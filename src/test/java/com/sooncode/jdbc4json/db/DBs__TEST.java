@@ -40,13 +40,13 @@ public class DBs__TEST {
 	@Test
 	public void getConnection4pressureTest() {
 
-		ManyTheadTest mtt = new ManyTheadTest(1, 1);
+		ManyTheadTest mtt = new ManyTheadTest(5, 100);
 		SoonTest st = (SoonTest) OpenInterfaceTest.newInstance(mtt);
 		List<Object> list = st.testMethod(DBs.class, "getConnection", new String[] { "default" });
 		for (Object obj : list) {
 			if (obj instanceof Connection) {
 				Connection con = (Connection) obj;
-				logger.info("【Jdbc4Json  test】 获取数据库连接是否成功：" + (con != null));
+				//logger.info("【Jdbc4Json  test】 获取数据库连接是否成功：" + (con != null));
 			}
 		}
  

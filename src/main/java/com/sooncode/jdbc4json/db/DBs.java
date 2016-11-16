@@ -14,11 +14,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
 import javax.sql.DataSource;
-
 import org.apache.log4j.Logger;
-
 import com.sooncode.jdbc4json.bean.ForeignKey;
 import com.sooncode.jdbc4json.bean.Index;
 import com.sooncode.jdbc4json.constant.DATA;
@@ -54,10 +51,7 @@ public class DBs {
 	 * 初始化
 	 */
 	static {
-		dBcache.clear();
-		if (classesPath == null) {
-			classesPath = new DBs().getClassesPath();
-		}
+		classesPath = getClassesPath();
 		List<String> dbConfig = getDbConfig();
 		Map<String, DataSource> dss = new HashMap<>();
 
@@ -77,8 +71,8 @@ public class DBs {
 
 			PropertiesUtil pu = new PropertiesUtil(classesPath + str);
 			DB db = new DB();
-            String key = pu.getString("KEY");
-			db.setKey(key == null ? DATA.DEFAULT_KEY :key);
+			String key = pu.getString("KEY");
+			db.setKey(key == null ? DATA.DEFAULT_KEY : key);
 			db.setDriver(pu.getString("DRIVER"));
 			db.setIp(pu.getString("IP"));
 			db.setPort(pu.getString("PORT"));
@@ -92,29 +86,26 @@ public class DBs {
 			Class<?> DataSources;
 			try {
 				DataSources = Class.forName("com.mchange.v2.c3p0.DataSources");
-			} catch (ClassNotFoundException e) {
-				DataSources = null;
-				logger.info("【Jdbc4Json】: 没有添加c3p0的jar包 , DataSources 加载失败");
-			}
-
-			if (DataSources != null) {
-
-				try {
-					// 加载驱动类
-					Class.forName(db.getDriver());
-					String jdbcUrl = DB4Parperties.getMysqlUrl(db.getIp(), db.getPort(), db.getDataName(), db.getEncodeing());
-					Properties p = new Properties();
-					p.setProperty(DB4Parperties.USER, db.getUserName());
-					p.setProperty(DB4Parperties.PASSWORD, db.getPassword());
-					Method unpooledDataSource = DataSources.getMethod(DB4Parperties.UNPOOLED_DATA_SOURCE, String.class, Properties.class);
-					DataSource ds = (DataSource) unpooledDataSource.invoke(null, jdbcUrl, p);
-					Method pooledDataSource = DataSources.getMethod(DB4Parperties.POOLED_DATA_SOURCE, DataSource.class, Properties.class);
-					ds = (DataSource) pooledDataSource.invoke(null, ds, p);
-					dss.put(db.getKey(), ds);
-					logger.info("【Jdbc4Json】: 已添加c3p0连接池 ;数据库" + db.getDataName() + (db.getKey().equals(DATA.DEFAULT_KEY) == true ? "（默认首选数据库）" : ""));
-				} catch (Exception e) {
-					e.printStackTrace();
+				if (DataSources != null) {
+						// 加载驱动类
+						Class.forName(db.getDriver());
+						String jdbcUrl = DB4Parperties.getMysqlUrl(db.getIp(), db.getPort(), db.getDataName(), db.getEncodeing());
+						Properties p = new Properties();
+						p.setProperty(DB4Parperties.USER, db.getUserName());
+						p.setProperty(DB4Parperties.PASSWORD, db.getPassword());
+						Method unpooledDataSource = DataSources.getMethod(DB4Parperties.UNPOOLED_DATA_SOURCE, String.class, Properties.class);
+						DataSource ds = (DataSource) unpooledDataSource.invoke(null, jdbcUrl, p);
+						Method pooledDataSource = DataSources.getMethod(DB4Parperties.POOLED_DATA_SOURCE, DataSource.class, Properties.class);
+						ds = (DataSource) pooledDataSource.invoke(null, ds, p);
+						dss.put(db.getKey(), ds);
+						logger.info("【Jdbc4Json】: 已添加c3p0连接池 ;数据库" + db.getDataName() + (db.getKey().equals(DATA.DEFAULT_KEY) == true ? "（默认首选数据库）" : ""));
+				}else{
+					DataSources = null;
+					logger.info("【Jdbc4Json】: 没有添加c3p0的jar包 , DataSources 加载失败!");
 				}
+			} catch ( Exception e) {
+				DataSources = null;
+				logger.info("【Jdbc4Json】: 添加c3p0连接池失败!");
 			}
 		}
 		dataSources = dss;
@@ -122,10 +113,12 @@ public class DBs {
 
 	/**
 	 * 获取数据库连接
-	 * @param dbKey 代表连接数据库参数的关键字
+	 * 
+	 * @param dbKey
+	 *            代表连接数据库参数的关键字
 	 * @return 数据库连接
 	 */
-	public static synchronized Connection getConnection(String dbKey) {
+	public static Connection getConnection(String dbKey) {
 		if (dbKey == null || dbKey.trim().equals("")) {
 			logger.error("【Jdbc4Json】:数据库 dbKey参数错误（dbKey为null 或者 dbKey 为空字符串）");
 			return null;
@@ -134,8 +127,13 @@ public class DBs {
 		Connection connection = null;
 		if (dataSources != null && dataSources.size() != 0) { // 已集成c3p0连接池
 			try {
-				connection = dataSources.get(dbKey).getConnection();
-				setTransactionIsolation(dbKey, connection);
+				DataSource ds = dataSources.get(dbKey);
+				if (ds != null) {
+					connection = ds.getConnection();
+					setTransactionIsolation(dbKey, connection);
+				} else {
+					return null;
+				}
 			} catch (SQLException e) {
 				logger.error("【Jdbc4Json】:从c3p0链接池中 获取数据库连接失败！ " + e.getMessage());
 				return null;
@@ -154,7 +152,7 @@ public class DBs {
 			String USERNAME = db.getUserName();
 			String PASSWORD = db.getPassword();
 
-			String mysqlUrl = DB4Parperties.getMysqlUrl(IP, PORT,DATA_NAME, ENCODEING);
+			String mysqlUrl = DB4Parperties.getMysqlUrl(IP, PORT, DATA_NAME, ENCODEING);
 
 			try {
 				Class.forName(DRIVER);
@@ -192,7 +190,7 @@ public class DBs {
 			ResultSet columnSet = getConnection(dbKey).getMetaData().getColumns(dataBaseName, STRING.PERCENT, tableName, STRING.PERCENT);
 			Map<String, Object> map = new HashMap<>();
 			while (columnSet.next()) { // 遍历某个表的字段
-				String columnName = columnSet.getString("COLUMN_NAME");//.toUpperCase());
+				String columnName = columnSet.getString("COLUMN_NAME");// .toUpperCase());
 				map.put(T2E.toField(columnName), null);
 			}
 			return map;
@@ -331,13 +329,12 @@ public class DBs {
 	 * 
 	 * @return
 	 */
-	private String getClassesPath() {
-
-		String path = this.getClass().getResource("/").getPath();
+	private static String getClassesPath() {
+		String path = DBs.class.getResource("/").getPath();
 		File file = new File(path);
 		String classesPath = file.toString() + File.separatorChar;
 		classesPath = classesPath.replace("%20", STRING.SPACING);
-		//logger.debug("【Jdbc4Json】: classesPath=" + classesPath);
+		// logger.debug("【Jdbc4Json】: classesPath=" + classesPath);
 		return classesPath;
 
 		/*
