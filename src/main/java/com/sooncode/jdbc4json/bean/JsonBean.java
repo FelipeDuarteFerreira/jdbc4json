@@ -42,11 +42,21 @@ public class JsonBean extends Bean {
 			if (map != null && map.size() == 1) {
 				for (Entry<String, Object> en : map.entrySet()) {
 					beanName = en.getKey();
-					this.beanName = beanName;
-					SJson newSj = new SJson(sj.getFields(beanName).toString());
-					for (Entry<String, Object> e : newSj.getMap().entrySet()) {
-						this.addField(e.getKey(), e.getValue());
+					String jsonString = sj.getFields(beanName).toString();
+					if (SJson.isJson(jsonString) == true) {
+						this.beanName = beanName;
+						SJson newSj = new SJson(jsonString);
+						for (Entry<String, Object> e : newSj.getMap().entrySet()) {
+							this.addField(e.getKey(), e.getValue());
+						}
+					} else {
+						this.addField(en.getKey(), en.getValue());
 					}
+				}
+
+			} else {
+				for (Entry<String, Object> e : map.entrySet()) {
+					this.addField(e.getKey(), e.getValue());
 				}
 			}
 		} else {
@@ -54,24 +64,22 @@ public class JsonBean extends Bean {
 		}
 	}
 
-	public JsonBean (String beanName,Map<String,Object> map){
-		
-		for(Entry<String,Object> en : map.entrySet()){
+	public JsonBean(String beanName, Map<String, Object> map) {
+
+		for (Entry<String, Object> en : map.entrySet()) {
 			String key = en.getKey();
 			Object val = en.getValue();
-			if(beanName==null && !key.contains(STRING.DOLLAR)){
+			if (beanName == null && !key.contains(STRING.DOLLAR)) {
 				this.map.put(key, val);
-			}else if(beanName!=null && !"".equals(beanName) && key.contains(STRING.DOLLAR)){
+			} else if (beanName != null && !"".equals(beanName) && key.contains(STRING.DOLLAR)) {
 				String[] keys = key.split(STRING.ESCAPE_DOLLAR);
-				if(keys.length==2  &&  beanName.equals(keys[0])){
-					this.map.put(keys[1], val);	
+				if (keys.length == 2 && beanName.equals(keys[0])) {
+					this.map.put(keys[1], val);
 				}
 			}
 		}
 	}
-	
-	
-	
+
 	public void addField(JsonBean jsonBean) {
 		if (jsonBean != null) {
 			this.addField(jsonBean.getBeanName(), jsonBean.getFields());
@@ -83,8 +91,8 @@ public class JsonBean extends Bean {
 			if (value instanceof Date) {
 				String str = new SimpleDateFormat(DATE_FORMAT.ALL_DATE).format(value);
 				map.put(key, str);
-			}else{
-			map.put(key, value);
+			} else {
+				map.put(key, value);
 			}
 		}
 	}
@@ -109,7 +117,7 @@ public class JsonBean extends Bean {
 					if (value instanceof Date) {
 						String str = new SimpleDateFormat(DATE_FORMAT.ALL_DATE).format(value);
 						map.put(key, str);
-					}else{
+					} else {
 						map.put(key, value);
 					}
 				}
@@ -164,6 +172,10 @@ public class JsonBean extends Bean {
 		return beanName;
 	}
 
+	public void setBeanName(String beanName) {
+		this.beanName = beanName;
+	}
+
 	public String toString() {
 		return this.getJsonString();
 	}
@@ -183,5 +195,5 @@ public class JsonBean extends Bean {
 	public void setIdVal(Object idVal) {
 		this.idVal = idVal;
 	}
-
+ 
 }
