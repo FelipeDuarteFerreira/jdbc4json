@@ -297,6 +297,23 @@ public class JdbcDao  implements JdbcDaoInterface{
 		return beans;
 	}
 
+	public long count(String key, Conditions conditions) {
+		DbBean cb = DbBeanCache.getDbBean(dbKey, conditions.getLeftBean());
+		String tableName = T2E.toTableName(cb.getBeanName());
+		String sql = "SELECT COUNT(" + key + ") AS SIZE" + " FROM " + tableName
+				+ " WHERE 1=1 " + ComSQL.where(cb).getReadySql();
+		Parameter p = new Parameter();
+		p.setReadySql(sql);
+		p.setParams(ComSQL.where(cb).getParams());
+		Map<String, Object> map = jdbc.get(p);
+		Long n = (Long) map.get("size");
+		if (n != null && n > 0) {
+			return n;
+		} else {
+			return 0L;
+		}
+	}
+	
 	/**
 	 * 获取表关系模式
 	 * 

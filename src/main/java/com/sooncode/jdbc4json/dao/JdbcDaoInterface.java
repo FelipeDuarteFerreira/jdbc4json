@@ -28,6 +28,6 @@ public interface JdbcDaoInterface {
 	public long delete(JsonBean jsonBean)  ;
 
 	public List<JsonBean> gets(Conditions conditions)  ;
- 
+	public long count(String key, Conditions conditions) ;
 	 
 }

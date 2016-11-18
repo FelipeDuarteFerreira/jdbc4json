@@ -187,12 +187,23 @@ public class JdbcDao_Test {
 		c.setCondition("chooseCourse.score", EqualSign.GTEQ);
 		 
 		Page page = jdbcDao.getPage(1L,1L,c);
-		 
+		
 		 
 		
 		
 		
 	}
+	
+	@Test 
+	public void count(){
+		JsonBean student = new JsonBean("student");
+		Conditions c = new Conditions(student);
+		long n = jdbcDao.count("*",c);
+		logger.info(n);
+	}
+	
+	
+	
 	
 	
 	@Test 

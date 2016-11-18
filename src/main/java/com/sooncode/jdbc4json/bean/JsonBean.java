@@ -11,13 +11,16 @@ import java.util.Map.Entry;
 import com.sooncode.jdbc4json.constant.DATE_FORMAT;
 import com.sooncode.jdbc4json.constant.STRING;
 import com.sooncode.jdbc4json.json.SJson;
+import com.sooncode.jdbc4json.reflect.RObject;
+import com.sooncode.jdbc4json.util.T2E;
 
 import java.util.TreeMap;
 
-public class JsonBean extends Bean {
+public class JsonBean<T>   {
 
 	private String beanName;
 
+	private T t ;
 	/***
 	 * 唯一标识字段
 	 */
@@ -30,6 +33,15 @@ public class JsonBean extends Bean {
 
 	public JsonBean() {
 
+	}
+
+	public JsonBean(T t) {
+		this.t = t;
+		String tClassName = t.getClass().getSimpleName();//TClass.getName(); // 
+		this.beanName  =T2E.toField(  T2E.toColumn(tClassName)); 
+		RObject rObj = new RObject(t);
+		Map<String, Object> map = rObj.getFiledAndValue();
+		this.map.putAll(map);
 	}
 
 	public JsonBean(String string) {
@@ -195,5 +207,12 @@ public class JsonBean extends Bean {
 	public void setIdVal(Object idVal) {
 		this.idVal = idVal;
 	}
- 
+
+	public T getJavaBean() {
+		
+		
+		
+		return t;
+	}
+
 }
