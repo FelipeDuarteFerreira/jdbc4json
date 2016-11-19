@@ -35,7 +35,7 @@ public class JsonBean__Test {
 	@Test
 	public void JsonBean() {
 
-		JsonBean jb = new JsonBean();
+		JsonBean<?> jb = new JsonBean<>();
 		jb.addField("id", 1);
 		jb.addField("name", "hechen");
 
@@ -53,12 +53,11 @@ public class JsonBean__Test {
 	}
 	@Test
 	public void JsonBean3() {
-		User u = new User();
-		 
 		JsonBean<User> jb = new JsonBean<>();
 		jb.addField("id","34364545");
-		u = jb.getJavaBean();
-		logger.info(jb.toString());
+		User u = new User();
+		u =  jb.getJavaBean(User.class);
+		logger.info(u);
 		
 	}
 

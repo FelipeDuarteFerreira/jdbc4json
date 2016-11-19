@@ -1,5 +1,5 @@
 package com.sooncode.jdbc4json.bean;
-
+ 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -16,11 +16,10 @@ import com.sooncode.jdbc4json.util.T2E;
 
 import java.util.TreeMap;
 
-public class JsonBean<T>   {
+public class JsonBean<T> {
 
 	private String beanName;
-
-	private T t ;
+ 
 	/***
 	 * 唯一标识字段
 	 */
@@ -31,21 +30,20 @@ public class JsonBean<T>   {
 
 	private Map<String, Object> map = new LinkedHashMap<>();
 
-	public JsonBean() {
-
+	public JsonBean(){
+		
 	}
-
-	public JsonBean(T t) {
-		this.t = t;
-		String tClassName = t.getClass().getSimpleName();//TClass.getName(); // 
+	 
+	public JsonBean(T javaBean) {
+		 
+		String tClassName = javaBean.getClass().getSimpleName();//TClass.getName(); // 
 		this.beanName  =T2E.toField(  T2E.toColumn(tClassName)); 
-		RObject rObj = new RObject(t);
+		RObject rObj = new RObject(javaBean);
 		Map<String, Object> map = rObj.getFiledAndValue();
 		this.map.putAll(map);
 	}
 
 	public JsonBean(String string) {
-
 		boolean b = SJson.isJson(string);
 		if (b == true) {
 			SJson sj = new SJson(string);
@@ -92,7 +90,7 @@ public class JsonBean<T>   {
 		}
 	}
 
-	public void addField(JsonBean jsonBean) {
+	public void addField(JsonBean<T> jsonBean) {
 		if (jsonBean != null) {
 			this.addField(jsonBean.getBeanName(), jsonBean.getFields());
 		}
@@ -109,10 +107,10 @@ public class JsonBean<T>   {
 		}
 	}
 
-	public void addField(String key, List<JsonBean> jsonBeans) {
+	public void addField(String key, List<JsonBean<T>> jsonBeans) {
 		if (jsonBeans != null && jsonBeans.size() > 0) {
 			List<Map<String, Object>> list = new LinkedList<>();
-			for (JsonBean j : jsonBeans) {
+			for (JsonBean<T> j : jsonBeans) {
 				list.add(j.getFields());
 			}
 			this.addField(key, list);
@@ -208,11 +206,21 @@ public class JsonBean<T>   {
 		this.idVal = idVal;
 	}
 
-	public T getJavaBean() {
-		
-		
-		
-		return t;
+	
+	public T getJavaBean(Class<T> javaBeanClass) {
+		 
+		RObject rObj = new RObject(javaBeanClass);
+		Map<String,Object> fileds = rObj.getFiledAndValue();
+		for (Entry<String,Object> en : fileds.entrySet()) {
+			String key = en.getKey();
+			Object val = this.map.get(key);
+			if(val!=null){
+				rObj.invokeSetMethod(key, val);
+			}
+		}
+		@SuppressWarnings("unchecked")
+		T javaBean = (T) rObj.getObject();
+		return javaBean ;
 	}
 
 }
