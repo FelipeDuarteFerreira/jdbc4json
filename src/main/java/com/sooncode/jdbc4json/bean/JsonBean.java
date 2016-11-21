@@ -36,7 +36,7 @@ public class JsonBean<T> {
 	 
 	public JsonBean(T javaBean) {
 		 
-		String tClassName = javaBean.getClass().getSimpleName();//TClass.getName(); // 
+		String tClassName = javaBean.getClass().getSimpleName(); 
 		this.beanName  =T2E.toField(  T2E.toColumn(tClassName)); 
 		RObject rObj = new RObject(javaBean);
 		Map<String, Object> map = rObj.getFiledAndValue();
