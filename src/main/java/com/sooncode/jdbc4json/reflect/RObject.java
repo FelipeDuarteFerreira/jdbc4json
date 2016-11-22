@@ -29,10 +29,11 @@ public class RObject {
 	private static final String UID="serialVersionUID";
 	
 	/** 被反射代理的对象 */
-	private Object object;
+	private  Object object;
+	 
 	 
 
-	public RObject(Object object) {
+	public <T> RObject(T object) {
 		this.object = object;
 	}
 
@@ -69,8 +70,10 @@ public class RObject {
 	}
 
 	/** 获取被反射代理的对象 */
-	public Object getObject() {
-		return object;
+	public <T> T getObject() {
+		@SuppressWarnings("unchecked")
+		T t = (T) object;
+		return t;
 	}
 
 	/**
@@ -202,13 +205,16 @@ public class RObject {
 	 * @param fieldName
 	 * @return
 	 */
-	public Object invokeGetMethod(String fieldName) {
+	
+	public <T> T invokeGetMethod(String fieldName) {
 		PropertyDescriptor pd;
 		try {
 			pd = new PropertyDescriptor(fieldName, this.object.getClass());
 			// 获得set方法
 			Method method = pd.getReadMethod();
-			return method.invoke(this.object);
+			@SuppressWarnings("unchecked")
+			T t = (T) method.invoke(this.object);
+			return t;
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			return null;
@@ -254,7 +260,7 @@ public class RObject {
 	}
 
 	/** 获取对象的第一个属性的值 */
-	public Object getPkValue() {
+	public <T> T  getPkValue() {
 
 		String str = JAVA_TYPES;// "Integer Long Short Byte Float Double Character Boolean Date String";
 		Class<?> c = object.getClass();
@@ -278,7 +284,8 @@ public class RObject {
 	 *            方法需要的参数集
 	 * @return 方法执行的返回值
 	 */
-	public Object invoke(String methodName, Object... args) {
+	
+	public <T> T invoke(String methodName, Object... args) {
 		try {
 			Method method = null;
 			for (Class<?> clazz = object.getClass(); clazz != Object.class; clazz = clazz.getSuperclass()) {
@@ -287,7 +294,9 @@ public class RObject {
 				} catch (Exception e) {
 				}
 			}
-			return method.invoke(object, args);
+			@SuppressWarnings("unchecked")
+			T t = (T) method.invoke(object, args);
+			return t;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
