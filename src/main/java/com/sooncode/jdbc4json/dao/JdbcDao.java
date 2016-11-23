@@ -31,7 +31,7 @@ import com.sooncode.jdbc4json.util.T2E;
  * @author pc
  * 
  */
-public class JdbcDao  implements JdbcDaoInterface{
+public class JdbcDao implements JdbcDaoInterface {
 
 	public final static Logger logger = Logger.getLogger("JdbcDao.class");
 
@@ -190,14 +190,18 @@ public class JdbcDao  implements JdbcDaoInterface{
 		}
 	}
 
-	
-
 	public long save(JsonBean jsonBean) {
 		DbBean cb = DbBeanCache.getDbBean(dbKey, jsonBean);
 		Parameter p = ComSQL.insert(cb);
 		long n = jdbc.update(p);
 		return n;
 
+	}
+
+	public <T> long save(T javaBean) {
+		JsonBean jsonBean = new JsonBean(javaBean);
+		long n = this.save(jsonBean);
+		return n;
 	}
 
 	public boolean saves(List<JsonBean> jsonBeans) {
@@ -300,8 +304,7 @@ public class JdbcDao  implements JdbcDaoInterface{
 	public long count(String key, Conditions conditions) {
 		DbBean cb = DbBeanCache.getDbBean(dbKey, conditions.getLeftBean());
 		String tableName = T2E.toTableName(cb.getBeanName());
-		String sql = "SELECT COUNT(" + key + ") AS SIZE" + " FROM " + tableName
-				+ " WHERE 1=1 " + ComSQL.where(cb).getReadySql();
+		String sql = "SELECT COUNT(" + key + ") AS SIZE" + " FROM " + tableName + " WHERE 1=1 " + ComSQL.where(cb).getReadySql();
 		Parameter p = new Parameter();
 		p.setReadySql(sql);
 		p.setParams(ComSQL.where(cb).getParams());
@@ -313,7 +316,7 @@ public class JdbcDao  implements JdbcDaoInterface{
 			return 0L;
 		}
 	}
-	
+
 	/**
 	 * 获取表关系模式
 	 * 
@@ -386,7 +389,7 @@ public class JdbcDao  implements JdbcDaoInterface{
 		return jsonBeans;
 
 	}
-	
+
 	/**
 	 * 一对多
 	 * 
@@ -497,6 +500,38 @@ public class JdbcDao  implements JdbcDaoInterface{
 			pd.setSize(0);
 		}
 		return pd;
+	}
+
+	@Override
+	public <T> boolean saves(T[] javaBeans) {
+		List<JsonBean> list = new LinkedList<>();
+		for (T javaBean : javaBeans) {
+			JsonBean j = new JsonBean(javaBean);
+			list.add(j);
+		}
+		boolean b = this.saves(list);
+		return b;
+	}
+
+	@Override
+	public <T> long saveOrUpdate(T javaBean) {
+		JsonBean j = new JsonBean(javaBean);
+		long n = this.saveOrUpdate(j);
+		return n;
+	}
+
+	@Override
+	public <T> long update(T javaBean) {
+		JsonBean j = new JsonBean(javaBean);
+		long n = this.update(j);
+		return n;
+	}
+
+	@Override
+	public <T> long delete(T javaBean) {
+		JsonBean j = new JsonBean(javaBean);
+		long n = this.delete(j);
+		return n;
 	}
 
 }

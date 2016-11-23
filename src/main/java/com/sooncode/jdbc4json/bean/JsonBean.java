@@ -16,7 +16,7 @@ import com.sooncode.jdbc4json.util.T2E;
 
 import java.util.TreeMap;
 
-public class JsonBean<T> {
+public class JsonBean {
 
 	private String beanName;
  
@@ -34,7 +34,7 @@ public class JsonBean<T> {
 		
 	}
 	 
-	public JsonBean(T javaBean) {
+	public <T> JsonBean(T javaBean) {
 		 
 		String tClassName = javaBean.getClass().getSimpleName(); 
 		this.beanName  =T2E.toField(  T2E.toColumn(tClassName)); 
@@ -90,7 +90,7 @@ public class JsonBean<T> {
 		}
 	}
 
-	public void addField(JsonBean<T> jsonBean) {
+	public   void  addField(JsonBean  jsonBean) {
 		if (jsonBean != null) {
 			this.addField(jsonBean.getBeanName(), jsonBean.getFields());
 		}
@@ -107,10 +107,10 @@ public class JsonBean<T> {
 		}
 	}
 
-	public void addField(String key, List<JsonBean<T>> jsonBeans) {
+	public void addField(String key, List<JsonBean> jsonBeans) {
 		if (jsonBeans != null && jsonBeans.size() > 0) {
 			List<Map<String, Object>> list = new LinkedList<>();
-			for (JsonBean<T> j : jsonBeans) {
+			for (JsonBean  j : jsonBeans) {
 				list.add(j.getFields());
 			}
 			this.addField(key, list);
@@ -137,9 +137,11 @@ public class JsonBean<T> {
 
 	}
 
-	public Object getField(String key) {
+	public <T> T getField(String key) {
 		if (key != null && !key.trim().equals("")) {
-			return this.map.get(key);
+			@SuppressWarnings("unchecked")
+			T t = (T) this.map.get(key);
+			return t ;
 		} else {
 			return null;
 		}
@@ -207,7 +209,7 @@ public class JsonBean<T> {
 	}
 
 	
-	public T getJavaBean(Class<T> javaBeanClass) {
+	public <T> T getJavaBean(Class<T> javaBeanClass) {
 		 
 		RObject rObj = new RObject(javaBeanClass);
 		Map<String,Object> fileds = rObj.getFiledAndValue();

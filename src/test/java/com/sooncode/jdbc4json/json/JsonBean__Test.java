@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
+import com.sooncode.example.entity.User;
 import com.sooncode.jdbc4json.bean.JsonBean;
 
 public class JsonBean__Test {
@@ -35,8 +36,7 @@ public class JsonBean__Test {
 	@Test
 	public void JsonBean() {
 
-		JsonBean<?> jb = new JsonBean<>();
-		jb.addField("id", 1);
+		JsonBean jb = new JsonBean ();
 		jb.addField("name", "hechen");
 
 		logger.info(jb.getJsonString());
@@ -46,14 +46,14 @@ public class JsonBean__Test {
 	@Test
 	public void JsonBean2() {
 		User u = new User();
-		u.setId("230457399");
-		JsonBean<User> jb = new JsonBean<>(u);
+		u.setName("hechen");
+		JsonBean  jb = new JsonBean (u);
 		logger.info(jb.toString());
 
 	}
 	@Test
 	public void JsonBean3() {
-		JsonBean<User> jb = new JsonBean<>();
+		JsonBean jb = new JsonBean ();
 		jb.addField("id","34364545");
 		User u = new User();
 		u =  jb.getJavaBean(User.class);

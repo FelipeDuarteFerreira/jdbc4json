@@ -33,44 +33,22 @@ public class Conditions {
 	 */
 	private String oderByes = new String();
 
+	public Conditions(Object leftJavaBean,Object... otherJavaBeans){
+		JsonBean leftBean = new JsonBean(leftJavaBean);
+		JsonBean[] jsonBeans = new JsonBean[otherJavaBeans.length];
+		for (int i =0;i<otherJavaBeans.length;i++) {
+			jsonBeans[i]= new JsonBean(otherJavaBeans[i]);
+		}
+		 this.init(leftBean, jsonBeans);
+	}
+	
 	public Conditions(JsonBean leftBean, JsonBean... otherBeans) {
-		
-		
-		
-		this.leftBean = leftBean;
-		this.otherBeans = otherBeans;
-		Map<String, Object> map = leftBean.getFields();
-		Map<String, Object> newMap = new TreeMap<>();
-		
-		for(Entry<String, Object> en : map.entrySet()){
-			String key = en.getKey();
-			Object value = en.getValue();
-			newMap.put(leftBean.getBeanName()+ STRING.POINT+key, value);
-		}
-		
-		if( otherBeans!=null  &&  otherBeans.length >0 ){
-			for (JsonBean bean : otherBeans) {
-				Map<String, Object> otherMap = bean.getFields();
-				 for(Entry<String,Object> en:otherMap.entrySet()){
-					 String key = en.getKey();
-					 Object val = en.getValue();
-					 newMap.put(bean.getBeanName()+STRING.POINT+key, val);
-				 }
-			}
-		}
-		
-		
-		Map<String, Condition> list = new HashMap<>();
-		for (Entry<String, Object> en : newMap.entrySet()) {
-			String key = en.getKey();
-			Object val = en.getValue();
-			Condition c = new Condition(key, val, null);
-			list.put(key, c);
-		}
-
-		this.ces = list;
+		 
+		 this.init(leftBean, otherBeans);
 	}
 
+	
+	
 	/**
 	 * 设置条件
 	 * 
@@ -186,10 +164,6 @@ public class Conditions {
 		c.setType("0");
 		if (c != null) {
 			String sql = STRING.SPACING + T2E.toColumn(key) + SQL_KEY.IS + SQL_KEY.NOT + SQL_KEY.NULL + STRING.SPACING;// "
-																														// IS
-																														// NOT
-																														// NULL
-																														// ";
 			c.setCondition(sql);
 			ces.put(c.getKey(), c);
 		}
@@ -331,6 +305,41 @@ public class Conditions {
 		return otherBeans;
 	}
 
+
+	private void init(JsonBean leftBean, JsonBean... otherBeans){
+		this.leftBean = leftBean;
+		this.otherBeans = otherBeans;
+		Map<String, Object> map = leftBean.getFields();
+		Map<String, Object> newMap = new TreeMap<>();
+		
+		for(Entry<String, Object> en : map.entrySet()){
+			String key = en.getKey();
+			Object value = en.getValue();
+			newMap.put(leftBean.getBeanName()+ STRING.POINT+key, value);
+		}
+		
+		if( otherBeans!=null  &&  otherBeans.length >0 ){
+			for (JsonBean bean : otherBeans) {
+				Map<String, Object> otherMap = bean.getFields();
+				 for(Entry<String,Object> en:otherMap.entrySet()){
+					 String key = en.getKey();
+					 Object val = en.getValue();
+					 newMap.put(bean.getBeanName()+STRING.POINT+key, val);
+				 }
+			}
+		}
+		
+		
+		Map<String, Condition> list = new HashMap<>();
+		for (Entry<String, Object> en : newMap.entrySet()) {
+			String key = en.getKey();
+			Object val = en.getValue();
+			Condition c = new Condition(key, val, null);
+			list.put(key, c);
+		}
+
+		this.ces = list;
+	}
 	 
 
 }
