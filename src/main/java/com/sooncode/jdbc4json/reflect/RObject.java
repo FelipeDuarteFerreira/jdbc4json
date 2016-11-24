@@ -22,16 +22,14 @@ import org.apache.log4j.Logger;
  */
 public class RObject {
 	public static Logger logger = Logger.getLogger("RObject.class");
-	private static final String NULL_STR="";
-	private static final String CLASS="class ";
-	private static final String LIST_INTERFACE="interface java.util.List";
-	private static final String JAVA_TYPES="Integer Long Short Byte Float Double Character Boolean Date String";
-	private static final String UID="serialVersionUID";
-	
+	private static final String NULL_STR = "";
+	private static final String CLASS = "class ";
+	private static final String LIST_INTERFACE = "interface java.util.List";
+	private static final String JAVA_TYPES = "Integer Long Short Byte Float Double Character Boolean Date String";
+	private static final String UID = "serialVersionUID";
+
 	/** 被反射代理的对象 */
-	private  Object object;
-	 
-	 
+	private Object object;
 
 	public <T> RObject(T object) {
 		this.object = object;
@@ -41,7 +39,7 @@ public class RObject {
 
 		try {
 			this.object = clas.newInstance();
-			 
+
 		} catch (Exception e) {
 
 			e.printStackTrace();
@@ -53,7 +51,7 @@ public class RObject {
 		try {
 			clas = Class.forName(className);
 			this.object = clas.newInstance();
-			 
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -61,7 +59,7 @@ public class RObject {
 
 	/** 获取对象的类名 */
 	public String getClassName() {
-		return this.object.getClass().getSimpleName(); 
+		return this.object.getClass().getSimpleName();
 	}
 
 	/** 获取对象的全类名 */
@@ -77,8 +75,8 @@ public class RObject {
 	}
 
 	/**
-	 * 获取被反射代理对象的属性集(除serialVersionUID属性外)
-	 * 包括父类的属性
+	 * 获取被反射代理对象的属性集(除serialVersionUID属性外) 包括父类的属性
+	 * 
 	 * @return
 	 */
 	public List<Field> getFields() {
@@ -86,19 +84,18 @@ public class RObject {
 
 		Class<?> thisClass = this.object.getClass();
 
-		
 		int n = 0;
 		for (; thisClass != Object.class; thisClass = thisClass.getSuperclass()) {
 
 			Field[] fields = thisClass.getDeclaredFields();
-			if(n==0){
+			if (n == 0) {
 				for (Field f : fields) {
 					if (!f.getName().equals(UID)) {
 						list.add(f);
 					}
 				}
-				
-			}else{
+
+			} else {
 				for (Field f : fields) {
 					int i = f.getModifiers();
 					boolean isPrivate = Modifier.isPrivate(i);
@@ -107,8 +104,8 @@ public class RObject {
 					}
 				}
 			}
-			
-           n++;
+
+			n++;
 		}
 
 		return list;
@@ -133,8 +130,6 @@ public class RObject {
 		return false;
 
 	}
-
-	 
 
 	/**
 	 * 获取 list 类型的属性名称
@@ -172,10 +167,9 @@ public class RObject {
 			// 获得set方法
 			Method method = pd.getWriteMethod();
 			method.invoke(object, args);
-		} catch ( Exception e) {
+		} catch (Exception e) {
 			logger.error(e.getMessage());
 		}
-			 
 
 	}
 
@@ -205,7 +199,7 @@ public class RObject {
 	 * @param fieldName
 	 * @return
 	 */
-	
+
 	public <T> T invokeGetMethod(String fieldName) {
 		PropertyDescriptor pd;
 		try {
@@ -218,7 +212,7 @@ public class RObject {
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			return null;
-		}  
+		}
 
 	}
 
@@ -227,7 +221,7 @@ public class RObject {
 
 		String str = JAVA_TYPES;
 		Map<String, Object> map = new HashMap<>();
-		 
+
 		List<Field> fields = this.getFields();
 		for (Field field : fields) {
 			String name = field.getName().replace("$cglib_prop_", "");
@@ -245,7 +239,7 @@ public class RObject {
 		Class<?> c = object.getClass();
 		Field[] fields = c.getDeclaredFields();
 		for (Field field : fields) {
-			if (!field.getName().equals(UID)) {  
+			if (!field.getName().equals(UID)) {
 				return field.getName();
 			}
 		}
@@ -260,9 +254,10 @@ public class RObject {
 	}
 
 	/** 获取对象的第一个属性的值 */
-	public <T> T  getPkValue() {
+	public <T> T getPkValue() {
 
-		String str = JAVA_TYPES;// "Integer Long Short Byte Float Double Character Boolean Date String";
+		String str = JAVA_TYPES;// "Integer Long Short Byte Float Double
+								// Character Boolean Date String";
 		Class<?> c = object.getClass();
 		Field[] fields = c.getDeclaredFields();
 		for (Field field : fields) {
@@ -284,7 +279,7 @@ public class RObject {
 	 *            方法需要的参数集
 	 * @return 方法执行的返回值
 	 */
-	
+
 	public <T> T invoke(String methodName, Object... args) {
 		try {
 			Method method = null;
@@ -354,7 +349,5 @@ public class RObject {
 		return json;
 
 	}
-
-	 
 
 }
