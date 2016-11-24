@@ -292,7 +292,7 @@ public class JdbcDao implements JdbcDaoInterface {
 		p.setReadySql(sql);
 		p.setParams(where.getParams());
 		List<Map<String, Object>> list = jdbc.gets(p);
-		List<JsonBean> beans = new ArrayList<>();
+		List<JsonBean> beans = new LinkedList <>();
 		for (Map<String, Object> map : list) {
 			JsonBean bean = new JsonBean(cb.getBeanName());
 			bean.addFields(map);
@@ -304,10 +304,10 @@ public class JdbcDao implements JdbcDaoInterface {
 	public long count(String key, Conditions conditions) {
 		DbBean cb = DbBeanCache.getDbBean(dbKey, conditions.getLeftBean());
 		String tableName = T2E.toTableName(cb.getBeanName());
-		String sql = "SELECT COUNT(" + key + ") AS SIZE" + " FROM " + tableName + " WHERE 1=1 " + ComSQL.where(cb).getReadySql();
+		String sql = "SELECT COUNT(" + key + ") AS SIZE" + " FROM " + tableName + " WHERE 1=1 " + conditions.getWhereParameter().getReadySql();
 		Parameter p = new Parameter();
 		p.setReadySql(sql);
-		p.setParams(ComSQL.where(cb).getParams());
+		p.setParams(conditions.getWhereParameter().getParams());
 		Map<String, Object> map = jdbc.get(p);
 		Long n = (Long) map.get("size");
 		if (n != null && n > 0) {
@@ -531,6 +531,77 @@ public class JdbcDao implements JdbcDaoInterface {
 	public <T> long delete(T javaBean) {
 		JsonBean j = new JsonBean(javaBean);
 		long n = this.delete(j);
+		return n;
+	}
+
+	@Override
+	public <T> T get(Conditions conditions,Class<T> javaBeanClass) {
+		List<JsonBean> list = this.gets(conditions) ;
+		if(list.size() == 1){
+			JsonBean jb = list.get(0);
+			T t = jb.getJavaBean(javaBeanClass);
+			return t;
+		}else{
+			return null;
+		}
+	}
+
+	@Override
+	public <T> T get(T javaBean) {
+		 
+		Conditions c = new Conditions(javaBean);
+		Class<?> clas =  javaBean.getClass();
+	    @SuppressWarnings("unchecked")
+		T t = (T) this.get(c, clas);
+		return t;
+	}
+
+	@Override
+	public <T> T get(JsonBean jsonBean,Class<T> javaBeanClass) {
+		Conditions c = new Conditions(jsonBean);
+		T t = (T) this.get(c, javaBeanClass);
+		return t;
+	}
+
+	@Override
+	public <T> List<T> gets(Conditions conditions, Class<T> javaBeanClass) {
+		List<JsonBean> list = this.gets(conditions);
+		List<T> newList = new LinkedList<>();
+		for (JsonBean jb : list) {
+			T t = jb.getJavaBean(javaBeanClass);
+			newList.add(t);
+		}
+		return newList;
+	}
+
+	@Override
+	public <T> List<T> gets(JsonBean jsonBean, Class<T> javaBeanClass) {
+		Conditions conditions = new Conditions(jsonBean);
+		List<T> list = this.gets(conditions,javaBeanClass);
+		return list;
+	}
+
+	@Override
+	public <T> List<T> gets(T javaBean) {
+		JsonBean jsonBean = new JsonBean(javaBean);
+		Conditions conditions = new Conditions(jsonBean);
+		@SuppressWarnings("unchecked")
+		Class<T> javaBeanClass = (Class<T>) javaBean.getClass();
+		List<T> list = this.gets(conditions,javaBeanClass);
+		return list; 
+	}
+
+	@Override
+	public long count(String key, JsonBean jsonBean) {
+		Conditions c = new Conditions(jsonBean );
+		long n = this.count(key, c);
+		return n;
+	}
+
+	@Override
+	public <T> long count(String key, T javaBean) {
+		Conditions c = new Conditions(javaBean);
+		long n = this.count(key, c);
 		return n;
 	}
 

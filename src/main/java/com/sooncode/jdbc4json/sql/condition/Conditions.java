@@ -315,7 +315,11 @@ public class Conditions {
 		for(Entry<String, Object> en : map.entrySet()){
 			String key = en.getKey();
 			Object value = en.getValue();
+			if(otherBeans!=null && otherBeans.length >0){
 			newMap.put(leftBean.getBeanName()+ STRING.POINT+key, value);
+			}else{
+				newMap.put(key, value);
+			}
 		}
 		
 		if( otherBeans!=null  &&  otherBeans.length >0 ){

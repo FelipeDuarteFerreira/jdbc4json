@@ -14,14 +14,22 @@ public interface JdbcDaoInterface {
  
 
 	public Page getPage(long pageNum, long pageSize, Conditions conditions);
-
+	
+    public <T> T get(Conditions conditions,Class<T> javaBeanClass);
+    public <T> T get(T javaBean);
+    public <T> T get(JsonBean jsonBean,Class<T> javaBeanClass);
+    
+    public List<JsonBean> gets(Conditions conditions)  ;
+    public <T> List<T> gets(Conditions conditions,Class<T> javaBeanClass)  ;
+    public <T> List<T> gets(JsonBean jsonBean,Class<T> javaBeanClass)  ;
+    public <T> List<T> gets(T javaBean)  ;
+    
 	public long save(JsonBean jsonBean)  ;
 	public <T> long save(T javaBean)  ;
-	
 	public boolean saves(List<JsonBean> jsonBeans) ;
 	public <T> boolean saves(T[] javaBeans) ;
+	
 	public boolean updates(List<JsonBean> jsonBeans)  ;
-
 	public long saveOrUpdate(JsonBean jsonBean)  ;
 	public <T> long saveOrUpdate(T javaBean)  ;
 
@@ -31,8 +39,9 @@ public interface JdbcDaoInterface {
 	public long delete(JsonBean jsonBean)  ;
 	public <T> long delete(T javaBean)  ;
 
-	public List<JsonBean> gets(Conditions conditions)  ;
 	//public <T> List<T> gets(Conditions conditions)  ;
 	public long count(String key, Conditions conditions) ;
+	public long count(String key, JsonBean jsonBean) ;
+	public <T> long count(String key, T javaBean) ;
 	 
 }

@@ -294,6 +294,10 @@ public class User implements Serializable{
 	 public void setCreateDate(java.util.Date createDate) {
 	 	 this.createDate = createDate;
 	 }
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", field20=" + field20 + ", field19=" + field19 + ", field17=" + field17 + ", field18=" + field18 + ", pass=" + pass + ", field13=" + field13 + ", field14=" + field14 + ", field15=" + field15 + ", name=" + name + ", field16=" + field16 + ", age=" + age + ", field10=" + field10 + ", field11=" + field11 + ", field12=" + field12 + ", note=" + note + ", field7=" + field7 + ", field6=" + field6 + ", field9=" + field9 + ", field8=" + field8 + ", field3=" + field3 + ", field2=" + field2 + ", field5=" + field5 + ", field4=" + field4 + ", field1=" + field1 + ", createDate=" + createDate + "]";
+	}
 
 }
 
