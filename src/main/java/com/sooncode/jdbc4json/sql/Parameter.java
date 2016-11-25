@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.sooncode.jdbc4json.constant.SQL_KEY;
 import com.sooncode.jdbc4json.constant.STRING;
+import com.sooncode.jdbc4json.exception.sql.SqlException;
 
 /**
  * 参数模型
@@ -113,8 +114,9 @@ public class Parameter {
 	 * 参数模型是否没有异常</br>
 	 * 当预编译SQL为空（null），或 为空字符串时，为存在异常；当预编译中的参数大于参数Map中的个数时，存在异常。
 	 * @return 存在异常时返回false；没有异常时返回true.
+	 * @throws SqlException 
 	 */
-	public boolean isNotException(){
+	public boolean isNotException()  {
 		
 		if(this.readySql == null || this.readySql.trim().equals(STRING.NULL_STR)){
 			return false;
@@ -130,7 +132,12 @@ public class Parameter {
 			if(this.params.size()>=size){
 				return true;
 			}else{
-				return false;
+				 try {
+					throw new SqlException("parameter is not matching （参数不匹配）");
+				} catch (SqlException e) {
+					e.printStackTrace();
+				}
+				 return false;
 			}
 			 
 		}

@@ -52,7 +52,7 @@ public class JdbcDao_Test {
 	@Test
 	public void save3(){
 		User u = new User();
-		u.setName("何臣");
+		u.setName("何臣','");
 		u.setAge(18);
 		Long b = jdbcDao.save(u);
 		logger.info(b);
@@ -60,10 +60,10 @@ public class JdbcDao_Test {
 	}
 	@Test
 	public void saves(){
-		String json = "{\"teacher\":{\"createDate\":\"2016-10-26 14:15:22\",\"teacherName\":\"hechen6578\",\"clazzId\":\"001\"}}";
+		String json = "{\"teacher\":{\"createDate\":\"2016-10-26 14:15:22\",\"teacherName\":\"hechen6578','fdf\",\"clazzId\":\"001\"}}";
 		JsonBean    t = new JsonBean(json);
 		 
-		String json2 = "{\"teacher\":{\"createDate\":\"2016-10-26 14:15:23\",\"teacherName\":\"hechen2345\",\"clazzId\":\"001\"}}";
+		String json2 = "{\"teacher\":{\"createDate\":\"2016-10-26 14:15:23\",\"teacherName\":\"hechen2345','fdfd\",\"clazzId\":\"001\"}}";
 		JsonBean    t2 = new JsonBean(json2);
 		
 		List<JsonBean> beans = new ArrayList<>();

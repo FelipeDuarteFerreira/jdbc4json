@@ -40,6 +40,8 @@ public class ComSQL {
 		String columnString = SQL_KEY.L_BRACKET;
 		String filedString = SQL_KEY.L_BRACKET;
 		int n = 0;
+		Map<Integer,Object> par = new HashMap<>();
+		int index=1;
 		for (Map.Entry<String, Object> entry : map.entrySet()) {
 
 			columnString = columnString + T2E.toColumn(entry.getKey());
@@ -47,11 +49,13 @@ public class ComSQL {
 				filedString = filedString + SQL_KEY.NULL;
 			} else {
 
+				filedString = filedString + STRING.QUESTION  ;// STRING.S_QUOTES+ new SimpleDateFormat(DATE_FORMAT.ALL_DATE).format(entry.getValue()) + STRING.S_QUOTES;
 				if (entry.getValue().getClass().getName().equals(CLASS_NAME.DATE)) {
-					filedString = filedString + STRING.S_QUOTES+ new SimpleDateFormat(DATE_FORMAT.ALL_DATE).format(entry.getValue()) + STRING.S_QUOTES;
+					par.put(index,  new SimpleDateFormat(DATE_FORMAT.ALL_DATE).format(entry.getValue()));
 				} else {
-					filedString = filedString + STRING.S_QUOTES + entry.getValue() + STRING.S_QUOTES;
+					par.put(index, entry.getValue());
 				}
+				index++;
 			}
 			if (n != map.size() - 1) {
 				columnString += SQL_KEY.COMMA;
@@ -65,6 +69,7 @@ public class ComSQL {
 		}
 		String sqlString = SQL_KEY.INSERT + tableName + columnString + SQL_KEY.VALUES + filedString;
 		Parameter p = new Parameter();
+		p.setParams(par);
 		p.setReadySql(sqlString);
 		return p;
 	}

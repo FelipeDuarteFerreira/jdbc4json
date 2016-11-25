@@ -20,6 +20,7 @@ import com.sooncode.jdbc4json.bean.ForeignKey;
 import com.sooncode.jdbc4json.bean.Index;
 import com.sooncode.jdbc4json.constant.DATA;
 import com.sooncode.jdbc4json.constant.STRING;
+import com.sooncode.jdbc4json.exception.db.DbException;
 import com.sooncode.jdbc4json.util.T2E;
 
 /**
