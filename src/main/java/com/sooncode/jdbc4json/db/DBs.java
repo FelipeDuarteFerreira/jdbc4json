@@ -5,7 +5,7 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.sql.Connection;
-import java.sql.DriverManager;
+ 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -20,7 +20,6 @@ import com.sooncode.jdbc4json.bean.ForeignKey;
 import com.sooncode.jdbc4json.bean.Index;
 import com.sooncode.jdbc4json.constant.DATA;
 import com.sooncode.jdbc4json.constant.STRING;
-import com.sooncode.jdbc4json.exception.db.DbException;
 import com.sooncode.jdbc4json.util.T2E;
 
 /**
@@ -88,25 +87,25 @@ public class DBs {
 			try {
 				DataSources = Class.forName("com.mchange.v2.c3p0.DataSources");
 				if (DataSources != null) {
-						// 加载驱动类
-						Class.forName(db.getDriver());
-						String jdbcUrl = DB4Parperties.getMysqlUrl(db.getIp(), db.getPort(), db.getDataName(), db.getEncodeing());
-						Properties p = new Properties();
-						p.setProperty(DB4Parperties.USER, db.getUserName());
-						p.setProperty(DB4Parperties.PASSWORD, db.getPassword());
-						Method unpooledDataSource = DataSources.getMethod(DB4Parperties.UNPOOLED_DATA_SOURCE, String.class, Properties.class);
-						DataSource ds = (DataSource) unpooledDataSource.invoke(null, jdbcUrl, p);
-						Method pooledDataSource = DataSources.getMethod(DB4Parperties.POOLED_DATA_SOURCE, DataSource.class, Properties.class);
-						ds = (DataSource) pooledDataSource.invoke(null, ds, p);
-						dss.put(db.getKey(), ds);
-						logger.info("【Jdbc4Json】: 已添加c3p0连接池 ;数据库" + db.getDataName() + (db.getKey().equals(DATA.DEFAULT_KEY) == true ? "（默认首选数据库）" : ""));
-				}else{
-					DataSources = null;
-					logger.info("【Jdbc4Json】: 没有添加c3p0的jar包 , DataSources 加载失败!");
+					// 加载驱动类
+					Class.forName(db.getDriver());
+					String jdbcUrl = DB4Parperties.getMysqlUrl(db.getIp(), db.getPort(), db.getDataName(), db.getEncodeing());
+					Properties p = new Properties();
+					p.setProperty(DB4Parperties.USER, db.getUserName());
+					p.setProperty(DB4Parperties.PASSWORD, db.getPassword());
+					Method unpooledDataSource = DataSources.getMethod(DB4Parperties.UNPOOLED_DATA_SOURCE, String.class, Properties.class);
+					DataSource ds = (DataSource) unpooledDataSource.invoke(null, jdbcUrl, p);
+					Method pooledDataSource = DataSources.getMethod(DB4Parperties.POOLED_DATA_SOURCE, DataSource.class, Properties.class);
+					ds = (DataSource) pooledDataSource.invoke(null, ds, p);
+					dss.put(db.getKey(), ds);
+					logger.info("【Jdbc4Json】: 已添加c3p0连接池 ;数据库" + db.getDataName() + (db.getKey().equals(DATA.DEFAULT_KEY) == true ? "（默认首选数据库）" : ""));
+				} else {
 				}
-			} catch ( Exception e) {
-				DataSources = null;
-				logger.info("【Jdbc4Json】: 添加c3p0连接池失败!");
+			} catch (Exception e) {
+				logger.info("【Jdbc4Json】: 添加c3p0连接池失败! 启用原生jdbc连接（无数据库连接池）");
+				SooncodeDataSource sds = new SooncodeDataSource();
+				sds.setDb(db);
+				dss.put(db.getKey(), sds);
 			}
 		}
 		dataSources = dss;
@@ -126,53 +125,62 @@ public class DBs {
 		}
 
 		Connection connection = null;
-		if (dataSources != null && dataSources.size() != 0) { // 已集成c3p0连接池
+		DataSource ds = dataSources.get(dbKey);
+		if (ds != null) {
 			try {
-				DataSource ds = dataSources.get(dbKey);
-				if (ds != null) {
-					connection = ds.getConnection();
-					setTransactionIsolation(dbKey, connection);
-				} else {
-					return null;
-				}
+				connection = ds.getConnection();
+				setTransactionIsolation(dbKey,connection);
+				return connection;
 			} catch (SQLException e) {
-				logger.error("【Jdbc4Json】:从c3p0链接池中 获取数据库连接失败！ " + e.getMessage());
+				e.printStackTrace();
 				return null;
 			}
-		} else {// 没有集成c3p0连接池
-			DB db = DBs.dBcache.get(dbKey);
-			if (db == null) {
-				logger.error("【Jdbc4Json】:dbKey=" + dbKey + "，数据库不存在或者数据库配置文件加载失败！");
-				return null;
-			}
-			String DRIVER = db.getDriver();
-			String IP = db.getIp();
-			String PORT = db.getPort();
-			String DATA_NAME = db.getDataName();
-			String ENCODEING = db.getEncodeing();
-			String USERNAME = db.getUserName();
-			String PASSWORD = db.getPassword();
-
-			String mysqlUrl = DB4Parperties.getMysqlUrl(IP, PORT, DATA_NAME, ENCODEING);
-
-			try {
-				Class.forName(DRIVER);
-			} catch (ClassNotFoundException e) {
-				logger.info("【Jdbc4Json】: 加载数据库驱动失败 ");
-				return null;
-			}
-			try {
-				connection = DriverManager.getConnection(mysqlUrl, USERNAME, PASSWORD);
-				setTransactionIsolation(dbKey, connection);
-			} catch (SQLException e) {
-				logger.info("【Jdbc4Json】: 数据库连接失败 ");
-				return null;
-			}
-
+		} else {
+			return null;
 		}
 
-		return connection;
 	}
+	
+	/**
+	 * 设置事务隔离级别 * 设置事务隔离级别：</br>
+	 * Connection.TRANSACTION_NONE （0） :指示事务不受支持的常量。(注意，不能使用 ，因为它指定了不受支持的事务。)
+	 * （不支持事务） </br>
+	 * Connection.TRANSACTION_READ_UNCOMMITTED （1） :指示可以发生脏读 (dirty
+	 * read)、不可重复读和虚读 (phantom read) 的常量。</br>
+	 * Connection.TRANSACTION_READ_COMMITTED （2）:指示不可以发生脏读的常量；不可重复读和虚读可以发生。
+	 * </br>
+	 * Connection.TRANSACTION_REPEATABLE_READ （4） :指示不可以发生脏读和不可重复读的常量；虚读可以发生。
+	 * (JDBC 默认值) </br>
+	 * Connection.TRANSACTION_SERIALIZABLE （8）: 指示不可以发生脏读、不可重复读和虚读的常量。
+	 * 
+	 * @param dbKey
+	 * @param connection
+	 */
+	private static void setTransactionIsolation(String dbKey, Connection connection) {
+		DB db = dBcache.get(dbKey);
+		String ransactionIsolation = db.getTransactionIsolation();
+
+		try {
+			 
+			if (ransactionIsolation != null) {
+				if (ransactionIsolation.equals("TRANSACTION_NONE")) {// 0
+					connection.setTransactionIsolation(Connection.TRANSACTION_NONE);
+				} else if (ransactionIsolation.equals("TRANSACTION_READ_UNCOMMITTED")) {// 1
+					connection.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+				} else if (ransactionIsolation.equals("TRANSACTION_SERIALIZABLE")) {// 8
+					connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+				}
+				if (ransactionIsolation.equals("TRANSACTION_READ_COMMITTED")) {// 2
+					connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+				}
+			}
+			 
+			 
+		} catch (Exception e) {
+			 e.printStackTrace();
+		}
+	}
+
 
 	/**
 	 * 查询数据库表的所有字段 构造 “字段属性模型”
@@ -348,41 +356,4 @@ public class DBs {
 
 	}
 
-	/**
-	 * 设置事务隔离级别 * 设置事务隔离级别：</br>
-	 * Connection.TRANSACTION_NONE （0） :指示事务不受支持的常量。(注意，不能使用 ，因为它指定了不受支持的事务。)
-	 * （不支持事务） </br>
-	 * Connection.TRANSACTION_READ_UNCOMMITTED （1） :指示可以发生脏读 (dirty
-	 * read)、不可重复读和虚读 (phantom read) 的常量。</br>
-	 * Connection.TRANSACTION_READ_COMMITTED （2）:指示不可以发生脏读的常量；不可重复读和虚读可以发生。
-	 * </br>
-	 * Connection.TRANSACTION_REPEATABLE_READ （4） :指示不可以发生脏读和不可重复读的常量；虚读可以发生。
-	 * (JDBC 默认值) </br>
-	 * Connection.TRANSACTION_SERIALIZABLE （8）: 指示不可以发生脏读、不可重复读和虚读的常量。
-	 * 
-	 * @param dbKey
-	 * @param connection
-	 */
-	private static void setTransactionIsolation(String dbKey, Connection connection) {
-
-		try {
-			String ransactionIsolation = dBcache.get(dbKey).getTransactionIsolation();
-			if (ransactionIsolation != null) {
-				if (ransactionIsolation.equals("TRANSACTION_NONE")) {// 0
-					connection.setTransactionIsolation(Connection.TRANSACTION_NONE);
-				} else if (ransactionIsolation.equals("TRANSACTION_READ_UNCOMMITTED")) {// 1
-					connection.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
-				} else if (ransactionIsolation.equals("TRANSACTION_SERIALIZABLE")) {// 8
-					connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-				}
-				if (ransactionIsolation.equals("TRANSACTION_READ_COMMITTED")) {// 2
-					connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
-				}
-			}
-			int n = connection.getTransactionIsolation();
-			logger.debug("【Jdbc4Json】数据库[" + dBcache.get(dbKey).getDataName() + "]的事务隔离级别为：" + n);
-		} catch (Exception e) {
-			logger.error("【Jdbc4Json】数据库[" + dBcache.get(dbKey).getDataName() + "]的事务隔离级别设置失败!");
-		}
-	}
 }

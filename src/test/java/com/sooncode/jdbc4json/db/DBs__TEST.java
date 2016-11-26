@@ -46,7 +46,7 @@ public class DBs__TEST {
 		for (Object obj : list) {
 			if (obj instanceof Connection) {
 				Connection con = (Connection) obj;
-				//logger.info("【Jdbc4Json  test】 获取数据库连接是否成功：" + (con != null));
+				logger.info("【Jdbc4Json  test】 获取数据库连接是否成功：" + (con != null));
 			}
 		}
  
