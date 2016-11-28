@@ -286,7 +286,7 @@ public class DBs {
 	 * 
 	 */
 	public static void close(Object... objs) {
-		if (objs != null && objs.length > 0) {
+		/*if (objs != null && objs.length > 0) {
 			for (Object obj : objs) {
 				try {
 					if (obj != null) {
@@ -299,7 +299,7 @@ public class DBs {
 					logger.info("【Jdbc4Json】: 关闭数据库资源失败 ");
 				}
 			}
-		}
+		}*/
 	}
 
 	public static void rollback(Connection connection) {
