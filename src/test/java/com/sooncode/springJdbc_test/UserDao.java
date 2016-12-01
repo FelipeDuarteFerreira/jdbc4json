@@ -12,7 +12,7 @@ import com.sooncode.example.entity.User;
 
 public class UserDao {
     
-    private JdbcTemplate jdbcT = new JdbcTemplate(new DriverManagerDataSource("jdbc:mysql://127.0.0.1:3306/jdbc?",   "root",   "hechenwe@gmail.com"));
+    private JdbcTemplate jdbcT = new JdbcTemplate(new DriverManagerDataSource("jdbc:mysql://127.0.0.1:3306/jdbc?",   "root",   "123456"));
     
     public void setJdbcT(JdbcTemplate jdbcT) {
         this.jdbcT = jdbcT;
