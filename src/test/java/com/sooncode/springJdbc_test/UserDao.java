@@ -12,7 +12,7 @@ import com.sooncode.example.entity.User;
 
 public class UserDao {
     
-    private JdbcTemplate jdbcT = new JdbcTemplate(new DriverManagerDataSource("jdbc:mysql://127.0.0.1:3306/jdbc?",   "jdbc_test",   "000000"));
+    private JdbcTemplate jdbcT = new JdbcTemplate(new DriverManagerDataSource("jdbc:mysql://127.0.0.1:3306/jdbc?",   "root",   "hechenwe@gmail.com"));
     
     public void setJdbcT(JdbcTemplate jdbcT) {
         this.jdbcT = jdbcT;
@@ -37,9 +37,9 @@ public class UserDao {
         }
         return depts;
     }    
-    public int delete(int bid){
-        String sql = "delete from DeptInfo where bid =?";
-        return jdbcT.update(sql, new Object[]{bid});
+    public int delete(int id){
+        String sql = "delete from user where id =?";
+        return jdbcT.update(sql, new Object[]{id});
     }     
     
     public static void main(String[] args) {      
@@ -50,9 +50,12 @@ public class UserDao {
         }
         System.out.println("---------------------------------");*/
         
-        List list = dao.findALL();
+        /*List list = dao.findALL();
         for(Iterator it = list.iterator(); it.hasNext(); ) {
             System.out.println(it.next());
-        }
+        }*/
+    	
+    	int n = dao.delete(1);
+    	System.out.println("UserDao.main()"+n);
     }
 }
