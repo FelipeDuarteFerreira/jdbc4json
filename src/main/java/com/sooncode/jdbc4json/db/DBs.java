@@ -96,6 +96,7 @@ public class DBs {
 					Method unpooledDataSource = DataSources.getMethod(DB4Parperties.UNPOOLED_DATA_SOURCE, String.class, Properties.class);
 					DataSource ds = (DataSource) unpooledDataSource.invoke(null, jdbcUrl, p);
 					Method pooledDataSource = DataSources.getMethod(DB4Parperties.POOLED_DATA_SOURCE, DataSource.class, Properties.class);
+					p = c3p0properties;
 					ds = (DataSource) pooledDataSource.invoke(null, ds, p);
 					dss.put(db.getKey(), ds);
 					logger.info("【Jdbc4Json】: 已添加c3p0连接池 ;数据库" + db.getDataName() + (db.getKey().equals(DATA.DEFAULT_KEY) == true ? "（默认首选数据库）" : ""));
