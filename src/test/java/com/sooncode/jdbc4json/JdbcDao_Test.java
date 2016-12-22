@@ -25,16 +25,17 @@ import com.sooncode.soontest.OpenInterfaceTest;
 public class JdbcDao_Test {
     private static Logger logger = Logger.getLogger("JdbcDaoTest.class");
 	private JdbcDaoInterface jdbcDao =  (JdbcDaoInterface) OpenInterfaceTest.newInstance(JdbcDaoFactory.getJdbcDao()) ;
+	
 	@Test
 	public void save(){
 		
-	   String json = "{\"teacher\":{\"createDate\":\"2016-10-26 14:15:22\",\"teacherName\":\"hechen\",\"clazzId\":\"001\",\"sex\":\"1\",\"hight\":34,\"xxx\":34}}";
+	   String json = "{\"teacher\":{\"createDate\":\"2016-10-26 14:15:22\",\"teacherName\":\"hechen123\",\"clazzId\":\"001\",\"sex\":\"1\",\"hight\":34,\"age\":34}}";
 		JsonBean    t = new JsonBean(json);
 		t.updateField("createDate", new Date());
 		t.addField("teacherAge", 45);
 		t.addField("address", "beijing");
 		t.updateField("hight", (int)t.getField("hight")+1);
-		t.updateField("teacherName", "TOM");
+		//t.updateField("teacherName", "TOM");
 		t.removeField("sex");
 	 
 		Long b = jdbcDao.save(t);
@@ -118,7 +119,7 @@ public class JdbcDao_Test {
 	@Test 
 	public void get(){
 		 
-		String json = "{\"teacher\":{\"teacherName\":\"hechen\"}}";
+		String json = "{\"teacher\":{\"teacherName\":\"hechen123\"}}";
 		JsonBean   j = new JsonBean(json);
 		Conditions c = new Conditions(j);
 		c.setOderBy("clazzId", Sort.ASC);

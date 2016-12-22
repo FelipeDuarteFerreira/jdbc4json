@@ -18,7 +18,7 @@ public class Jdbc implements JdbcInterface {
 	}
 
 	public static void main(String[] args) {
-		int n = new Jdbc().update("sdfjldk");
+		int n = new Jdbc().update("sdfjldksdfghjhgj");
 		System.out.println("Jdbc.main()" + n);
 	}
 
