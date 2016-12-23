@@ -7,6 +7,9 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.sooncode.example.entity.User;
 import com.sooncode.jdbc4json.bean.JsonBean;
@@ -21,7 +24,9 @@ import com.sooncode.jdbc4json.util.Page;
 import com.sooncode.soontest.OpenInterfaceTest;
 
  
- 
+@RunWith(SpringJUnit4ClassRunner.class)
+//@ContextConfiguration(locations = { "classpath:spring-conf.xml" })
+@ContextConfiguration("/applicationContext.xml")
 public class JdbcDao_Test {
     private static Logger logger = Logger.getLogger("JdbcDaoTest.class");
 	private JdbcDaoInterface jdbcDao =  (JdbcDaoInterface) OpenInterfaceTest.newInstance(JdbcDaoFactory.getJdbcDao()) ;

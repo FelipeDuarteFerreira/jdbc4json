@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd   
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+
+	 <context:component-scan base-package="com.sooncode.example"></context:component-scan>
+
+	<bean id="db" class="com.sooncode.jdbc4json.db.DB"  >
+		<property name="key" value="default" />
+		<property name="driver" value="com.mysql.jdbc.Driver" />
+		<property name="ip" value="127.0.0.1" />
+		<property name="port" value="3306" />
+		<property name="dataName" value="jdbc" />
+		<property name="encodeing" value="utf8" />
+		<property name="userName" value="root" />
+		<property name="password" value="hechenwe@gmail.com" />
+		<property name="transactionIsolation" value="TRANSACTION_REPEATABLE_READ" />
+	</bean>
+	<!--创建jdbc数据源 -->
+	<bean id="dataSource" class="com.sooncode.jdbc4json.db.SooncodeDataSource" > <!-- destroy-method="close" -->
+		<property name="db" ref="db" />
+	</bean>
+
+	 
+
+	<!-- <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+
+	</bean> -->
+
+	 
+	<!-- (事务管理)transaction manager, use JtaTransactionManager for global tx -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+ 
+</beans>
