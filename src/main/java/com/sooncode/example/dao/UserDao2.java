@@ -9,7 +9,7 @@ import com.sooncode.jdbc4json.JdbcFactory;
 import com.sooncode.jdbc4json.sql.Parameter;
 @Transactional
 @Repository
-public class UserDao {
+public class UserDao2 {
 	private Jdbc jdbc = JdbcFactory.getJdbc();
 	@Transactional
 	public boolean updateUser(User user){

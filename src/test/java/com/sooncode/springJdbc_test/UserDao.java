@@ -5,18 +5,22 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sooncode.example.entity.User;
 
+@Repository
+
 public class UserDao {
     
-    private JdbcTemplate jdbcT = new JdbcTemplate(new DriverManagerDataSource("jdbc:mysql://127.0.0.1:3306/jdbc?",   "root",   "123456"));
+    @Autowired
+    private JdbcTemplate jdbcT ;
     
-    public void setJdbcT(JdbcTemplate jdbcT) {
-        this.jdbcT = jdbcT;
-    }
+    
 
     public  List<User>  findALL() {
         String sql = "select * from user";
@@ -37,32 +41,47 @@ public class UserDao {
         }
         return depts;
     }    
+    @Transactional(propagation=Propagation.REQUIRED)
     public int delete(int id){
         String sql = "delete from user where id =?";
-        return jdbcT.update(sql, new Object[]{id});
+         int n=  jdbcT.update(sql, new Object[]{id});
+        /*String string  = null;
+        if(string.equals("")) {
+            int i = 0;
+        }*/
+        return  n;
     }
-    
+    @Transactional (propagation=Propagation.REQUIRED)
     public int update(int id ,String name){
     	String sql = "update  user  set name=? where id =?";
-    	return jdbcT.update(sql, new Object[]{name,id});
+    	int n = jdbcT.update(sql, new Object[]{name,id});
+    	return n;
+    }     
+    /**
+     * 扣除余额
+     * @param id
+     * @param balance
+     * @return
+     * @throws BalanceInsufficientEx 
+     */
+    @Transactional (propagation=Propagation.REQUIRED)
+    public boolean subtractBalance(int id ,int balance)   {
+    	
+    	 
+    	String sql = "update  user  set balance = balance-? where id =?";
+    	int n = jdbcT.update(sql, new Object[]{balance,id});
+    	
+    	String select = "select * from user where id = '"+id+"'";
+    	List<Map<String, Object>> list = jdbcT.queryForList(select); 
+        Map<String,Object> map = list.get(0); 
+    	int bal = (int) map.get("balance");
+    	if(bal<0){
+    		throw new BalanceInsufficientEx("余额不足");
+    	}
+    	if(n==1){
+    		return true;
+    	}
+    	return false;
     }     
     
-    public static void main(String[] args) {      
-    	UserDao dao = new UserDao();
-        List<User> depts = dao.findALL();;
-        for(User dept:depts){
-            System.out.println(dept.getId() +","+dept.getName());
-        }
-        System.out.println("---------------------------------"); 
-        
-        /*List list = dao.findALL();
-        for(Iterator it = list.iterator(); it.hasNext(); ) {
-            System.out.println(it.next());
-        }*/
-    	
-    	//int n = dao.delete(1);
-    	//System.out.println("UserDao.main()"+n);
-    	int m = dao.update(7,"AAA");
-    	System.out.println("UserDao.main()"+m);
-    }
 }

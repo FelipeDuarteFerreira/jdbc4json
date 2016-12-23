@@ -4,13 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sooncode.example.dao.UserDao;
+ 
+import com.sooncode.example.dao.UserDao2;
 import com.sooncode.example.entity.User;
 
 @Service
 public class UserService {
 	@Autowired
-	private UserDao userDao;
+	private UserDao2 userDao;
 	
 	@Transactional
 	public boolean updateUser(User user){

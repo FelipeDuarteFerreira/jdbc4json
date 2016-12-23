@@ -25,7 +25,6 @@ import com.sooncode.soontest.OpenInterfaceTest;
 
  
 @RunWith(SpringJUnit4ClassRunner.class)
-//@ContextConfiguration(locations = { "classpath:spring-conf.xml" })
 @ContextConfiguration("/applicationContext.xml")
 public class JdbcDao_Test {
     private static Logger logger = Logger.getLogger("JdbcDaoTest.class");
