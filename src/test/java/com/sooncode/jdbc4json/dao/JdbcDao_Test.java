@@ -146,7 +146,7 @@ public class JdbcDao_Test {
 	@Test
 	public void getPage3() {
 		Student s = new Student();
-		s.setAge(22); 
+		//s.setAge(22); 
 		Clazz clazz = new Clazz();
 		clazz.setClazzId("002");
 		Conditions c = new Conditions(clazz,s);
@@ -177,7 +177,7 @@ public class JdbcDao_Test {
 	    Many2Many<Student,ChooseCourse,Course> m2m = page.getMany2Many();
 
 		logger.info("---------------------------------------------------------------");
-		logger.info(m2m.getLeft());
+		logger.info(m2m.getOne());
 		logger.info("---------------------------------------------------------------");
 		
 		for (int i =0;i<m2m.getMany().size();i++) {
@@ -186,6 +186,44 @@ public class JdbcDao_Test {
 		}
 		logger.info("---------------------------------------------------------------");
 		 
+	}
+	/**
+	 * 多对多 分页
+	 */
+	@Test
+	public void getPage5() {
+		Student s = new Student();
+		ChooseCourse cc = new ChooseCourse();
+		Course  co= new Course ();
+		co.setCourseId("001");
+		Conditions c = new Conditions(co,cc,s);
+		c.setBetweenCondition("chooseCourse.score", 50, 100);
+		Page page = dao.getPage(1L, 10L, c);
+		List<Many2Many<Course,ChooseCourse,Student>> m2ms = page.getMany2Manys();
+		Many2Many<Course,ChooseCourse,Student> m2m = page.getMany2Many();
+		logger.info("---------------------------------------------------------------");
+		
+		One2One<ChooseCourse, Student> o2o  =  m2m.getMany() ;
+		logger.info(m2m.getOne());
+		logger.info("---------------------------------------------------------------");
+		for(int j= 0 ;j<o2o.size();j++){
+			logger.info(o2o.getLeft(j) + " -------" + o2o.getRight(j));
+		 
+		}
+		
+		
+		
+		/*for (int i =0;i<m2ms.size();i++) {
+			One2One<ChooseCourse, Student> o2o  =  m2ms.get(i).getMany() ;
+			logger.info(m2ms.get(i).getLeft());
+			logger.info("---------------------------------------------------------------");
+			for(int j= 0 ;j<o2o.size();j++){
+				logger.info(o2o.getLeft(j) + " -------" + o2o.getRight(j));
+			 
+			}
+		}*/
+		logger.info("---------------------------------------------------------------");
+		
 	}
 	
 	

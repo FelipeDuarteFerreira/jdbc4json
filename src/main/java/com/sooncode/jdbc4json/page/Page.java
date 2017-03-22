@@ -1,5 +1,7 @@
 package com.sooncode.jdbc4json.page;
- 
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * 分页
@@ -8,54 +10,81 @@ package com.sooncode.jdbc4json.page;
  *
  * @param <T>
  */
-public class Page  {
-	
-	//------------------------------------------ 属性 --------------------------------------------------------
-	
-	private    Result  result;
-	//private JsonBean  jsonBean;
+public class Page {
+
+	// ------------------------------------------ 属性
+	// --------------------------------------------------------
+
+	private Result result;
+
+	private List<One2Many<?, ?>> o2ms;
+
+	private List<Many2Many<?, ?, ?>> m2ms;
+
 	/** 总记录数 */
 	private Long total = 0L; // 总记录数
-	
+
 	/** 每页显示记录数 */
 	private Long pageSize = 20L; // 默认20
-	
+
 	/** 总页数 */
 	private Long totalPages = 1L; // 总页数
-	
+
 	/** 当前页 */
 	private Long pageNumber = 1L; // 当前页
 
 	/** 是否为第一页 */
 	private boolean isFirstPage = false; // 是否为第一页
-	
+
 	/** 是否为最后一页 */
 	private boolean isLastPage = false; // 是否为最后一页
-	
+
 	/** 是否有前一页 */
 	private boolean hasPreviousPage = false; // 是否有前一页
-	
+
 	/** 是否有下一页 */
 	private boolean hasNextPage = false; // 是否有下一页
-	
-	//--------------------------------------------- 构造器 ----------------------------------------------------------------
 
- 
-	public Page (long pageNumber, long pageSize, long total, Result  result) {
-		init( total ,pageNumber, pageSize);
+	// --------------------------------------------- 构造器
+	// ----------------------------------------------------------------
+
+	public Page(long pageNumber, long pageSize, long total, Result result) {
+		init(total, pageNumber, pageSize);
 		this.result = result;
 	}
-	
-	 
+
+	public <L, R> Page(long pageNumber, long pageSize, long total, List<One2Many<L, R>> o2ms) {
+		init(total, pageNumber, pageSize);
+		List<One2Many<?, ?>> o2mes = new LinkedList<>();
+		for (One2Many<?, ?> result : o2ms) {
+			One2Many<?, ?> o2m = result;
+			o2mes.add(o2m);
+		}
+		this.o2ms = o2mes;
+	}
+
+	public <L, M, R> Page(long pageNumber, long pageSize, long total, LinkedList<Many2Many<L, M, R>> m2ms) {
+		init(total, pageNumber, pageSize);
+		List<Many2Many<?, ?, ?>> m2mes = new LinkedList<>();
+		for (Many2Many<?, ?, ?> result : m2ms) {
+			Many2Many<?, ?, ?> m2m = result;
+			m2mes.add(m2m);
+		}
+		this.m2ms = m2mes;
+	}
+
+	public Page() {
+
+	}
 
 	/** 设置基本参数 */
 	private void init(long total, long pageNumber, long pageSize) {
 		// 设置基本参数
 		this.total = total;
 		this.pageSize = pageSize;
-		if(total==0L){
-			this.totalPages= 0L;	
-		}else{
+		if (total == 0L) {
+			this.totalPages = 0L;
+		} else {
 			this.totalPages = (this.total - 1) / this.pageSize + 1;
 		}
 
@@ -79,10 +108,10 @@ public class Page  {
 		hasPreviousPage = pageNumber > 1;
 		hasNextPage = pageNumber < totalPages;
 	}
-//-----------------------------------------------------get set 方法-----------------------------------------------------------------------
-	
-	 
-//--------------------------------------------------------------------------------
+	// -----------------------------------------------------get set
+	// 方法-----------------------------------------------------------------------
+
+	// --------------------------------------------------------------------------------
 	public Long getTotal() {
 		return total;
 	}
@@ -91,7 +120,7 @@ public class Page  {
 		this.total = total;
 	}
 
-	//--------------------------------------------------------------------------------
+	// --------------------------------------------------------------------------------
 	public Long getPageSize() {
 		return pageSize;
 	}
@@ -100,7 +129,7 @@ public class Page  {
 		this.pageSize = pageSize;
 	}
 
-	//--------------------------------------------------------------------------------
+	// --------------------------------------------------------------------------------
 	public Long getTotalPages() {
 		return totalPages;
 	}
@@ -108,8 +137,8 @@ public class Page  {
 	public void setTotalPages(Long totalPages) {
 		this.totalPages = totalPages;
 	}
-	
-	//--------------------------------------------------------------------------------
+
+	// --------------------------------------------------------------------------------
 	public Long getPageNumber() {
 		return pageNumber;
 	}
@@ -117,8 +146,8 @@ public class Page  {
 	public void setPageNumber(Long pageNumber) {
 		this.pageNumber = pageNumber;
 	}
-	
-	//--------------------------------------------------------------------------------
+
+	// --------------------------------------------------------------------------------
 	public boolean isFirstPage() {
 		return isFirstPage;
 	}
@@ -127,7 +156,7 @@ public class Page  {
 		this.isFirstPage = isFirstPage;
 	}
 
-	//--------------------------------------------------------------------------------
+	// --------------------------------------------------------------------------------
 	public boolean isLastPage() {
 		return isLastPage;
 	}
@@ -136,7 +165,7 @@ public class Page  {
 		this.isLastPage = isLastPage;
 	}
 
-	//--------------------------------------------------------------------------------
+	// --------------------------------------------------------------------------------
 	public boolean isHasPreviousPage() {
 		return hasPreviousPage;
 	}
@@ -145,7 +174,7 @@ public class Page  {
 		this.hasPreviousPage = hasPreviousPage;
 	}
 
-	//--------------------------------------------------------------------------------
+	// --------------------------------------------------------------------------------
 	public boolean isHasNextPage() {
 		return hasNextPage;
 	}
@@ -154,31 +183,56 @@ public class Page  {
 		this.hasNextPage = hasNextPage;
 	}
 
- 
-	 
-	public <L> One<L> getOne(){
+	public <L> One<L> getOne() {
 		@SuppressWarnings("unchecked")
 		One<L> one = (One<L>) result;
 		return one;
 	}
- 
-	
-	public <L,R> One2One<L,R> getOne2One(){
+
+	public <L, R> One2One<L, R> getOne2One() {
 		@SuppressWarnings("unchecked")
-		One2One<L,R> o2o = (One2One<L,R>) result;
+		One2One<L, R> o2o = (One2One<L, R>) result;
 		return o2o;
 	}
-	public <L,R> One2Many<L,R> getOne2Many(){
-		@SuppressWarnings("unchecked")
-		One2Many<L,R> o2m = (One2Many<L,R>) result;
+
+	public <L, R> One2Many<L, R> getOne2Many() {
+
+		One2Many<L, R> o2m = new One2Many<>();
+		List<One2Many<L, R>> o2ms = getOne2Manys();
+		if (o2ms.size() == 1) {
+			o2m = o2ms.get(0);
+		}
 		return o2m;
 	}
-	public <L,M,R> Many2Many<L,M,R> getMany2Many(){
-		@SuppressWarnings("unchecked")
-		Many2Many<L,M,R> m2m = (Many2Many<L,M,R>) result;
+
+	public <L, M, R> Many2Many<L, M, R> getMany2Many() {
+
+		Many2Many<L, M, R> m2m = new Many2Many<>();
+		List<Many2Many<L, M, R>> m2ms = getMany2Manys();
+		if (m2ms.size() == 1) {
+			m2m = m2ms.get(0);
+		}
 		return m2m;
 	}
-	
-	
-	
+
+	public <L, R> List<One2Many<L, R>> getOne2Manys() {
+		List<One2Many<L, R>> o2ms = new LinkedList<>();
+		for (One2Many<?, ?> result : this.o2ms) {
+			@SuppressWarnings("unchecked")
+			One2Many<L, R> o2m = (One2Many<L, R>) result;
+			o2ms.add(o2m);
+		}
+		return o2ms;
+	}
+
+	public <L, M, R> List<Many2Many<L, M, R>> getMany2Manys() {
+		List<Many2Many<L, M, R>> m2ms = new LinkedList<>();
+		for (Many2Many<?, ?, ?> result : this.m2ms) {
+			@SuppressWarnings("unchecked")
+			Many2Many<L, M, R> m2m = (Many2Many<L, M, R>) result;
+			m2ms.add(m2m);
+		}
+		return m2ms;
+	}
+
 }
