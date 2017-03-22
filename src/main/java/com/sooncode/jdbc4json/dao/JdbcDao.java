@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 import com.sooncode.jdbc4json.Jdbc;
 import com.sooncode.jdbc4json.bean.DbBean;
@@ -17,7 +15,6 @@ import com.sooncode.jdbc4json.bean.JsonBean;
 import com.sooncode.jdbc4json.constant.SQL_KEY;
 import com.sooncode.jdbc4json.constant.STRING;
 import com.sooncode.jdbc4json.page.Many2Many;
-import com.sooncode.jdbc4json.page.One;
 import com.sooncode.jdbc4json.page.One2Many;
 import com.sooncode.jdbc4json.page.One2One;
 import com.sooncode.jdbc4json.page.Page;
@@ -36,14 +33,28 @@ import com.sooncode.jdbc4json.util.T2E;
  * @author pc
  * 
  */
-@Repository
+ 
 public class JdbcDao {
 
 	public final static Logger logger = Logger.getLogger("JdbcDao.class");
 
-	@Autowired
+ 
 	private Jdbc jdbc;
-
+    
+	public Jdbc getJdbc() {
+		return jdbc;
+	}
+	public void setJdbc(Jdbc jdbc) {
+		this.jdbc = jdbc;
+	}
+	public JdbcDao (){
+		
+	}
+	public JdbcDao (Jdbc jdbc){
+		this.jdbc = jdbc;
+	}
+	
+	
 	public <T> long save(final T javaBean) {
 
 		DbBean db = jdbc.getDbBean(javaBean);

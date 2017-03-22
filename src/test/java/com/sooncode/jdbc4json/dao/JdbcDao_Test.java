@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sooncode.jdbc4json.entity.ChooseCourse;
 import com.sooncode.jdbc4json.entity.Clazz;
@@ -16,7 +17,6 @@ import com.sooncode.jdbc4json.entity.Identity;
 import com.sooncode.jdbc4json.entity.Student;
 import com.sooncode.jdbc4json.entity.User;
 import com.sooncode.jdbc4json.page.Many2Many;
-import com.sooncode.jdbc4json.page.One;
 import com.sooncode.jdbc4json.page.One2Many;
 import com.sooncode.jdbc4json.page.One2One;
 import com.sooncode.jdbc4json.page.Page;
@@ -50,7 +50,7 @@ public class JdbcDao_Test {
 	}
 
 	@Test
-	// @Transactional
+     
 	public void delete() {
 		User u = new User();
 		u.setId(9);
@@ -58,7 +58,19 @@ public class JdbcDao_Test {
 		u.setName("hh");
 		dao.update(u);
 	}
+	@Test
+    @Transactional
+	public void transactional() {
+		User u = new User();
+		u.setId(16);
+		dao.delete(u);
+		u.setName("hh");
+		dao.update(u);
+	}
 
+	
+	
+	
 	@Test
 	public void get() {
 		User u = new User();

@@ -15,12 +15,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.sql.DataSource;
+
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import com.sooncode.jdbc4json.bean.DbBean;
 import com.sooncode.jdbc4json.bean.DbBeanCache;
@@ -38,13 +39,32 @@ import com.sooncode.jdbc4json.util.T2E;
  *
  */
 
-@Repository
+
 public class Jdbc {
 
 	public final static Logger logger = Logger.getLogger("Jdbc.class");
-
-	@Autowired
 	private JdbcTemplate jdbcTemplate;
+ 
+	public Jdbc(){
+		 
+	}
+	
+	
+	 
+
+	public JdbcTemplate getJdbcTemplate() {
+		return jdbcTemplate;
+	}
+
+
+
+
+	public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+		this.jdbcTemplate = jdbcTemplate;
+	}
+
+
+
 
 	/**
 	 * 执行更新(包含添加,删除,修改)
@@ -65,7 +85,8 @@ public class Jdbc {
 		if (SqlVerification.isUpdateSql(sql) == false) {
 			return 0L;
 		}
-
+        logger.debug("【SQL】"+parameter.getFormatSql());
+        logger.debug("【参数】"+parameter.getParams());
 		return jdbcTemplate.execute(new ConnectionCallback<Long>() {
 
 			@Override
