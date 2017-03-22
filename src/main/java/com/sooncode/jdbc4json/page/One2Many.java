@@ -2,7 +2,7 @@ package com.sooncode.jdbc4json.page;
 
 import java.util.List;
 
-public class One2Many<L, R> implements Result{
+public class One2Many<L, R> {
 	private L one;
 	private List<R> many;
 

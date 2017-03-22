@@ -130,11 +130,13 @@ public class JdbcDao_Test {
 		Conditions c = new Conditions(s,id);
 		Page  page = dao.getPage(1L, 5L, c);
 		
-		List<One2One<Student,Identity>> o2o =  page.getOne2Ones() ;
+		List<One2One<Student,Identity>> list =  page.getOne2Ones() ;
 		
 		logger.info("---------------------------------------------------------------");
-		for (One2One<Student, Identity> one2One : o2o) {
-			logger.info(one2One.getLeft() + " -------" + one2One.getRight());
+		for (One2One<Student, Identity> one2One : list) {
+			Student st = one2One.getLeft();
+			Identity ide = one2One.getRight();
+			logger.info(st + " -------" + ide);
 		}
 		logger.info("---------------------------------------------------------------");
 	}

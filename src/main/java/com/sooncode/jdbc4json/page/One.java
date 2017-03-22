@@ -2,7 +2,7 @@ package com.sooncode.jdbc4json.page;
 
 import java.util.List;
 
-public class One<L> implements Result {
+public class One<L>  {
 	
 	
 	
