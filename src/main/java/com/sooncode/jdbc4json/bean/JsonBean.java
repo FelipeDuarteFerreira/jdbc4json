@@ -19,7 +19,9 @@ import java.util.TreeMap;
 public class JsonBean {
 
 	private String beanName;
- 
+    private String className;
+	
+	
 	/***
 	 * 唯一标识字段
 	 */
@@ -38,6 +40,7 @@ public class JsonBean {
 		 
 		String tClassName = javaBean.getClass().getSimpleName(); 
 		this.beanName  =T2E.toField(  T2E.toColumn(tClassName)); 
+		this.className = javaBean.getClass().getName();
 		RObject rObj = new RObject(javaBean);
 		Map<String, Object> map = rObj.getFiledAndValue();
 		this.map.putAll(map);
@@ -116,6 +119,7 @@ public class JsonBean {
 			this.addField(key, list);
 		}
 	}
+	 
 
 	public void addFields(Map<String, Object> fields) {
 
@@ -225,4 +229,10 @@ public class JsonBean {
 		return javaBean ;
 	}
 
+	public String getClassName() {
+		return className;
+	}
+
+	
+	
 }

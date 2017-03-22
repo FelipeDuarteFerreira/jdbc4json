@@ -1,5 +1,4 @@
 package com.sooncode.jdbc4json.service;
-import com.sooncode.jdbc4json.dao.JdbcDaoInterface;
 
 /**
  * Jdbc Dao 服务接口
@@ -7,7 +6,7 @@ import com.sooncode.jdbc4json.dao.JdbcDaoInterface;
  * @author pc
  * 
  */
-public interface JdbcServiceInterface extends JdbcDaoInterface{
+public interface JdbcServiceInterface{
   
 	 
 }

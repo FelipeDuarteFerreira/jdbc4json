@@ -1,10 +1,5 @@
-package com.sooncode.jdbc4json.util;
-
-
-import java.util.ArrayList;
-import java.util.List;
-
-import com.sooncode.jdbc4json.bean.JsonBean;
+package com.sooncode.jdbc4json.page;
+ 
 
 /**
  * 分页
@@ -13,13 +8,11 @@ import com.sooncode.jdbc4json.bean.JsonBean;
  *
  * @param <T>
  */
-public class Page {
+public class Page  {
 	
 	//------------------------------------------ 属性 --------------------------------------------------------
 	
-	/** 记录结果集 */
-	private List<JsonBean> jsonBeans;
-	
+	private    Result  result;
 	//private JsonBean  jsonBean;
 	/** 总记录数 */
 	private Long total = 0L; // 总记录数
@@ -47,15 +40,10 @@ public class Page {
 	
 	//--------------------------------------------- 构造器 ----------------------------------------------------------------
 
-	public Page (long pageNumber, long pageSize, long total, List<JsonBean> jsonBeans) {
-		 
-		 
+ 
+	public Page (long pageNumber, long pageSize, long total, Result  result) {
 		init( total ,pageNumber, pageSize);
-		if(jsonBeans==null ){
-			this.jsonBeans = new ArrayList<>();
-		}else{
-			this.jsonBeans = jsonBeans;
-		}
+		this.result = result;
 	}
 	
 	 
@@ -166,29 +154,31 @@ public class Page {
 		this.hasNextPage = hasNextPage;
 	}
 
-	public List<JsonBean> getJsonBeans() {
-		return jsonBeans;
+ 
+	 
+	public <L> One<L> getOne(){
+		@SuppressWarnings("unchecked")
+		One<L> one = (One<L>) result;
+		return one;
 	}
-
-	public void setJsonBeans(List<JsonBean> jsonBeans) {
-		this.jsonBeans = jsonBeans;
+ 
+	
+	public <L,R> One2One<L,R> getOne2One(){
+		@SuppressWarnings("unchecked")
+		One2One<L,R> o2o = (One2One<L,R>) result;
+		return o2o;
 	}
-
-	public String getJson(){
-		JsonBean jb = new JsonBean();
-		jb.addField("pageNumber",this.pageNumber);
-		jb.addField("pageSize",this.pageSize);
-		jb.addField("total",this.total);
-		jb.addField("totalPages",this.totalPages);
-		jb.addField("hasNextPage",this.hasNextPage);
-		jb.addField("hasPreviousPage",this.hasPreviousPage);
-		jb.addField("isFirstPage",this.isFirstPage);
-		jb.addField("isLastPage",this.isLastPage);
-		jb.addField("datas",this.jsonBeans);
-		
-		return jb.getJsonString();
-		
+	public <L,R> One2Many<L,R> getOne2Many(){
+		@SuppressWarnings("unchecked")
+		One2Many<L,R> o2m = (One2Many<L,R>) result;
+		return o2m;
 	}
+	public <L,M,R> Many2Many<L,M,R> getMany2Many(){
+		@SuppressWarnings("unchecked")
+		Many2Many<L,M,R> m2m = (Many2Many<L,M,R>) result;
+		return m2m;
+	}
+	
 	
 	
 }

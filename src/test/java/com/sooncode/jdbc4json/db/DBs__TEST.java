@@ -54,8 +54,8 @@ public class DBs__TEST {
 	
 	@Test 
 	public void getFields (){
-		Map<String,Object> map = DBs.getFields("default", "teacher");
-		logger.info(map);
+		//Map<String,Object> map = DBs.getFields("default", "teacher");
+		//logger.info(map);
 		
 	}
 

@@ -7,22 +7,26 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import com.sooncode.jdbc4json.Jdbc;
-import com.sooncode.jdbc4json.JdbcFactory;
 import com.sooncode.jdbc4json.bean.DbBean;
-import com.sooncode.jdbc4json.bean.DbBeanCache;
 import com.sooncode.jdbc4json.bean.ForeignKey;
 import com.sooncode.jdbc4json.bean.JsonBean;
-import com.sooncode.jdbc4json.constant.DATA;
 import com.sooncode.jdbc4json.constant.SQL_KEY;
 import com.sooncode.jdbc4json.constant.STRING;
+import com.sooncode.jdbc4json.page.Many2Many;
+import com.sooncode.jdbc4json.page.One;
+import com.sooncode.jdbc4json.page.One2Many;
+import com.sooncode.jdbc4json.page.One2One;
+import com.sooncode.jdbc4json.page.Page;
+import com.sooncode.jdbc4json.reflect.RObject;
 import com.sooncode.jdbc4json.sql.ComSQL;
 import com.sooncode.jdbc4json.sql.PageData;
 import com.sooncode.jdbc4json.sql.Parameter;
 import com.sooncode.jdbc4json.sql.TableRelationAnalyze;
 import com.sooncode.jdbc4json.sql.condition.Conditions;
-import com.sooncode.jdbc4json.util.Page;
 import com.sooncode.jdbc4json.util.T2E;
 
 /**
@@ -31,34 +35,135 @@ import com.sooncode.jdbc4json.util.T2E;
  * @author pc
  * 
  */
-public class JdbcDao implements JdbcDaoInterface {
+@Repository
+public class JdbcDao {
 
 	public final static Logger logger = Logger.getLogger("JdbcDao.class");
 
-	/**
-	 * 数据处理对象JDBC
-	 */
+	@Autowired
 	private Jdbc jdbc;
-	private String dbKey = DATA.DEFAULT_KEY;
 
-	JdbcDao() {
-		jdbc = JdbcFactory.getJdbc();
+	public <T> long save(final T javaBean) {
+
+		DbBean db = jdbc.getDbBean(javaBean);
+		Parameter parameter = ComSQL.insert(db);
+		return jdbc.update(parameter);
+
 	}
 
-	JdbcDao(String dbKey) {
-		jdbc = JdbcFactory.getJdbc(dbKey);
-		this.dbKey = dbKey;
+	public <T> long update(final T javaBean) {
+
+		DbBean dbBean = jdbc.getDbBean(javaBean);
+		Object pkValue = dbBean.getPrimaryFieldValue();
+		if (pkValue == null) {
+			return 0L;
+		}
+		Parameter parameter = ComSQL.update(dbBean);
+		return jdbc.update(parameter);
+
 	}
 
-	public Page getPage(long pageNum, long pageSize, Conditions conditions) {
+	public <T> long delete(final T javaBean) {
 
-		DbBean leftDbBean = DbBeanCache.getDbBean(dbKey, conditions.getLeftBean());
+		DbBean dbBean = jdbc.getDbBean(javaBean);
+		Object pkValue = dbBean.getPrimaryFieldValue();
+		if (pkValue == null) {
+			return 0L;
+		}
+		Parameter parameter = ComSQL.delete(dbBean);
+		return jdbc.update(parameter);
+
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> long saveOrUpdate(final T javaBean) {
+
+		DbBean dbBean = jdbc.getDbBean(javaBean);
+		Object pkValue = dbBean.getPrimaryFieldValue();
+		Parameter p = new Parameter();
+		if (pkValue != null) {
+			RObject<?> rObj = new RObject<>(dbBean.getClassName());
+			rObj.invokeSetMethod(dbBean.getPrimaryField(), pkValue);
+			List<T> list = gets((T) rObj.getObject());
+			if (list.size() == 1) {
+				dbBean = jdbc.getDbBean(javaBean);
+				p = ComSQL.update(dbBean);
+			}
+
+		} else {
+			p = ComSQL.insert(dbBean);
+		}
+
+		return jdbc.update(p);
+
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> List<T> gets(final Conditions conditions) {
+
+		String className = conditions.getLeftBean().getClassName();
+		RObject<?> rObj = new RObject<>(className);
+		DbBean dbBean = jdbc.getDbBean(rObj.getObject());
+		String columns = ComSQL.columns4One(dbBean);
+		Parameter where = conditions.getWhereParameter();
+		Parameter parameter = new Parameter();
+		String tableName = T2E.toTableName(dbBean.getBeanName());
+		String sql = SQL_KEY.SELECT + columns + SQL_KEY.FROM + tableName + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + where.getReadySql();
+		parameter.setReadySql(sql);
+		parameter.setParams(where.getParams());
+		List<Map<String, Object>> list = jdbc.gets(parameter);
+
+		List<T> tes = new LinkedList<>();
+		for (Map<String, Object> map : list) {
+			RObject<?> obj = new RObject<>(className);
+			for (Entry<String, Object> en : map.entrySet()) {
+				String fieldName = en.getKey();
+				Object value = en.getValue();
+				obj.invokeSetMethod(fieldName, value);
+			}
+			tes.add((T) obj.getObject());
+		}
+		return tes;
+
+	}
+
+	public <T> List<T> gets(T javaBean) {
+		Conditions c = new Conditions(javaBean);
+		return gets(c);
+	}
+
+	public long count(final String key, final Conditions conditions) {
+
+		RObject<?> rObj = new RObject<>(conditions.getLeftBean().getClassName());
+		DbBean dbBean = jdbc.getDbBean(rObj.getObject());
+		String tableName = T2E.toTableName(dbBean.getBeanName());
+		String sql = "SELECT COUNT(" + key + ") AS SIZE" + " FROM " + tableName + " WHERE 1=1 " + conditions.getWhereParameter().getReadySql();
+		Parameter parameter = new Parameter();
+		parameter.setReadySql(sql);
+		parameter.setParams(conditions.getWhereParameter().getParams());
+		Map<String, Object> map = jdbc.get(parameter);
+		Long n = (Long) map.get("size");
+		return n;
+
+	}
+
+	public <T> long count(String key, T javaBean) {
+		Conditions c = new Conditions(javaBean);
+		long n = this.count(key, c);
+		return n;
+	}
+
+	public <L,M,R> Page  getPage(long pageNum, long pageSize, Conditions conditions) {
+        
+		String limit = SQL_KEY.LIMIT + (pageNum-1)*pageSize + SQL_KEY.COMMA+ pageSize;
+		
+		DbBean leftDbBean = jdbc.getDbBean(conditions.getLeftBean());
 		JsonBean[] otherBeans = conditions.getOtherBeans();
 		List<DbBean> otherDbBeans = new ArrayList<>();
 
 		if (otherBeans.length > 0) {
 			for (JsonBean jBean : otherBeans) {
-				DbBean dbBean = DbBeanCache.getDbBean(dbKey, jBean);
+				DbBean dbBean = jdbc.getDbBean(jBean);
 				otherDbBeans.add(dbBean);
 			}
 		}
@@ -70,17 +175,13 @@ public class JdbcDao implements JdbcDaoInterface {
 		// 1.单表
 		if (n == 1) {
 			String columns = ComSQL.columns4One(leftDbBean);
-			String where = conditions.getWhereParameter().getReadySql();
+			String where = conditions.getWhereParameter().getReadySql() + limit ;
 			String sql = SQL_KEY.SELECT + columns + SQL_KEY.FROM + leftTableName + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + where;
 			Parameter p = conditions.getWhereParameter();
 			p.setReadySql(sql);
 			List<Map<String, Object>> list = jdbc.gets(p);
-			List<JsonBean> beans = new ArrayList<>();
-			for (Map<String, Object> map : list) {
-				JsonBean jb = new JsonBean(leftDbBean.getBeanName());
-				jb.addFields(map);
-				beans.add(jb);
-			}
+			List<L> result = findBean(list,  leftDbBean);
+			One<L> one = new One<>(result);
 			String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + leftTableName + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + where;
 			Parameter sizeP = conditions.getWhereParameter();
 			sizeP.setReadySql(sizeSql);
@@ -89,41 +190,45 @@ public class JdbcDao implements JdbcDaoInterface {
 			if (size == null) {
 				size = 0L;
 			}
-			Page pager = new Page(pageNum, pageSize, size, beans);
+			Page   pager =   new Page (pageNum, pageSize, size, one);
 			return pager;
 
 		} else if (n == 2) {// 1对1
 
-			PageData pd = one2one(leftDbBean, otherDbBeans, conditions);
-			List<JsonBean> jsonBeans = findJsonBean(pd.getList(), null, null, null, leftDbBean);
-			for (JsonBean jsonBean : jsonBeans) {
+			One2One<L,R> one2one = new One2One<>();
+			
+			PageData pd = one2one(leftDbBean, otherDbBeans, conditions,limit);
+			List<Bean<L>> lBeans = findBean(pd.getList(), null, leftDbBean);
+			for (Bean<L> lb : lBeans) {
 				for (DbBean dbBean : otherDbBeans) {
-					List<JsonBean> beans = findJsonBean(pd.getList(), leftDbBean.getBeanName(), jsonBean.getId(), jsonBean.getIdVal(), dbBean);
+					List<Bean<R>> beans = findBean(pd.getList(), lb, dbBean);
 					if (beans != null && beans.size() == 1) {
-						jsonBean.addField(dbBean.getBeanName(), beans.get(0));
+						Bean<R> rBean = beans.get(0);
+						one2one.add(lb.getJavaBean(), rBean.getJavaBean());
 					}
 				}
 			}
-
+ 
+			
 			long size = pd.getSize();
-			Page pager = new Page(pageNum, pageSize, size, jsonBeans);
+			Page  pager = new Page (pageNum, pageSize, size, one2one);
 			return pager;
 
 		} else if (n == 3) { // 一对多
-
-			PageData pd = one2Many(leftDbBean, otherDbBeans, conditions);
-			List<JsonBean> leftJsonBeans = findJsonBean(pd.getList(), null, null, null, leftDbBean);
-			for (JsonBean leftJsonBean : leftJsonBeans) {
-				String id = leftJsonBean.getId();
-				Object idVal = leftJsonBean.getIdVal();
+            One2Many<L,R> one2Many = new One2Many<>(); 
+			PageData pd = one2Many(leftDbBean, otherDbBeans, conditions,limit);
+			List<Bean<L>> lBeans = findBean(pd.getList(),  null, leftDbBean);
+			if(lBeans.size()>0){
 				for (DbBean dbBean : otherDbBeans) {
-					List<JsonBean> otherJsonBeans = findJsonBean(pd.getList(), leftDbBean.getBeanName(), id, idVal, dbBean);
-					leftJsonBean.addField(dbBean.getBeanName(), otherJsonBeans);
+					List<Bean<R>> rBeans = findBean(pd.getList(), lBeans.get(0),  dbBean);
+					List<R> rJavaBeans = bean2JavaBean(rBeans);
+					one2Many = new One2Many<L, R>(lBeans.get(0).getJavaBean(), rJavaBeans);
 				}
 			}
+			 
 
 			long size = pd.getSize();
-			Page pager = new Page(pageNum, pageSize, size, leftJsonBeans);
+			Page pager = new Page(pageNum, pageSize, size, one2Many);
 			return pager;
 		} else if (n == 4) {// 多对多
 
@@ -133,7 +238,7 @@ public class JdbcDao implements JdbcDaoInterface {
 
 			String columns = ComSQL.columns(newDbBeans);
 			Parameter p = conditions.getWhereParameter();
-			String where = p.getReadySql();
+			String where = p.getReadySql() + limit;
 			String tableNames = new String();
 			String condition = new String();
 
@@ -160,17 +265,20 @@ public class JdbcDao implements JdbcDaoInterface {
 			String sql = SQL_KEY.SELECT + columns + SQL_KEY.FROM + tableNames + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + condition + where;
 			p.setReadySql(sql);
 			List<Map<String, Object>> list = jdbc.gets(p);
-
-			List<JsonBean> leftJsonBeans = findJsonBean(list, null, null, null, leftDbBean);
-			for (JsonBean jsonBean : leftJsonBeans) {
-				List<JsonBean> middleJsonBeans = findJsonBean(list, leftDbBean.getBeanName(), jsonBean.getId(), jsonBean.getIdVal(), middleDbBean);
-				List<JsonBean> jsonBeans = new LinkedList<>();
-				for (JsonBean middleJsonBean : middleJsonBeans) {
-					List<JsonBean> rightJsonBeans = findJsonBean(list, middleDbBean.getBeanName(), middleJsonBean.getId(), middleJsonBean.getIdVal(), rightDbBean);
-					jsonBeans.addAll(rightJsonBeans);
-
+            Many2Many<L, M, R> many2many = new Many2Many<>();
+			List<Bean<L>> lBeans = findBean(list, null, leftDbBean);
+			if(lBeans.size()>0) {
+				Bean<L> lBean = lBeans.get(0);
+				many2many.setLeft(lBean.getJavaBean());
+				List<Bean<M>> mBeans = findBean(list, lBean, middleDbBean);
+				One2One<M,R> one2one = new One2One<>();
+				for (Bean<M> mBean : mBeans) {
+					List<Bean<R>> rBeans = findBean(list, mBean, rightDbBean);
+					if(rBeans.size()>0){
+					one2one.add(mBean.getJavaBean(), rBeans.get(0).getJavaBean());
+					}
 				}
-				jsonBean.addField(rightDbBean.getBeanName(), jsonBeans);
+				many2many.setMany(one2one);
 			}
 			String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + tableNames + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + condition + where;
 			Parameter sizeP = conditions.getWhereParameter();
@@ -180,140 +288,14 @@ public class JdbcDao implements JdbcDaoInterface {
 			if (size == null) {
 				size = 0L;
 			}
-			Page pager = new Page(pageNum, pageSize, size, leftJsonBeans);
+			Page pager = new Page(pageNum, pageSize, size, many2many);
 
 			return pager;
 		} else if (n == 5) {// 未知
 			return null;
+
 		} else {
 			return null;
-		}
-	}
-
-	public long save(JsonBean jsonBean) {
-		DbBean cb = DbBeanCache.getDbBean(dbKey, jsonBean);
-		Parameter p = ComSQL.insert(cb);
-		long n = jdbc.update(p);
-		return n;
-
-	}
-
-	public <T> long save(T javaBean) {
-		JsonBean jsonBean = new JsonBean(javaBean);
-		long n = this.save(jsonBean);
-		return n;
-	}
-
-	public boolean saves(List<JsonBean> jsonBeans) {
-
-		if (jsonBeans == null) {
-			return false;
-		}
-
-		List<Parameter> pes = new LinkedList<>();
-		for (JsonBean jsonBean : jsonBeans) {
-			DbBean cb = DbBeanCache.getDbBean(dbKey, jsonBean);
-			Parameter p = ComSQL.insert(cb);
-			pes.add(p);
-		}
-		return jdbc.updates(pes);
-
-	}
-
-	public boolean updates(List<JsonBean> jsonBeans) {
-		List<Parameter> parameters = new ArrayList<>();
-		for (JsonBean jsonBean : jsonBeans) {
-			DbBean cb = DbBeanCache.getDbBean(dbKey, jsonBean);
-			Object pkVal = cb.getPrimaryFieldValue();
-			if (pkVal != null) {
-				Parameter p = ComSQL.update(cb);
-				parameters.add(p);
-			}
-		}
-		return jdbc.updates(parameters);
-	}
-
-	public long saveOrUpdate(JsonBean jsonBean) {
-		DbBean dbBean = DbBeanCache.getDbBean(dbKey, jsonBean);
-
-		Object id = dbBean.getPrimaryFieldValue();
-		if (id != null) {// obj 有id update();
-			JsonBean newJsonBean = new JsonBean(jsonBean.getBeanName());
-			newJsonBean.addField(dbBean.getPrimaryField(), id);
-
-			Conditions c = new Conditions(newJsonBean);
-			List<JsonBean> newObj = this.gets(c);
-			if (newObj == null || newObj.size() == 0) {
-				return save(jsonBean);
-			} else {
-				return update(jsonBean);
-			}
-
-		} else {// obj 没有id
-			Conditions c = new Conditions(jsonBean);
-			List<JsonBean> oldObj = this.gets(c);
-			if (oldObj == null || oldObj.size() == 0) {
-				return save(jsonBean);// 用obj 去数据库查询 如果不存在 则保存
-			} else {
-				return -1L;// 用obj 去数据库查询 如何存在 不更新 不保存
-			}
-		}
-
-	}
-
-	public long update(JsonBean jsonBean) {
-		DbBean dbBean = DbBeanCache.getDbBean(dbKey, jsonBean);
-		Object pkValue = dbBean.getPrimaryFieldValue();
-		if (pkValue == null) {
-			return 0L;
-		}
-		Parameter p = ComSQL.update(dbBean);
-		long n = jdbc.update(p);
-		return n;
-
-	}
-
-	public long delete(JsonBean jsonBean) {
-		DbBean dbBean = DbBeanCache.getDbBean(dbKey, jsonBean);
-		Parameter p = ComSQL.delete(dbBean);
-		long n = jdbc.update(p);
-		return n;
-
-	}
-
-	public List<JsonBean> gets(Conditions conditions) {
-
-		DbBean cb = DbBeanCache.getDbBean(dbKey, conditions.getLeftBean());
-		String columns = ComSQL.columns4One(cb);
-		Parameter where = conditions.getWhereParameter();
-		Parameter p = new Parameter();
-		String tableName = T2E.toTableName(cb.getBeanName());
-		String sql = SQL_KEY.SELECT + columns + SQL_KEY.FROM + tableName + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + where.getReadySql();
-		p.setReadySql(sql);
-		p.setParams(where.getParams());
-		List<Map<String, Object>> list = jdbc.gets(p);
-		List<JsonBean> beans = new LinkedList <>();
-		for (Map<String, Object> map : list) {
-			JsonBean bean = new JsonBean(cb.getBeanName());
-			bean.addFields(map);
-			beans.add(bean);
-		}
-		return beans;
-	}
-
-	public long count(String key, Conditions conditions) {
-		DbBean cb = DbBeanCache.getDbBean(dbKey, conditions.getLeftBean());
-		String tableName = T2E.toTableName(cb.getBeanName());
-		String sql = "SELECT COUNT(" + key + ") AS SIZE" + " FROM " + tableName + " WHERE 1=1 " + conditions.getWhereParameter().getReadySql();
-		Parameter p = new Parameter();
-		p.setReadySql(sql);
-		p.setParams(conditions.getWhereParameter().getParams());
-		Map<String, Object> map = jdbc.get(p);
-		Long n = (Long) map.get("size");
-		if (n != null && n > 0) {
-			return n;
-		} else {
-			return 0L;
 		}
 	}
 
@@ -324,6 +306,7 @@ public class JdbcDao implements JdbcDaoInterface {
 	 * @param otherBeans
 	 * @return 单表 ：1 ; 一对一：2 一对多：3 ; 多对多：4 ;未知 ：5
 	 */
+
 	private int getRelation(DbBean leftDbBean, DbBean... otherBeans) {
 		if (TableRelationAnalyze.isOne(leftDbBean, otherBeans)) {
 			return 1;
@@ -339,10 +322,11 @@ public class JdbcDao implements JdbcDaoInterface {
 
 	}
 
-	private List<JsonBean> findJsonBean(List<Map<String, Object>> list, String mainBeanName, String id, Object idVal, DbBean dbBean) {
+	/*private List<JsonBean> findJsonBean(List<Map<String, Object>> list, String mainBeanName, String id, Object idVal, DbBean dbBean) {
 		if (id != null && idVal != null) {
 			List<Map<String, Object>> newlist = new LinkedList<>();
 			for (Map<String, Object> map : list) {
+				mainBeanName =T2E.toField(T2E.toColumn(mainBeanName)) ;
 				Object thisVal = map.get(mainBeanName + STRING.DOLLAR + id);
 				if (thisVal.toString().equals(idVal.toString())) {
 					newlist.add(map);
@@ -388,8 +372,74 @@ public class JdbcDao implements JdbcDaoInterface {
 
 		return jsonBeans;
 
+	}*/
+ 
+	@SuppressWarnings("unchecked")
+	private <L,R> List<Bean<R>> findBean(List<Map<String, Object>> list, Bean<L> bean, DbBean dbBean) {
+		if (bean != null) {
+			List<Map<String, Object>> newlist = new LinkedList<>();
+			for (Map<String, Object> map : list) {
+				String name = T2E.toField(T2E.toColumn(bean.getBeanName()));
+				
+				Object thisVal = map.get( name+ STRING.DOLLAR + bean.getKey());
+				if (thisVal.toString().equals(bean.getVal())) {
+					newlist.add(map);
+				}
+			}
+			list = newlist;
+		}
+		
+		String dbBeanName = dbBean.getBeanName();
+		String pkName = dbBean.getPrimaryField();
+		List<Bean<R>> beans = new LinkedList<>();
+		String str = new String();
+		for (Map<String, Object> map : list) {
+			String idName ;
+			String idValue;
+			Bean<R> resultBean = new Bean<>();
+			resultBean.setBeanName(dbBean.getBeanName());
+			RObject<?> rObj = new RObject<>(dbBean.getClassName());
+			for (Entry<String, Object> en : map.entrySet()) {
+				String key = en.getKey();
+				Object val = en.getValue();
+				String[] strs = key.split(STRING.ESCAPE_DOLLAR);
+				if (strs.length ==2) {
+					String beanName = strs[0];
+					String pr = strs[1];
+					
+					if (dbBeanName.toUpperCase().equals(beanName.toUpperCase())) {
+						rObj.invokeSetMethod(pr, val);
+						if (pkName.toUpperCase().equals(pr.toUpperCase())) {
+							 idName = pkName;
+							 idValue = val.toString();
+							 resultBean.setKey(idName);
+							 resultBean.setVal(idValue);
+						}
+					}
+				}
+			}
+			if (beans.size() == 0 || !str.contains(resultBean.getVal())) {
+				 
+				str = str + resultBean.getKey() + STRING.AT;
+				resultBean.setJavaBean( (R) rObj.getObject());
+				beans.add(resultBean);
+			}  
+		}
+		
+		return beans;
+		
 	}
 
+	
+	private <T> List<T> bean2JavaBean(List<Bean<T>> beans){
+		List<T> list = new LinkedList<>();
+		for (Bean<T> bean : beans) {
+			list.add(bean.getJavaBean());
+		}
+		return list;
+	}
+	
+	
 	/**
 	 * 一对多
 	 * 
@@ -398,7 +448,8 @@ public class JdbcDao implements JdbcDaoInterface {
 	 * @param conditions
 	 * @return
 	 */
-	private PageData one2Many(DbBean leftDbBean, List<DbBean> otherDbBeans, Conditions conditions) {
+
+	private PageData one2Many(DbBean leftDbBean, List<DbBean> otherDbBeans, Conditions conditions ,String limit) {
 		PageData pd = new PageData();
 		String leftTableName = T2E.toTableName(leftDbBean.getBeanName());
 		String leftTablePk = T2E.toColumn(leftDbBean.getPrimaryField());
@@ -408,7 +459,7 @@ public class JdbcDao implements JdbcDaoInterface {
 
 		String columns = ComSQL.columns(newDbBeans);
 		Parameter p = conditions.getWhereParameter();
-		String where = p.getReadySql();
+		String where = p.getReadySql() + limit;
 		String otherTableName = new String();
 		String condition = new String();
 		for (DbBean dbBean : otherDbBeans) {
@@ -443,14 +494,15 @@ public class JdbcDao implements JdbcDaoInterface {
 	}
 
 	/**
-	 * 一对一
+	 * 一对一**
 	 * 
 	 * @param leftDbBean
 	 * @param otherDbBeans
 	 * @param conditions
 	 * @return
 	 */
-	private PageData one2one(DbBean leftDbBean, List<DbBean> otherDbBeans, Conditions conditions) {
+	private PageData one2one(DbBean leftDbBean, List<DbBean> otherDbBeans, Conditions conditions ,String limit) {
+		 
 		PageData pd = new PageData();
 		String leftTableName = T2E.toTableName(leftDbBean.getBeanName());
 
@@ -460,7 +512,7 @@ public class JdbcDao implements JdbcDaoInterface {
 
 		String columns = ComSQL.columns(newDbBeans);
 		Parameter p = conditions.getWhereParameter();
-		String where = p.getReadySql();
+		String where = p.getReadySql() +limit;
 		String otherTableNames = new String();
 		String condition = new String();
 
@@ -502,107 +554,20 @@ public class JdbcDao implements JdbcDaoInterface {
 		return pd;
 	}
 
-	@Override
-	public <T> boolean saves(T[] javaBeans) {
-		List<JsonBean> list = new LinkedList<>();
-		for (T javaBean : javaBeans) {
-			JsonBean j = new JsonBean(javaBean);
-			list.add(j);
+ 
+	private <L> List<L> findBean (List<Map<String, Object>> list,DbBean dbBean){
+		 List<L> javaBeans = new LinkedList<>();
+		 for (Map<String,Object> map : list) {
+			 RObject<L> rObj =  new RObject<>(dbBean.getClassName());
+			 for(Entry<String, Object> en : map.entrySet()){
+				 String fieldName = en.getKey();
+				 Object value = en.getValue();
+				 rObj.invokeSetMethod(fieldName, value);
+			 }
+			 javaBeans.add(rObj.getObject());
 		}
-		boolean b = this.saves(list);
-		return b;
-	}
-
-	@Override
-	public <T> long saveOrUpdate(T javaBean) {
-		JsonBean j = new JsonBean(javaBean);
-		long n = this.saveOrUpdate(j);
-		return n;
-	}
-
-	@Override
-	public <T> long update(T javaBean) {
-		JsonBean j = new JsonBean(javaBean);
-		long n = this.update(j);
-		return n;
-	}
-
-	@Override
-	public <T> long delete(T javaBean) {
-		JsonBean j = new JsonBean(javaBean);
-		long n = this.delete(j);
-		return n;
-	}
-
-	@Override
-	public <T> T get(Conditions conditions,Class<T> javaBeanClass) {
-		List<JsonBean> list = this.gets(conditions) ;
-		if(list.size() == 1){
-			JsonBean jb = list.get(0);
-			T t = jb.getJavaBean(javaBeanClass);
-			return t;
-		}else{
-			return null;
-		}
-	}
-
-	@Override
-	public <T> T get(T javaBean) {
-		 
-		Conditions c = new Conditions(javaBean);
-		Class<?> clas =  javaBean.getClass();
-	    @SuppressWarnings("unchecked")
-		T t = (T) this.get(c, clas);
-		return t;
-	}
-
-	@Override
-	public <T> T get(JsonBean jsonBean,Class<T> javaBeanClass) {
-		Conditions c = new Conditions(jsonBean);
-		T t = (T) this.get(c, javaBeanClass);
-		return t;
-	}
-
-	@Override
-	public <T> List<T> gets(Conditions conditions, Class<T> javaBeanClass) {
-		List<JsonBean> list = this.gets(conditions);
-		List<T> newList = new LinkedList<>();
-		for (JsonBean jb : list) {
-			T t = jb.getJavaBean(javaBeanClass);
-			newList.add(t);
-		}
-		return newList;
-	}
-
-	@Override
-	public <T> List<T> gets(JsonBean jsonBean, Class<T> javaBeanClass) {
-		Conditions conditions = new Conditions(jsonBean);
-		List<T> list = this.gets(conditions,javaBeanClass);
-		return list;
-	}
-
-	@Override
-	public <T> List<T> gets(T javaBean) {
-		JsonBean jsonBean = new JsonBean(javaBean);
-		Conditions conditions = new Conditions(jsonBean);
-		@SuppressWarnings("unchecked")
-		Class<T> javaBeanClass = (Class<T>) javaBean.getClass();
-		List<T> list = this.gets(conditions,javaBeanClass);
-		return list; 
-	}
-
-	@Override
-	public long count(String key, JsonBean jsonBean) {
-		Conditions c = new Conditions(jsonBean );
-		long n = this.count(key, c);
-		return n;
-	}
-
-	@Override
-	public <T> long count(String key, T javaBean) {
-		Conditions c = new Conditions(javaBean);
-		long n = this.count(key, c);
-		return n;
-	}
+		 return javaBeans;
+	 }
+	 
 
 }

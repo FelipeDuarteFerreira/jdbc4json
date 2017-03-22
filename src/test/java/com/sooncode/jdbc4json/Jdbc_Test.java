@@ -10,14 +10,14 @@ import com.sooncode.jdbc4json.sql.Parameter;
 
 public class Jdbc_Test {
 	private static Logger logger = Logger.getLogger("Jdbc_Test.class");
-	private Jdbc jdbc = JdbcFactory.getJdbc();
+	private Jdbc jdbc ;
 
 	@Test
 	public void executeProcedure() {
 		String sql = "{call proc_name2(?,?)}";
 		Integer in = 1;
-		Object r = jdbc.procedure(sql, in);
-		logger.info(r);
+	//	Object r = jdbc.procedure(sql, in);
+	//	logger.info(r);
 	}
 	
 	@Test
@@ -33,17 +33,9 @@ public class Jdbc_Test {
 				"	AND TEACHER.TEACHER_NAME = ? ORDER BY CLAZZ_ID ASC ";
 		Parameter p = new Parameter(sql);
 		p.addParameter("hechen");
-		long t1 = System.nanoTime();
+	 
 		List<Map<String,Object>> list = jdbc.gets(p);
-		long t2 = System.nanoTime();
-		logger.info("耗时："+(t2-t1)+"(ns)");
-		logger.info(list);
-		
-		long t3 = System.nanoTime();
-		List<Map<String,Object>> list2 = jdbc.gets(p);
-		long t4 = System.nanoTime();
-		logger.info("耗时："+(t4-t3)/1000000+"(ms)");
-		logger.info(list2);
+	    logger.info(list);
 	}
 	 
 }

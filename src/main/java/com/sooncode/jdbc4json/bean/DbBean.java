@@ -5,6 +5,7 @@ import java.util.Map;
 
 
 public class DbBean {
+	private String className;
 	private String beanName;
 	private String primaryField;
 	private Object primaryFieldValue;
@@ -51,5 +52,15 @@ public class DbBean {
 	public void setForeignKeies(List<ForeignKey> foreignKeies) {
 		this.foreignKeies = foreignKeies;
 	}
+
+	public String getClassName() {
+		return className;
+	}
+
+	public void setClassName(String className) {
+		this.className = className;
+	}
+	
+	
 
 }

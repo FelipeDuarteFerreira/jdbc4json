@@ -15,7 +15,7 @@ public class JdbcDaoFactory {
 		JdbcDao dao = daos.get(dbKey);
 
 		if (dao == null) {
-			dao = new JdbcDao(dbKey);
+			//dao = new JdbcDao(dbKey);
 			daos.put(dbKey, dao);
 		}
 		return dao;

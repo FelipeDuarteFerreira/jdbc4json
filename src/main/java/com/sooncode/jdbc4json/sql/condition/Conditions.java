@@ -121,8 +121,8 @@ public class Conditions {
 	public Conditions setBetweenCondition(String key, Object start, Object end) {
 
 		Condition c = ces.get(key);
-		c.setType("0");
 		if (c != null) {
+			c.setType("0");
 			String sql = STRING.SPACING + T2E.toColumn(key) + SQL_KEY.BETWEEN + start + SQL_KEY.AND + end
 					+ STRING.SPACING;
 			c.setCondition(sql);

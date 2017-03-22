@@ -1,8 +1,8 @@
 package com.sooncode.jdbc4json.dao;
 import java.util.List;
 import com.sooncode.jdbc4json.bean.JsonBean;
+import com.sooncode.jdbc4json.page.Page;
 import com.sooncode.jdbc4json.sql.condition.Conditions;
-import com.sooncode.jdbc4json.util.Page;
 
 /**
  * Jdbc Dao 服务接口
@@ -39,7 +39,7 @@ public interface JdbcDaoInterface {
 	public long delete(JsonBean jsonBean)  ;
 	public <T> long delete(T javaBean)  ;
 
-	//public <T> List<T> gets(Conditions conditions)  ;
+	 
 	public long count(String key, Conditions conditions) ;
 	public long count(String key, JsonBean jsonBean) ;
 	public <T> long count(String key, T javaBean) ;

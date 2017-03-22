@@ -37,7 +37,7 @@ public class T2E {
 		StringBuilder sb = new StringBuilder();
 		while (i < field.length()) {
 
-			while (i < field.length() && (isLower(c[i]) || isNumber(c[i]) || is$(c[i]))) {
+			while (i < field.length() && (isLower(c[i]) || isNumber(c[i]) ||isPont(c[i]) || is$(c[i]))) {
 				sb.append(c[i]);
 				i++;
 			}
@@ -128,6 +128,13 @@ public class T2E {
 	 */
 	private static boolean isNumber(char c) {
 		if (c >= '0' && c <= '9') {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	private static boolean isPont(char c) {
+		if (c =='.') {
 			return true;
 		} else {
 			return false;

@@ -6,9 +6,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +18,7 @@ import org.apache.log4j.Logger;
  * @author pc
  *
  */
-public class RObject {
+public class RObject<T> {
 	public static Logger logger = Logger.getLogger("RObject.class");
 	private static final String NULL_STR = "";
 	private static final String CLASS = "class ";
@@ -29,16 +27,17 @@ public class RObject {
 	private static final String UID = "serialVersionUID";
 
 	/** 被反射代理的对象 */
-	private Object object;
+	private T object;
 
-	public <T> RObject(T object) {
+	public   RObject(T object) {
 		this.object = object;
 	}
 
+	@SuppressWarnings("unchecked")
 	public RObject(Class<?> clas) {
 
 		try {
-			this.object = clas.newInstance();
+			this.object = (T) clas.newInstance();
 
 		} catch (Exception e) {
 
@@ -46,11 +45,12 @@ public class RObject {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public RObject(String className) {
 		Class<?> clas;
 		try {
 			clas = Class.forName(className);
-			this.object = clas.newInstance();
+			this.object = (T) clas.newInstance();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -68,10 +68,8 @@ public class RObject {
 	}
 
 	/** 获取被反射代理的对象 */
-	public <T> T getObject() {
-		@SuppressWarnings("unchecked")
-		T t = (T) object;
-		return t;
+	public   T getObject() {
+		return object;
 	}
 
 	/**
@@ -168,7 +166,7 @@ public class RObject {
 			Method method = pd.getWriteMethod();
 			method.invoke(object, args);
 		} catch (Exception e) {
-			logger.error(e.getMessage());
+			//logger.error(e.getMessage());
 		}
 
 	}
@@ -187,7 +185,7 @@ public class RObject {
 			Class<?>[] c = method.getParameterTypes();
 			return c[0];
 		} catch (IntrospectionException e) {
-			logger.error(e.getMessage());
+			//logger.error(e.getMessage());
 			return null;
 		}
 
@@ -200,7 +198,7 @@ public class RObject {
 	 * @return
 	 */
 
-	public <T> T invokeGetMethod(String fieldName) {
+	public   T invokeGetMethod(String fieldName) {
 		PropertyDescriptor pd;
 		try {
 			pd = new PropertyDescriptor(fieldName, this.object.getClass());
@@ -254,7 +252,7 @@ public class RObject {
 	}
 
 	/** 获取对象的第一个属性的值 */
-	public <T> T getPkValue() {
+	public   T getPkValue() {
 
 		String str = JAVA_TYPES;// "Integer Long Short Byte Float Double
 								// Character Boolean Date String";
@@ -280,7 +278,7 @@ public class RObject {
 	 * @return 方法执行的返回值
 	 */
 
-	public <T> T invoke(String methodName, Object... args) {
+	public   T invoke(String methodName, Object... args) {
 		try {
 			Method method = null;
 			for (Class<?> clazz = object.getClass(); clazz != Object.class; clazz = clazz.getSuperclass()) {
@@ -310,44 +308,6 @@ public class RObject {
 		return null;
 	}
 
-	/**
-	 * 用json数据格式重写 实体的toString()方法
-	 * 
-	 * @param obj
-	 * @return
-	 */
-	public static String toJson(Object obj) {
-
-		RObject rO = new RObject(obj);
-		Map<String, Object> map = rO.getFiledAndValue();
-
-		String json = "{";
-		int n = 0;
-		for (Map.Entry<String, Object> en : map.entrySet()) {
-			if (n != 0) {
-				json = json + ",";
-			}
-			json = json + "\"" + en.getKey() + "\":";
-			if (en.getValue() != null) {
-				String simpleName = en.getValue().getClass().getSimpleName();
-				if (simpleName.equals("String")) {
-					json = json + "\"" + en.getValue() + "\"";
-				} else if (simpleName.equals("Date")) {
-					Date date = (Date) en.getValue();
-					json = json + "\"" + new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(date) + "\"";
-
-				} else {
-					json = json + en.getValue();
-				}
-			} else {
-
-				json = json + null;
-			}
-			n++;
-		}
-		json = json + "}";
-		return json;
-
-	}
+	 
 
 }
