@@ -11,14 +11,10 @@ import java.util.List;
  * @param <T>
  */
 public class Page {
-
-	// ------------------------------------------ 属性
-	// --------------------------------------------------------
-
-	private Result result;
-
+ 
+	private List<Object> ones;
+	private List<One2One<?,?>> o2os;
 	private List<One2Many<?, ?>> o2ms;
-
 	private List<Many2Many<?, ?, ?>> m2ms;
 
 	/** 总记录数 */
@@ -47,10 +43,10 @@ public class Page {
 
 	// --------------------------------------------- 构造器
 	// ----------------------------------------------------------------
-
-	public Page(long pageNumber, long pageSize, long total, Result result) {
+ 
+	public <L> Page(long pageNumber, long pageSize, long total) {
 		init(total, pageNumber, pageSize);
-		this.result = result;
+		//this.ones = (List<Object>) ones;
 	}
 
 	public <L, R> Page(long pageNumber, long pageSize, long total, List<One2Many<L, R>> o2ms) {
@@ -183,17 +179,12 @@ public class Page {
 		this.hasNextPage = hasNextPage;
 	}
 
-	public <L> One<L> getOne() {
-		@SuppressWarnings("unchecked")
-		One<L> one = (One<L>) result;
-		return one;
+	@SuppressWarnings("unchecked")
+	public <L> List<L> getOnes() {
+		return (List<L>) ones;
 	}
 
-	public <L, R> One2One<L, R> getOne2One() {
-		@SuppressWarnings("unchecked")
-		One2One<L, R> o2o = (One2One<L, R>) result;
-		return o2o;
-	}
+	 
 
 	public <L, R> One2Many<L, R> getOne2Many() {
 
@@ -233,6 +224,30 @@ public class Page {
 			m2ms.add(m2m);
 		}
 		return m2ms;
+	}
+
+	 
+
+	@SuppressWarnings("unchecked")
+	public <L> void setOnes(List<L> ones) {
+		this.ones = (List<Object>) ones;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <L,R> List<One2One<L,R>> getOne2Ones() {
+		List<One2One<L,R>> list = new LinkedList<>();
+		for(One2One<?,?> o2o :this.o2os){
+			list.add((One2One<L, R>) o2o);
+		}
+		return list;
+	}
+
+	public <L,R> void setOne2Ones(List<One2One<L, R>> o2os) {
+		List<One2One<?,?>> list = new LinkedList<>();
+		for (One2One<L, R> o2o : o2os) {
+			list.add(o2o);
+		}
+		this.o2os = list;
 	}
 
 }

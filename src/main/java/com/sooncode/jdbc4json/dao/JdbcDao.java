@@ -182,7 +182,7 @@ public class JdbcDao {
 			p.setReadySql(sql);
 			List<Map<String, Object>> list = jdbc.gets(p);
 			List<L> result = findBean(list, leftDbBean);
-			One<L> one = new One<>(result);
+			 
 			String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + leftTableName + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + where;
 			Parameter sizeP = conditions.getWhereParameter();
 			sizeP.setReadySql(sizeSql);
@@ -191,13 +191,14 @@ public class JdbcDao {
 			if (size == null) {
 				size = 0L;
 			}
-			Page pager = new Page(pageNum, pageSize, size, one);
+			Page pager = new Page(pageNum, pageSize, size);
+			pager.setOnes(result);
 			return pager;
 
 		} else if (n == 2) {// 1对1
 
 			One2One<L, R> one2one = new One2One<>();
-
+            List<One2One<L,R>> one2ones = new LinkedList<>();
 			PageData pd = one2one(leftDbBean, otherDbBeans, conditions, limit);
 			List<Bean<L>> lBeans = findBean(pd.getList(), null, leftDbBean);
 			for (Bean<L> lb : lBeans) {
@@ -205,14 +206,16 @@ public class JdbcDao {
 					List<Bean<R>> beans = findBean(pd.getList(), lb, dbBean);
 					if (beans != null && beans.size() == 1) {
 						Bean<R> rBean = beans.get(0);
-						one2one.add(lb.getJavaBean(), rBean.getJavaBean());
+						One2One<L, R> o2o = new One2One<L, R>(lb.getJavaBean(), rBean.getJavaBean());
+						one2ones.add(o2o);
 					}
 				}
 			}
 
 			long size = pd.getSize();
-			Page pager = new Page(pageNum, pageSize, size, one2one);
-			return pager;
+			Page page = new Page(pageNum, pageSize, size);
+			page.setOne2Ones(one2ones);
+			return page;
 
 		} else if (n == 3) { // 一对多
 			One2Many<L, R> one2Many = new One2Many<>();
@@ -273,14 +276,15 @@ public class JdbcDao {
 			for (Bean<L> lBean : lBeans) {
 				many2many.setOne(lBean.getJavaBean());
 				List<Bean<M>> mBeans = findBean(list, lBean, middleDbBean);
-				One2One<M, R> one2one = new One2One<>();
+				List<One2One<M,R>> o2os = new LinkedList<>();
 				for (Bean<M> mBean : mBeans) {
 					List<Bean<R>> rBeans = findBean(list, mBean, rightDbBean);
 					if (rBeans.size() > 0) {
-						one2one.add(mBean.getJavaBean(), rBeans.get(0).getJavaBean());
+						One2One<M, R> o2o = new One2One<>(mBean.getJavaBean(), rBeans.get(0).getJavaBean());
+						o2os.add(o2o);
 					}
 				}
-				many2many.setMany(one2one);
+				many2many.setMany(o2os);
 				m2ms.add(many2many);
 			}
 

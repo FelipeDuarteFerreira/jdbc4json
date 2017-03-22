@@ -110,8 +110,8 @@ public class JdbcDao_Test {
 		u.setSex("1");
 		Conditions c = new Conditions(u);
 		Page  page = dao.getPage(1L, 5L, c);
-		One<User> users =   page.getOne();
-		List<User> list = users.getOnes();
+		 
+		List<User> list = page.getOnes();
 		logger.info("---------------------------------------------------------------");
 		for (User user : list) {
 			logger.info(user);
@@ -130,12 +130,11 @@ public class JdbcDao_Test {
 		Conditions c = new Conditions(s,id);
 		Page  page = dao.getPage(1L, 5L, c);
 		
-		One2One<Student,Identity> o2o =  page.getOne2One() ;
+		List<One2One<Student,Identity>> o2o =  page.getOne2Ones() ;
 		
 		logger.info("---------------------------------------------------------------");
-		for (int i =0;i<o2o.size();i++) {
-			logger.info(o2o.getLeft(i) + " -------" + o2o.getRight(i));
-			 
+		for (One2One<Student, Identity> one2One : o2o) {
+			logger.info(one2One.getLeft() + " -------" + one2One.getRight());
 		}
 		logger.info("---------------------------------------------------------------");
 	}
@@ -152,11 +151,12 @@ public class JdbcDao_Test {
 		Conditions c = new Conditions(clazz,s);
 		Page page = dao.getPage(1L, 3L, c);
 		One2Many<Clazz,Student> o2m = page.getOne2Many();
-		
+	    Clazz cl = o2m.getOne();
+		List<Student> stues = o2m.getMany();
 		logger.info("---------------------------------------------------------------");
-		logger.info(o2m.getOne());
+		logger.info(cl);
 		logger.info("---------------------------------------------------------------");
-		for ( Student st : o2m.getMany()) {
+		for ( Student st : stues) {
 			logger.info(st);
 		}
 		logger.info("---------------------------------------------------------------");
@@ -176,12 +176,16 @@ public class JdbcDao_Test {
 		Page page = dao.getPage(1L, 10L, c);
 	    Many2Many<Student,ChooseCourse,Course> m2m = page.getMany2Many();
 
+	    Student stu = m2m.getOne();
+	    List<One2One<ChooseCourse, Course>> list = m2m.getMany();
+	    
+	    
 		logger.info("---------------------------------------------------------------");
-		logger.info(m2m.getOne());
+		logger.info(stu);
 		logger.info("---------------------------------------------------------------");
 		
-		for (int i =0;i<m2m.getMany().size();i++) {
-			logger.info(m2m.getMany().getLeft(i) + " -------" + m2m.getMany().getRight(i));
+		for (One2One<ChooseCourse, Course> o2o : list) {
+			logger.info(o2o.getLeft() + " -------" + o2o.getRight());
 			 
 		}
 		logger.info("---------------------------------------------------------------");
@@ -200,29 +204,24 @@ public class JdbcDao_Test {
 		c.setBetweenCondition("chooseCourse.score", 50, 100);
 		Page page = dao.getPage(1L, 10L, c);
 		List<Many2Many<Course,ChooseCourse,Student>> m2ms = page.getMany2Manys();
-		Many2Many<Course,ChooseCourse,Student> m2m = page.getMany2Many();
+	 
+		
 		logger.info("---------------------------------------------------------------");
-		
-		One2One<ChooseCourse, Student> o2o  =  m2m.getMany() ;
-		logger.info(m2m.getOne());
-		logger.info("---------------------------------------------------------------");
-		for(int j= 0 ;j<o2o.size();j++){
-			logger.info(o2o.getLeft(j) + " -------" + o2o.getRight(j));
-		 
-		}
-		
-		
-		
-		/*for (int i =0;i<m2ms.size();i++) {
-			One2One<ChooseCourse, Student> o2o  =  m2ms.get(i).getMany() ;
-			logger.info(m2ms.get(i).getLeft());
-			logger.info("---------------------------------------------------------------");
-			for(int j= 0 ;j<o2o.size();j++){
-				logger.info(o2o.getLeft(j) + " -------" + o2o.getRight(j));
-			 
+		for (Many2Many<Course, ChooseCourse, Student> many2Many : m2ms) {
+			Course cou = many2Many.getOne();
+			logger.info( cou);
+			List<One2One<ChooseCourse, Student>>list = many2Many.getMany();
+			for (One2One<ChooseCourse, Student> one2One : list) {
+				ChooseCourse choo = one2One.getLeft();
+				Student stude = one2One.getRight();
+				logger.info( choo +"---" + stude);
+				
 			}
-		}*/
+			
+		}
 		logger.info("---------------------------------------------------------------");
+		 
+		 
 		
 	}
 	
