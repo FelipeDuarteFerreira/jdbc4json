@@ -37,6 +37,11 @@ public class JdbcDao_Test {
 		u.setName("ni hao");
 		u.setSex("1");
 		dao.save(u);
+		
+		Student s = new Student();
+		s.setStudentId("374928393874");
+		s.setName("fjsldkjflsdkfj");
+		dao.save(s);
 	}
 
 	@Test
@@ -186,7 +191,7 @@ public class JdbcDao_Test {
 		ChooseCourse cc = new ChooseCourse();
 		Course  co= new Course ();
 		Conditions c = new Conditions(s,cc,co);
-		c.setBetweenCondition("chooseCourse.score", 50, 100);
+		//c.setBetweenCondition("chooseCourse.score", 50, 100);
 		Page page = dao.getPage(1L, 10L, c);
 	    Many2Many<Student,ChooseCourse,Course> m2m = page.getMany2Many();
 
@@ -238,7 +243,35 @@ public class JdbcDao_Test {
 		 
 		
 	}
-	
-	
+	@Test
+	public void getPage6() {
+		Student s = new Student();
+		ChooseCourse cc = new ChooseCourse();
+		Course  co= new Course ();
+		//co.setCourseId("001");
+		Conditions c = new Conditions(co,cc,s);
+		c.setBetweenCondition("chooseCourse.score", 50, 100);
+		Page page = dao.getPage(1L, 10L, co,cc,s);
+		List<Many2Many<Course,ChooseCourse,Student>> m2ms = page.getMany2Manys();
+		
+		
+		logger.info("---------------------------------------------------------------");
+		for (Many2Many<Course, ChooseCourse, Student> many2Many : m2ms) {
+			Course cou = many2Many.getOne();
+			logger.info( cou);
+			List<One2One<ChooseCourse, Student>>list = many2Many.getMany();
+			for (One2One<ChooseCourse, Student> one2One : list) {
+				ChooseCourse choo = one2One.getLeft();
+				Student stude = one2One.getRight();
+				logger.info( choo +"---" + stude);
+				
+			}
+			
+		}
+		logger.info("---------------------------------------------------------------");
+		
+		
+		
+	}
 
 }

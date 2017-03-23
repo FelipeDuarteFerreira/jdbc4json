@@ -15,6 +15,8 @@ public class Clazz implements Serializable{
 	 /**  */
 	 private Integer studentNumber ;
 
+	 
+	 
 	 /** 班级名称 */
 	 public String getClazzName() { 
 	 	 return clazzName;

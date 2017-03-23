@@ -164,7 +164,15 @@ public class JdbcDao {
 		long n = this.count(key, c);
 		return n;
 	}
-
+	
+	
+	public <L, M, R> Page getPage(long pageNum, long pageSize, L left,M middle,R right) {
+		Conditions conditions = new Conditions(left, middle,right);
+		return getPage(pageNum, pageSize, conditions);
+	}
+	
+	
+	
 	public <L, M, R> Page getPage(long pageNum, long pageSize, Conditions conditions) {
 
 		String limit = SQL_KEY.LIMIT + (pageNum - 1) * pageSize + SQL_KEY.COMMA + pageSize;
@@ -308,12 +316,9 @@ public class JdbcDao {
 			}
 			Page pager = new Page(pageNum, pageSize, size, m2ms);
 			return pager;
-		} else if (n == 5) {// 未知
+		} else {// 未知
 			return new Page();
-
-		} else {
-			return new Page();
-		}
+		}  
 	}
 
 	/**

@@ -1,6 +1,5 @@
 package com.sooncode.jdbc4json.dao;
 
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;

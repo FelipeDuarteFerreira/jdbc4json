@@ -33,6 +33,9 @@ public class JdbcService   {
 		this.jdbcDao = jdbcDao;
 	}
 
+	public <L,M,R> Page getPage(long pageNum, long pageSize,L left,M middle,R right ) {
+		return jdbcDao.getPage(pageNum, pageSize, left,middle,right);
+	}
 	public Page getPage(long pageNum, long pageSize, Conditions conditions) {
 		return jdbcDao.getPage(pageNum, pageSize, conditions);
 	}
