@@ -1,6 +1,6 @@
 package com.sooncode.jdbc4json.dao;
 
-import java.util.List;
+ 
 
 public class Bean <T> {
 

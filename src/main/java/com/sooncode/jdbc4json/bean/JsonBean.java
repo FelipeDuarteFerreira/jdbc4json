@@ -41,7 +41,7 @@ public class JsonBean {
 		String tClassName = javaBean.getClass().getSimpleName(); 
 		this.beanName  =T2E.toField(  T2E.toColumn(tClassName)); 
 		this.className = javaBean.getClass().getName();
-		RObject rObj = new RObject(javaBean);
+		RObject<?> rObj = new RObject<>(javaBean);
 		Map<String, Object> map = rObj.getFiledAndValue();
 		this.map.putAll(map);
 	}
@@ -215,7 +215,7 @@ public class JsonBean {
 	
 	public <T> T getJavaBean(Class<T> javaBeanClass) {
 		 
-		RObject rObj = new RObject(javaBeanClass);
+		RObject<T> rObj = new RObject<>(javaBeanClass);
 		Map<String,Object> fileds = rObj.getFiledAndValue();
 		for (Entry<String,Object> en : fileds.entrySet()) {
 			String key = en.getKey();
@@ -224,7 +224,7 @@ public class JsonBean {
 				rObj.invokeSetMethod(key, val);
 			}
 		}
-		@SuppressWarnings("unchecked")
+		 
 		T javaBean = (T) rObj.getObject();
 		return javaBean ;
 	}

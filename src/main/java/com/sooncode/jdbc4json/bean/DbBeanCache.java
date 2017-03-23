@@ -71,7 +71,7 @@ public class DbBeanCache {
 		dbBean.setPrimaryField(pkName);
 		dbBean.setForeignKeies(foreignKeies);
 		
-		RObject rObj = new RObject(javaBean);
+		RObject<?> rObj = new RObject<>(javaBean);
 		
 		Map<String,Object> map = rObj.getFiledAndValue();
 		 

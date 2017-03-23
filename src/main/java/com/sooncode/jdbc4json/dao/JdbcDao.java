@@ -207,8 +207,7 @@ public class JdbcDao {
 			return pager;
 
 		} else if (n == 2) {// 1对1
-
-			One2One<L, R> one2one = new One2One<>();
+			 
             List<One2One<L,R>> one2ones = new LinkedList<>();
 			PageData pd = one2one(leftDbBean, otherDbBeans, conditions, limit);
 			List<Bean<L>> lBeans = findBean(pd.getList(), null, leftDbBean);
@@ -340,39 +339,7 @@ public class JdbcDao {
 
 	}
 
-	/*
-	 * private List<JsonBean> findJsonBean(List<Map<String, Object>> list,
-	 * String mainBeanName, String id, Object idVal, DbBean dbBean) { if (id !=
-	 * null && idVal != null) { List<Map<String, Object>> newlist = new
-	 * LinkedList<>(); for (Map<String, Object> map : list) { mainBeanName
-	 * =T2E.toField(T2E.toColumn(mainBeanName)) ; Object thisVal =
-	 * map.get(mainBeanName + STRING.DOLLAR + id); if
-	 * (thisVal.toString().equals(idVal.toString())) { newlist.add(map); } }
-	 * list = newlist; }
-	 * 
-	 * String dbBeanName = dbBean.getBeanName(); String pkName =
-	 * dbBean.getPrimaryField(); List<JsonBean> jsonBeans = new LinkedList<>();
-	 * String str = new String(); for (Map<String, Object> map : list) {
-	 * JsonBean jsonBean = new JsonBean(); for (Entry<String, Object> en :
-	 * map.entrySet()) { String key = en.getKey(); Object val = en.getValue();
-	 * String[] strs = key.split(STRING.ESCAPE_DOLLAR); if (strs.length > 0) {
-	 * String beanName = strs[0]; String pr = strs[1];
-	 * 
-	 * if (dbBeanName.toUpperCase().equals(beanName.toUpperCase())) {
-	 * jsonBean.addField(pr, val); if
-	 * (pkName.toUpperCase().equals(pr.toUpperCase())) { jsonBean.setId(pkName);
-	 * jsonBean.setIdVal(val); } } } } if (jsonBeans.size() == 0) {
-	 * jsonBeans.add(jsonBean); str = str + jsonBean.getIdVal().toString() +
-	 * STRING.AT; } else { if (!str.contains(jsonBean.getIdVal().toString())) {
-	 * jsonBeans.add(jsonBean); str = str + jsonBean.getIdVal().toString() +
-	 * STRING.AT; } }
-	 * 
-	 * }
-	 * 
-	 * return jsonBeans;
-	 * 
-	 * }
-	 */
+	 
 
 	@SuppressWarnings("unchecked")
 	private <L, R> List<Bean<R>> findBean(List<Map<String, Object>> list, Bean<L> bean, DbBean dbBean) {

@@ -1,5 +1,9 @@
 package com.sooncode.jdbc4json.dao;
 
+ 
+
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,6 +28,7 @@ public void getStudentByStudentId(){
 	logger.info(s);
 	
 }
+ 
 @Test
 public void getStudentAndIdentity(){
 	
