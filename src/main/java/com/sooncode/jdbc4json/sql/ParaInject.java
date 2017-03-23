@@ -47,7 +47,7 @@ public class ParaInject {
 			templateSql = tm.getTemplateSql();
 			map = tm.getMap();
 			for (Map.Entry<String, Object> entry : map.entrySet()) {
-				String key = STRING.OCTOTHORPE + STRING.L_CURLY_BRACKET   + entry.getKey() +  STRING.R_CURLY_BRACKET ;
+				String key = STRING.DOLLAR + STRING.L_CURLY_BRACKET   + entry.getKey() +  STRING.R_CURLY_BRACKET ;
 				Object value = entry.getValue();
 				String newTemp = templateSql.replace(key, STRING.QUESTION);
 				if(!newTemp.equals(templateSql)){
@@ -81,7 +81,7 @@ public class ParaInject {
 			templateSql = tm.getTemplateSql();
 			map = tm.getMap();
 			for (Map.Entry<String, Object> entry : map.entrySet()) {
-				String key =STRING.OCTOTHORPE + STRING.L_CURLY_BRACKET+ entry.getKey()+STRING.R_CURLY_BRACKET;
+				String key =STRING.DOLLAR + STRING.L_CURLY_BRACKET+ entry.getKey()+STRING.R_CURLY_BRACKET;
 				Object value = entry.getValue();
 				String newTemp = templateSql.replace(key, STRING.QUESTION);
 				if(!newTemp.equals(templateSql)){
@@ -103,8 +103,9 @@ public class ParaInject {
 		Map<Integer,String> tempMap = new TreeMap<>();
 		for(Entry<String, Object>en : map.entrySet()){
 			
-			templateSql = templateSql .replace( STRING.DOLLAR + STRING.L_CURLY_BRACKET+en.getKey()+STRING.R_CURLY_BRACKET, en.getValue().toString());
-			String key = STRING.OCTOTHORPE + STRING.L_CURLY_BRACKET+en.getKey()+STRING.R_CURLY_BRACKET;
+			//templateSql = templateSql .replace( STRING.DOLLAR + STRING.L_CURLY_BRACKET+en.getKey()+STRING.R_CURLY_BRACKET, en.getValue().toString());
+			templateSql = templateSql .replace( STRING.OCTOTHORPE + STRING.L_CURLY_BRACKET+en.getKey()+STRING.R_CURLY_BRACKET, en.getValue().toString());
+			String key = STRING.DOLLAR + STRING.L_CURLY_BRACKET+en.getKey()+STRING.R_CURLY_BRACKET;
 			int index = sb.indexOf(key);
 			if(index!=-1){
 				tempMap.put(index,en.getKey());

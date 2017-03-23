@@ -15,13 +15,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import com.sooncode.jdbc4json.bean.DbBean;
 import com.sooncode.jdbc4json.bean.DbBeanCache;
@@ -122,6 +120,7 @@ public class Jdbc {
 			return new LinkedList<>();
 		}
         logger.debug("【SQL】"+parameter.getFormatSql());
+        logger.debug("【参数】"+parameter.getParams());
 		return jdbcTemplate.execute(new ConnectionCallback<List<Map<String, Object>>>() {
 
 			@Override
@@ -149,10 +148,9 @@ public class Jdbc {
 	}
 
 	/**
-	 * 执行查询语句 (只有一条返回记录)。 可防止SQL注入，推荐使用。
-	 * 
-	 * @param sql可执行SQL
-	 * @return map 记录数量不为1时返回空Map.
+	 * 执行查询语句 (只有一条返回记录)。
+	 * @param parameter
+	 * @return
 	 */
 	public Map<String, Object> get(Parameter parameter) {
 		 
@@ -196,7 +194,7 @@ public class Jdbc {
 		
 		
 	}
-
+ 
 	 
 	private Long getUpdateResult(Connection con, Parameter p) {
 

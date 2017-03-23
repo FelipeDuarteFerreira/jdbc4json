@@ -4,9 +4,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.sooncode.jdbc4json.bean.JsonBean;
 import com.sooncode.jdbc4json.dao.JdbcDao;
-import com.sooncode.jdbc4json.dao.JdbcDaoFactory;
 import com.sooncode.jdbc4json.page.Page;
 import com.sooncode.jdbc4json.sql.condition.Conditions;
 
@@ -16,7 +14,7 @@ import com.sooncode.jdbc4json.sql.condition.Conditions;
  * @author pc
  * 
  */
-public class JdbcService implements JdbcServiceInterface {
+public class JdbcService   {
 
 	public final static Logger logger = Logger.getLogger("JdbcDao.class");
 
@@ -25,43 +23,20 @@ public class JdbcService implements JdbcServiceInterface {
 	 */
 	private JdbcDao jdbcDao;
 
-	JdbcService() {
-		jdbcDao = JdbcDaoFactory.getJdbcDao();
+	 
+
+	public JdbcDao getJdbcDao() {
+		return jdbcDao;
 	}
 
-	JdbcService(String dbKey) {
-		jdbcDao = JdbcDaoFactory.getJdbcDao(dbKey);
+	public void setJdbcDao(JdbcDao jdbcDao) {
+		this.jdbcDao = jdbcDao;
 	}
 
 	public Page getPage(long pageNum, long pageSize, Conditions conditions) {
 		return jdbcDao.getPage(pageNum, pageSize, conditions);
 	}
-
-	public long save(JsonBean jsonBean) {
-		return jdbcDao.save(jsonBean);
-
-	}
-
-	public long saveOrUpdate(JsonBean jsonBean) {
-		return jdbcDao.saveOrUpdate(jsonBean);
-
-	}
-
-	public long update(JsonBean jsonBean) {
-		return jdbcDao.update(jsonBean);
-
-	}
-
-	public long delete(JsonBean jsonBean) {
-		return jdbcDao.delete(jsonBean);
-
-	}
-
-	public List<JsonBean> gets(Conditions conditions) {
-
-		return jdbcDao.gets(conditions);
-	}
-
+ 
 	public <T> long save(T javaBean) {
 		return jdbcDao.save(javaBean);
 	}
@@ -84,10 +59,6 @@ public class JdbcService implements JdbcServiceInterface {
 
 	public <T> List<T> gets(T javaBean) {
 		return jdbcDao.gets(javaBean);
-	}
-
-	public long count(String key, JsonBean jsonBean) {
-		return jdbcDao.count(key, jsonBean);
 	}
 
 	public <T> long count(String key, T javaBean) {

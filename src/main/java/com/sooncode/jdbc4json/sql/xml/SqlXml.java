@@ -11,19 +11,17 @@ import java.util.regex.Pattern;
 import com.sooncode.jdbc4json.constant.STRING;
 import com.sooncode.jdbc4json.sql.ParaInject;
 import com.sooncode.jdbc4json.sql.Parameter;
+import com.sooncode.util.PathUtil;
 
-//import org.apache.log4j.Logger;
- 
 
 
 /**
- * 读取Xml文件
+ * 读取Xml文件中的SQL
  * 
  * @author pc
  *
  */
 public class SqlXml {
-	//private static Logger logger = Logger.getLogger("SqlXml.class");
 	/**
 	 * xml 文件名
 	 */
@@ -32,10 +30,15 @@ public class SqlXml {
 	
     /**
      * 
-     * @param xmlName xml文件的全路径名称
+     * @param xmlName 如： com/sooncode/jdbc4json/dao/studentDao.xml
      */
 	public SqlXml(String xmlName) {
-		this.xmlName = xmlName;
+		String[] str = xmlName.split("/");
+		String s = new String();
+		for (String string : str) {
+			s = s + string + File.separatorChar;
+		}
+		this.xmlName = PathUtil.getClassPath()+ s;
 	}
 
 	/**
@@ -64,7 +67,7 @@ public class SqlXml {
 	 * @param obs 参数载体(注入sql中的对象集 (可选) 或者一个Map对象)
 	 * @return 参数模型 
 	 */
-	public Parameter getSql(String id,Object...obs) {
+	public Parameter getParameter(String id,Object...obs) {
 		String xml =  readFile(this.xmlName);
 		ParaXml paraXml = new ParaXml(xml);
 		String sql = paraXml.getValue(id);
@@ -85,14 +88,14 @@ public class SqlXml {
 	 * @param obs 参数载体(注入sql中的对象集 (可选) 或者一个Map对象)
 	 * @return 参数模型 
 	 */
-	public static Parameter getSql2(String readySql,Object...obs) {
+	public  Parameter getParameter(StringBuffer readySql,Object...obs) {
 		if(obs.length>0){
-			Parameter p = ParaInject.getParameter(readySql, obs);
+			Parameter p = ParaInject.getParameter(readySql.toString(), obs);
 			p.setReadySql(compressString(p.getReadySql()));
 			return 	p;		
 		}else{
 			Parameter p = new Parameter();
-			p.setReadySql(readySql);
+			p.setReadySql(readySql.toString());
 			return p;
 		}
 	}

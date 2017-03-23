@@ -8,7 +8,7 @@ import com.sooncode.jdbc4json.constant.STRING;
 import com.sooncode.jdbc4json.exception.sql.SqlException;
 
 /**
- * 参数模型
+ * 预编译SQL和参数 模型
  * 
  * @author pc
  *
