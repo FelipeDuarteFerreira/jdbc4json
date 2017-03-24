@@ -1,4 +1,4 @@
-package com.sooncode.jdbc4json.sql;
+package com.sooncode.soonjdbc.sql;
 
 import java.util.List;
 import java.util.Map;

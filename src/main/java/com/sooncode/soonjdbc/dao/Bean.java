@@ -1,4 +1,4 @@
-package com.sooncode.jdbc4json.dao;
+package com.sooncode.soonjdbc.dao;
 
  
 

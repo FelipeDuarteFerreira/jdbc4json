@@ -1,4 +1,4 @@
-package com.sooncode.jdbc4json.sql;
+package com.sooncode.soonjdbc.sql;
 
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -6,13 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.sooncode.jdbc4json.bean.DbBean;
-import com.sooncode.jdbc4json.constant.CLASS_NAME;
-import com.sooncode.jdbc4json.constant.DATE_FORMAT;
-import com.sooncode.jdbc4json.constant.SQL_KEY;
-import com.sooncode.jdbc4json.constant.STRING;
- 
-import com.sooncode.jdbc4json.util.T2E;
+import com.sooncode.soonjdbc.bean.DbBean;
+import com.sooncode.soonjdbc.constant.CLASS_NAME;
+import com.sooncode.soonjdbc.constant.DATE_FORMAT;
+import com.sooncode.soonjdbc.constant.SQL_KEY;
+import com.sooncode.soonjdbc.constant.STRING;
+import com.sooncode.soonjdbc.util.T2E;
 
 /**
  * 通用SQL语句构造

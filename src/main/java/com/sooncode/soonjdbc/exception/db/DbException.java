@@ -1,4 +1,4 @@
-package com.sooncode.jdbc4json.exception.db;
+package com.sooncode.soonjdbc.exception.db;
 
 public class DbException  extends Exception{
  

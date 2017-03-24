@@ -1,4 +1,4 @@
-package com.sooncode.jdbc4json.constant;
+package com.sooncode.soonjdbc.constant;
 /**
  * SQL 语句的关键字 
  * @author he chen 

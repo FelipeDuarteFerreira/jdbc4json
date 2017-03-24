@@ -1,4 +1,4 @@
-package com.sooncode.jdbc4json.util;
+package com.sooncode.soonjdbc.util;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;

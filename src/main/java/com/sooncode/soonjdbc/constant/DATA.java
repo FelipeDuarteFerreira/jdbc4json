@@ -1,4 +1,4 @@
-package com.sooncode.jdbc4json.constant;
+package com.sooncode.soonjdbc.constant;
 /**
  * 数据库配置相关常量
  * @author he chen

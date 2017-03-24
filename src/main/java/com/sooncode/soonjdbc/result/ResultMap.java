@@ -1,11 +1,11 @@
-package com.sooncode.jdbc4json.result;
+package com.sooncode.soonjdbc.result;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.sooncode.jdbc4json.constant.STRING;
-import com.sooncode.jdbc4json.util.T2E;
+import com.sooncode.soonjdbc.constant.STRING;
+import com.sooncode.soonjdbc.util.T2E;
 
 /**
  * 查询返回结果集

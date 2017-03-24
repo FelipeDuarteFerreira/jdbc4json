@@ -1,6 +1,6 @@
-package com.sooncode.jdbc4json.sql.verification;
+package com.sooncode.soonjdbc.sql.verification;
 
-import com.sooncode.jdbc4json.constant.STRING;
+import com.sooncode.soonjdbc.constant.STRING;
 
 /**
  * SQL 验证

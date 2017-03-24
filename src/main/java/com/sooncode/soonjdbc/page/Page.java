@@ -1,4 +1,4 @@
-package com.sooncode.jdbc4json.page;
+package com.sooncode.soonjdbc.page;
 
 import java.util.LinkedList;
 import java.util.List;

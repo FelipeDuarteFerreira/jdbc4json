@@ -1,10 +1,13 @@
-package com.sooncode.jdbc4json.json;
+package com.sooncode.soonjdbc.json;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+
+import com.sooncode.soonjdbc.json.SJson;
+import com.sooncode.soonjdbc.json.SJsons;
 
 public class SJsons__Test {
 	private static Logger logger = Logger.getLogger("SJsons__Test.class");

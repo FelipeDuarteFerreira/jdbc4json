@@ -1,7 +1,7 @@
-package com.sooncode.jdbc4json.sql.condition;
+package com.sooncode.soonjdbc.sql.condition;
 
-import com.sooncode.jdbc4json.constant.STRING;
-import com.sooncode.jdbc4json.util.T2E;
+import com.sooncode.soonjdbc.constant.STRING;
+import com.sooncode.soonjdbc.util.T2E;
 
 /**
  * 排序模型

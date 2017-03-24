@@ -1,12 +1,13 @@
-package com.sooncode.jdbc4json.sql;
+package com.sooncode.soonjdbc.sql;
  
 import org.apache.log4j.Logger;
 
-import com.sooncode.jdbc4json.sql.condition.And;
-import com.sooncode.jdbc4json.sql.condition.Cond;
-import com.sooncode.jdbc4json.sql.condition.Or;
-import com.sooncode.jdbc4json.sql.condition.sign.EqualSign;
-import com.sooncode.jdbc4json.sql.condition.sign.LikeSign;
+import com.sooncode.soonjdbc.sql.Parameter;
+import com.sooncode.soonjdbc.sql.condition.And;
+import com.sooncode.soonjdbc.sql.condition.Cond;
+import com.sooncode.soonjdbc.sql.condition.Or;
+import com.sooncode.soonjdbc.sql.condition.sign.EqualSign;
+import com.sooncode.soonjdbc.sql.condition.sign.LikeSign;
  
 
 public class Cond_Test{

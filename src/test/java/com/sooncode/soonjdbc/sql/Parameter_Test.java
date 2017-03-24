@@ -1,10 +1,12 @@
-package com.sooncode.jdbc4json.sql;
+package com.sooncode.soonjdbc.sql;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+
+import com.sooncode.soonjdbc.sql.Parameter;
 
 /**
  * 参数模型

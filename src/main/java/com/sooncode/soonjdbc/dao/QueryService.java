@@ -1,4 +1,4 @@
-package com.sooncode.jdbc4json.dao;
+package com.sooncode.soonjdbc.dao;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -6,24 +6,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.sooncode.jdbc4json.Jdbc;
-import com.sooncode.jdbc4json.bean.DbBean;
-import com.sooncode.jdbc4json.bean.ForeignKey;
-import com.sooncode.jdbc4json.bean.JsonBean;
-import com.sooncode.jdbc4json.constant.SQL_KEY;
-import com.sooncode.jdbc4json.constant.STRING;
-import com.sooncode.jdbc4json.page.Many2Many;
-import com.sooncode.jdbc4json.page.One2Many;
-import com.sooncode.jdbc4json.page.One2Many2Many;
-import com.sooncode.jdbc4json.page.One2One;
-import com.sooncode.jdbc4json.page.One2One;
-import com.sooncode.jdbc4json.page.Page;
-import com.sooncode.jdbc4json.reflect.RObject;
-import com.sooncode.jdbc4json.sql.ComSQL;
-import com.sooncode.jdbc4json.sql.Parameter;
-import com.sooncode.jdbc4json.sql.TableRelationAnalyze;
-import com.sooncode.jdbc4json.sql.condition.Conditions;
-import com.sooncode.jdbc4json.util.T2E;
+import com.sooncode.soonjdbc.Jdbc;
+import com.sooncode.soonjdbc.bean.DbBean;
+import com.sooncode.soonjdbc.bean.ForeignKey;
+import com.sooncode.soonjdbc.bean.JsonBean;
+import com.sooncode.soonjdbc.constant.SQL_KEY;
+import com.sooncode.soonjdbc.constant.STRING;
+import com.sooncode.soonjdbc.page.Many2Many;
+import com.sooncode.soonjdbc.page.One2Many;
+import com.sooncode.soonjdbc.page.One2Many2Many;
+import com.sooncode.soonjdbc.page.One2One;
+import com.sooncode.soonjdbc.page.Page;
+import com.sooncode.soonjdbc.reflect.RObject;
+import com.sooncode.soonjdbc.sql.ComSQL;
+import com.sooncode.soonjdbc.sql.Parameter;
+import com.sooncode.soonjdbc.sql.TableRelationAnalyze;
+import com.sooncode.soonjdbc.sql.condition.Conditions;
+import com.sooncode.soonjdbc.util.T2E;
 
 class QueryService {
 	/**

@@ -1,4 +1,4 @@
-package com.sooncode.jdbc4json.exception.sql;
+package com.sooncode.soonjdbc.exception.sql;
 /**
  * SQL 语句异常
  * @author pc

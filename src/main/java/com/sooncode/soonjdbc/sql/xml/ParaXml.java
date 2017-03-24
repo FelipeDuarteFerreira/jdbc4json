@@ -1,4 +1,4 @@
-package com.sooncode.jdbc4json.sql.xml;
+package com.sooncode.soonjdbc.sql.xml;
 
 import java.io.IOException;
 import java.io.StringReader;

@@ -1,4 +1,4 @@
-package com.sooncode.jdbc4json.sql.condition;
+package com.sooncode.soonjdbc.sql.condition;
 
 public enum Sort {
 	/**降序*/

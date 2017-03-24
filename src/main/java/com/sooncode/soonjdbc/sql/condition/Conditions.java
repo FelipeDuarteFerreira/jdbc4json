@@ -1,18 +1,19 @@
-package com.sooncode.jdbc4json.sql.condition;
+package com.sooncode.soonjdbc.sql.condition;
 
 import java.util.HashMap;
 
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 
-import com.sooncode.jdbc4json.bean.JsonBean;
-import com.sooncode.jdbc4json.constant.SQL_KEY;
-import com.sooncode.jdbc4json.constant.STRING;
-import com.sooncode.jdbc4json.sql.Parameter;
-import com.sooncode.jdbc4json.sql.condition.sign.LikeSign;
-import com.sooncode.jdbc4json.sql.condition.sign.Sign;
-import com.sooncode.jdbc4json.util.T2E;
+import com.sooncode.soonjdbc.bean.JsonBean;
+import com.sooncode.soonjdbc.constant.SQL_KEY;
+import com.sooncode.soonjdbc.constant.STRING;
+import com.sooncode.soonjdbc.sql.Parameter;
+import com.sooncode.soonjdbc.sql.condition.sign.LikeSign;
+import com.sooncode.soonjdbc.sql.condition.sign.Sign;
+import com.sooncode.soonjdbc.util.T2E;
+
+import java.util.TreeMap;
 
 /**
  * 查询条件构造器

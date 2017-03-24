@@ -1,4 +1,4 @@
-package com.sooncode.jdbc4json.reflect;
+package com.sooncode.soonjdbc.reflect;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;

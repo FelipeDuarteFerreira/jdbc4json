@@ -1,9 +1,9 @@
-package com.sooncode.jdbc4json.sql;
+package com.sooncode.soonjdbc.sql;
 
 import java.util.List;
 
-import com.sooncode.jdbc4json.bean.DbBean;
-import com.sooncode.jdbc4json.bean.ForeignKey;
+import com.sooncode.soonjdbc.bean.DbBean;
+import com.sooncode.soonjdbc.bean.ForeignKey;
 
 /**
  * 数据库 表关系 分析

@@ -1,4 +1,4 @@
-package com.sooncode.jdbc4json.sql.xml;
+package com.sooncode.soonjdbc.sql.xml;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,9 +8,9 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.sooncode.jdbc4json.constant.STRING;
-import com.sooncode.jdbc4json.sql.ParaInject;
-import com.sooncode.jdbc4json.sql.Parameter;
+import com.sooncode.soonjdbc.constant.STRING;
+import com.sooncode.soonjdbc.sql.ParaInject;
+import com.sooncode.soonjdbc.sql.Parameter;
 import com.sooncode.util.PathUtil;
 
 

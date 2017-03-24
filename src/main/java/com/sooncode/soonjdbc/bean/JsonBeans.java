@@ -1,10 +1,10 @@
-package com.sooncode.jdbc4json.bean;
+package com.sooncode.soonjdbc.bean;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.sooncode.jdbc4json.json.SJson;
+import com.sooncode.soonjdbc.json.SJson;
 
 import net.sf.json.JSONArray;
 

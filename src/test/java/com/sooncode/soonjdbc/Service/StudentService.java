@@ -1,11 +1,11 @@
-package com.sooncode.jdbc4json.Service;
+package com.sooncode.soonjdbc.Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sooncode.jdbc4json.dao.JdbcDao;
-import com.sooncode.jdbc4json.entity.Student;
+import com.sooncode.soonjdbc.dao.JdbcDao;
+import com.sooncode.soonjdbc.entity.Student;
 @Service
 public class StudentService {
     @Autowired

@@ -1,13 +1,13 @@
-package  com.sooncode.jdbc4json;
+package  com.sooncode.soonjdbc;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.sooncode.jdbc4json.entity.Clazz;
-import com.sooncode.jdbc4json.entity.Student;
-import com.sooncode.jdbc4json.page.One2One;
+import com.sooncode.soonjdbc.entity.Clazz;
+import com.sooncode.soonjdbc.entity.Student;
+import com.sooncode.soonjdbc.page.One2One;
 
  
 /**

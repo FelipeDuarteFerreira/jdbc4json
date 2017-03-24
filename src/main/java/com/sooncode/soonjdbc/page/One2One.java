@@ -1,4 +1,4 @@
-package com.sooncode.jdbc4json.page;
+package com.sooncode.soonjdbc.page;
 
 import java.util.HashMap;
 import java.util.Map;

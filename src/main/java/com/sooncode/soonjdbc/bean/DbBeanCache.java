@@ -1,4 +1,4 @@
-package com.sooncode.jdbc4json.bean;
+package com.sooncode.soonjdbc.bean;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.sooncode.jdbc4json.constant.STRING;
-import com.sooncode.jdbc4json.reflect.RObject;
-import com.sooncode.jdbc4json.util.T2E;
+import com.sooncode.soonjdbc.constant.STRING;
+import com.sooncode.soonjdbc.reflect.RObject;
+import com.sooncode.soonjdbc.util.T2E;
 
 public class DbBeanCache {
     

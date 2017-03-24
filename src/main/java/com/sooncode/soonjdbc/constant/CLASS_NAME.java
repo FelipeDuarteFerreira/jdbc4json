@@ -1,4 +1,4 @@
-package com.sooncode.jdbc4json.constant;
+package com.sooncode.soonjdbc.constant;
 
 public class CLASS_NAME {
 	/**

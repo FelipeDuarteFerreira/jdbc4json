@@ -1,12 +1,12 @@
-package com.sooncode.jdbc4json.service;
+package com.sooncode.soonjdbc.service;
 
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.sooncode.jdbc4json.dao.JdbcDao;
-import com.sooncode.jdbc4json.page.Page;
-import com.sooncode.jdbc4json.sql.condition.Conditions;
+import com.sooncode.soonjdbc.dao.JdbcDao;
+import com.sooncode.soonjdbc.page.Page;
+import com.sooncode.soonjdbc.sql.condition.Conditions;
 
 /**
  * Jdbc Dao 服务

@@ -1,11 +1,11 @@
-package com.sooncode.jdbc4json.sql.condition;
+package com.sooncode.soonjdbc.sql.condition;
  
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sooncode.jdbc4json.constant.SQL_KEY;
-import com.sooncode.jdbc4json.constant.STRING;
-import com.sooncode.jdbc4json.sql.Parameter;
+import com.sooncode.soonjdbc.constant.SQL_KEY;
+import com.sooncode.soonjdbc.constant.STRING;
+import com.sooncode.soonjdbc.sql.Parameter;
  
 
 public class And extends Cond{

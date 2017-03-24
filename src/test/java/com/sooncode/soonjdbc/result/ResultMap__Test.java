@@ -1,10 +1,12 @@
-package com.sooncode.jdbc4json.result;
+package com.sooncode.soonjdbc.result;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+
+import com.sooncode.soonjdbc.result.ResultMap;
 
 public class ResultMap__Test {
 	private static Logger logger = Logger.getLogger("ResultMap__Test.class");

@@ -1,4 +1,4 @@
-package com.sooncode.jdbc4json.json;
+package com.sooncode.soonjdbc.json;
 
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.sooncode.jdbc4json.constant.DATE_FORMAT;
-import com.sooncode.jdbc4json.constant.STRING;
+import com.sooncode.soonjdbc.constant.DATE_FORMAT;
+import com.sooncode.soonjdbc.constant.STRING;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;

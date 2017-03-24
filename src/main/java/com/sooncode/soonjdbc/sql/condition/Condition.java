@@ -1,4 +1,4 @@
-package com.sooncode.jdbc4json.sql.condition;
+package com.sooncode.soonjdbc.sql.condition;
 /**
  * 查询条件 最小单位
  * @author pc

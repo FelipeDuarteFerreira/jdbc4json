@@ -1,10 +1,9 @@
-package com.sooncode.jdbc4json.util;
+package com.sooncode.soonjdbc.util;
 
 import java.util.HashMap;
 import java.util.Map;
 
-
-import com.sooncode.jdbc4json.constant.STRING;
+import com.sooncode.soonjdbc.constant.STRING;
 
  
 

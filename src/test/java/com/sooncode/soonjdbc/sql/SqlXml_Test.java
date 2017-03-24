@@ -1,9 +1,9 @@
-package com.sooncode.jdbc4json.sql;
+package com.sooncode.soonjdbc.sql;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
-import com.sooncode.jdbc4json.sql.xml.SqlXml;
+import com.sooncode.soonjdbc.sql.xml.SqlXml;
 import com.sooncode.util.PathUtil;
 
  

@@ -1,4 +1,4 @@
-package com.sooncode.jdbc4json.sql;
+package com.sooncode.soonjdbc.sql;
 
 import java.lang.reflect.Field;
 import java.util.AbstractMap;
@@ -11,7 +11,7 @@ import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
-import com.sooncode.jdbc4json.constant.STRING;
+import com.sooncode.soonjdbc.constant.STRING;
  
 /**
  * SQL中的参数注入

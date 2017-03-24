@@ -1,10 +1,10 @@
-package com.sooncode.jdbc4json.controller;
+package com.sooncode.soonjdbc.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import com.sooncode.jdbc4json.entity.Student;
-import com.sooncode.jdbc4json.service.JdbcService;
+import com.sooncode.soonjdbc.entity.Student;
+import com.sooncode.soonjdbc.service.JdbcService;
 
 @Controller
 public class StudentController {

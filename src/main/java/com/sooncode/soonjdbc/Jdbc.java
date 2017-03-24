@@ -1,4 +1,4 @@
-package com.sooncode.jdbc4json;
+package com.sooncode.soonjdbc;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -21,14 +21,14 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import com.sooncode.jdbc4json.bean.DbBean;
-import com.sooncode.jdbc4json.bean.DbBeanCache;
-import com.sooncode.jdbc4json.bean.JsonBean;
-import com.sooncode.jdbc4json.constant.DATE_FORMAT;
-import com.sooncode.jdbc4json.reflect.RObject;
-import com.sooncode.jdbc4json.sql.Parameter;
-import com.sooncode.jdbc4json.sql.verification.SqlVerification;
-import com.sooncode.jdbc4json.util.T2E;
+import com.sooncode.soonjdbc.bean.DbBean;
+import com.sooncode.soonjdbc.bean.DbBeanCache;
+import com.sooncode.soonjdbc.bean.JsonBean;
+import com.sooncode.soonjdbc.constant.DATE_FORMAT;
+import com.sooncode.soonjdbc.reflect.RObject;
+import com.sooncode.soonjdbc.sql.Parameter;
+import com.sooncode.soonjdbc.sql.verification.SqlVerification;
+import com.sooncode.soonjdbc.util.T2E;
 
 /**
  * 执行SQL语句核心类

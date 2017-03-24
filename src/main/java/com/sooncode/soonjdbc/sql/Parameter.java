@@ -1,11 +1,11 @@
-package com.sooncode.jdbc4json.sql;
+package com.sooncode.soonjdbc.sql;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sooncode.jdbc4json.constant.SQL_KEY;
-import com.sooncode.jdbc4json.constant.STRING;
-import com.sooncode.jdbc4json.exception.sql.SqlException;
+import com.sooncode.soonjdbc.constant.SQL_KEY;
+import com.sooncode.soonjdbc.constant.STRING;
+import com.sooncode.soonjdbc.exception.sql.SqlException;
 
 /**
  * 预编译SQL和参数 模型

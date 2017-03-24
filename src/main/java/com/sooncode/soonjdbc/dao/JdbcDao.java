@@ -1,4 +1,4 @@
-package com.sooncode.jdbc4json.dao;
+package com.sooncode.soonjdbc.dao;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -7,15 +7,15 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
-import com.sooncode.jdbc4json.Jdbc;
-import com.sooncode.jdbc4json.bean.DbBean;
-import com.sooncode.jdbc4json.constant.SQL_KEY;
-import com.sooncode.jdbc4json.page.Page;
-import com.sooncode.jdbc4json.reflect.RObject;
-import com.sooncode.jdbc4json.sql.ComSQL;
-import com.sooncode.jdbc4json.sql.Parameter;
-import com.sooncode.jdbc4json.sql.condition.Conditions;
-import com.sooncode.jdbc4json.util.T2E;
+import com.sooncode.soonjdbc.Jdbc;
+import com.sooncode.soonjdbc.bean.DbBean;
+import com.sooncode.soonjdbc.constant.SQL_KEY;
+import com.sooncode.soonjdbc.page.Page;
+import com.sooncode.soonjdbc.reflect.RObject;
+import com.sooncode.soonjdbc.sql.ComSQL;
+import com.sooncode.soonjdbc.sql.Parameter;
+import com.sooncode.soonjdbc.sql.condition.Conditions;
+import com.sooncode.soonjdbc.util.T2E;
 
 /**
  * Jdbc Dao 服务

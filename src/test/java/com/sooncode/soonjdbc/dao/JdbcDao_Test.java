@@ -1,4 +1,4 @@
-package com.sooncode.jdbc4json.dao;
+package com.sooncode.soonjdbc.dao;
 
 import java.util.List;
 
@@ -10,22 +10,22 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sooncode.jdbc4json.entity.ChooseCourse;
-import com.sooncode.jdbc4json.entity.Clazz;
-import com.sooncode.jdbc4json.entity.Course;
-import com.sooncode.jdbc4json.entity.Friend;
-import com.sooncode.jdbc4json.entity.Identity;
-import com.sooncode.jdbc4json.entity.School;
-import com.sooncode.jdbc4json.entity.Student;
-import com.sooncode.jdbc4json.entity.User;
-import com.sooncode.jdbc4json.page.Many2Many;
-import com.sooncode.jdbc4json.page.One2Many;
-import com.sooncode.jdbc4json.page.One2Many2Many;
-import com.sooncode.jdbc4json.page.One2One;
-import com.sooncode.jdbc4json.page.One2One;
-import com.sooncode.jdbc4json.page.Page;
-import com.sooncode.jdbc4json.sql.condition.Conditions;
-import com.sooncode.jdbc4json.sql.condition.sign.LikeSign;
+import com.sooncode.soonjdbc.dao.JdbcDao;
+import com.sooncode.soonjdbc.entity.ChooseCourse;
+import com.sooncode.soonjdbc.entity.Clazz;
+import com.sooncode.soonjdbc.entity.Course;
+import com.sooncode.soonjdbc.entity.Friend;
+import com.sooncode.soonjdbc.entity.Identity;
+import com.sooncode.soonjdbc.entity.School;
+import com.sooncode.soonjdbc.entity.Student;
+import com.sooncode.soonjdbc.entity.User;
+import com.sooncode.soonjdbc.page.Many2Many;
+import com.sooncode.soonjdbc.page.One2Many;
+import com.sooncode.soonjdbc.page.One2Many2Many;
+import com.sooncode.soonjdbc.page.One2One;
+import com.sooncode.soonjdbc.page.Page;
+import com.sooncode.soonjdbc.sql.condition.Conditions;
+import com.sooncode.soonjdbc.sql.condition.sign.LikeSign;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/applicationContext.xml")
@@ -43,7 +43,7 @@ public class JdbcDao_Test {
 		dao.save(u);
 		
 		Student s = new Student();
-		s.setStudentId("374928393874");
+		s.setStudentId("374928393875");
 		s.setName("fjsldkjflsdkfj");
 		dao.save(s);
 	}

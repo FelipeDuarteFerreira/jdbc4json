@@ -1,4 +1,4 @@
-package com.sooncode.jdbc4json.entity;
+package com.sooncode.soonjdbc.entity;
 
 import java.io.Serializable;
 /**

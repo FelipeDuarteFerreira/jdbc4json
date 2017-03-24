@@ -1,8 +1,9 @@
-package com.sooncode.jdbc4json.dao;
+package com.sooncode.soonjdbc.dao;
 import java.util.List;
-import com.sooncode.jdbc4json.bean.JsonBean;
-import com.sooncode.jdbc4json.page.Page;
-import com.sooncode.jdbc4json.sql.condition.Conditions;
+
+import com.sooncode.soonjdbc.bean.JsonBean;
+import com.sooncode.soonjdbc.page.Page;
+import com.sooncode.soonjdbc.sql.condition.Conditions;
 
 /**
  * Jdbc Dao 服务接口

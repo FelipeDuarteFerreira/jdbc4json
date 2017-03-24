@@ -1,4 +1,4 @@
-package com.sooncode.jdbc4json.sql.condition.sign;
+package com.sooncode.soonjdbc.sql.condition.sign;
 
 /**
  * 时间格式

@@ -1,4 +1,4 @@
-package com.sooncode.jdbc4json.constant;
+package com.sooncode.soonjdbc.constant;
 /**
  * 字符串常量
  * @author pc

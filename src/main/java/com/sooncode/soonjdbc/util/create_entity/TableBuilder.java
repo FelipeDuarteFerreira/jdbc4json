@@ -1,4 +1,4 @@
-package com.sooncode.jdbc4json.util.create_entity;
+package com.sooncode.soonjdbc.util.create_entity;
 
  
 import java.sql.Connection;
@@ -10,9 +10,10 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 
-import com.sooncode.jdbc4json.util.T2E;
+import com.sooncode.soonjdbc.util.T2E;
+
+import java.util.Properties;
 
 
  

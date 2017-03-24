@@ -1,4 +1,4 @@
-package com.sooncode.jdbc4json;
+package com.sooncode.soonjdbc;
 
 import java.util.List;
 import java.util.Map;
@@ -6,7 +6,8 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
-import com.sooncode.jdbc4json.sql.Parameter;
+import com.sooncode.soonjdbc.Jdbc;
+import com.sooncode.soonjdbc.sql.Parameter;
 
 public class Jdbc_Test {
 	private static Logger logger = Logger.getLogger("Jdbc_Test.class");

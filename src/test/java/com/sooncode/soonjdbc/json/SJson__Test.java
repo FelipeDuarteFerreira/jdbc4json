@@ -1,4 +1,4 @@
-package com.sooncode.jdbc4json.json;
+package com.sooncode.soonjdbc.json;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +8,8 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+
+import com.sooncode.soonjdbc.json.SJson;
 
 public class SJson__Test {
 	private static Logger logger = Logger.getLogger("SJson__Test.class");

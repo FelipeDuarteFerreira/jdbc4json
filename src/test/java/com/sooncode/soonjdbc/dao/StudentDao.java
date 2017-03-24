@@ -1,16 +1,16 @@
-package com.sooncode.jdbc4json.dao;
+package com.sooncode.soonjdbc.dao;
 
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.sooncode.jdbc4json.Jdbc;
-import com.sooncode.jdbc4json.Entity;
-import com.sooncode.jdbc4json.entity.Identity;
-import com.sooncode.jdbc4json.entity.Student;
-import com.sooncode.jdbc4json.sql.Parameter;
-import com.sooncode.jdbc4json.sql.xml.SqlXml;
+import com.sooncode.soonjdbc.Entity;
+import com.sooncode.soonjdbc.Jdbc;
+import com.sooncode.soonjdbc.entity.Identity;
+import com.sooncode.soonjdbc.entity.Student;
+import com.sooncode.soonjdbc.sql.Parameter;
+import com.sooncode.soonjdbc.sql.xml.SqlXml;
 
 @Repository
 public class StudentDao {
