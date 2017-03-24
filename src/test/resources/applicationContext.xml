@@ -29,6 +29,9 @@
 	<bean id="jdbcDao" class="com.sooncode.jdbc4json.dao.JdbcDao">
 		<property name="jdbc" ref="jdbc" />
 	</bean>
+	<bean id="jdbcService" class="com.sooncode.jdbc4json.service.JdbcService">
+		<property name="jdbcDao" ref="jdbcDao" />
+	</bean>
 
 	<!-- (事务管理)transaction manager, use JtaTransactionManager for global tx -->
 	

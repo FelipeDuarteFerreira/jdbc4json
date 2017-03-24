@@ -1,0 +1,16 @@
+<sqls>
+	<sql id="getStudentByStudentId">
+		SELECT *
+		FROM STUDENT
+		WHERE STUDENT_ID = ${studentId}
+	</sql>
+	<sql id="getStudentAndIdentity">
+		SELECT
+		STUDENT.STUDENT_ID AS STUDENT$STUDENT_ID,
+		IDENTITY.IDENTITY_NUMBER AS IDENTITY$IDENTITY_NUMBER
+		FROM STUDENT , IDENTITY
+		WHERE
+		IDENTITY.IDENTITY_ID = STUDENT.IDENTITY_ID AND
+		STUDENT.STUDENT_ID = ${studentId}
+	</sql>
+</sqls>
