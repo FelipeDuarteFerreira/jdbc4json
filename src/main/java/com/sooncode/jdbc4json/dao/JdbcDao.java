@@ -1,6 +1,5 @@
 package com.sooncode.jdbc4json.dao;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -10,18 +9,10 @@ import org.apache.log4j.Logger;
 
 import com.sooncode.jdbc4json.Jdbc;
 import com.sooncode.jdbc4json.bean.DbBean;
-import com.sooncode.jdbc4json.bean.ForeignKey;
-import com.sooncode.jdbc4json.bean.JsonBean;
 import com.sooncode.jdbc4json.constant.SQL_KEY;
-import com.sooncode.jdbc4json.constant.STRING;
-import com.sooncode.jdbc4json.page.Many2Many;
-import com.sooncode.jdbc4json.page.One2Many;
-import com.sooncode.jdbc4json.page.One2One;
 import com.sooncode.jdbc4json.page.Page;
-
 import com.sooncode.jdbc4json.reflect.RObject;
 import com.sooncode.jdbc4json.sql.ComSQL;
-import com.sooncode.jdbc4json.sql.PageData;
 import com.sooncode.jdbc4json.sql.Parameter;
 import com.sooncode.jdbc4json.sql.condition.Conditions;
 import com.sooncode.jdbc4json.util.T2E;
