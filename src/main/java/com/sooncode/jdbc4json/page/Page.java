@@ -13,7 +13,7 @@ import java.util.List;
 public class Page {
 
 	private List<Object> ones;
-	private List<One2One<?, ?>> o2os;
+	private List<One2One> o2os;
 	private List<One2Many<?, ?>> o2ms;
 	private List<Many2Many<?, ?, ?>> m2ms;
 	private List<One2Many2Many<?, ?, ?>> o2m2ms;
@@ -234,26 +234,7 @@ public class Page {
 		this.ones = (List<Object>) ones;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <L, R> List<One2One<L, R>> getOne2Ones() {
-		List<One2One<L, R>> list = new LinkedList<>();
-		if (this.o2os.size() > 0) {
-			for (One2One<?, ?> o2o : this.o2os) {
-				list.add((One2One<L, R>) o2o);
-			}
-		}
-		return list;
-	}
-
-	public <L, R> void setOne2Ones(List<One2One<L, R>> o2os) {
-		List<One2One<?, ?>> list = new LinkedList<>();
-		if (o2os.size() > 0) {
-			for (One2One<L, R> o2o : o2os) {
-				list.add(o2o);
-			}
-		}
-		this.o2os = list;
-	}
+	 
 
 	@SuppressWarnings("unchecked")
 	public <L, M, R> List<One2Many2Many<L, M, R>> getOne2Many2Manys() {
@@ -287,4 +268,14 @@ public class Page {
 		this.o2m2ms = list;
 	}
 
+	public List<One2One> getOne2One() {
+		return o2os;
+	}
+
+	public void setOne2One(List<One2One> o2os) {
+		this.o2os = o2os;
+	}
+
+	
+	
 }

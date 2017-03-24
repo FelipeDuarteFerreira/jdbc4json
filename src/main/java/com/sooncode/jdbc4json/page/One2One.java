@@ -1,35 +1,29 @@
 package com.sooncode.jdbc4json.page;
 
+import java.util.HashMap;
+import java.util.Map;
+
+
  
+public class One2One {
 
-public class One2One<L, R> {
-
-	private L left;
-	private R right;
-
-	public L getLeft() {
-		return left;
+	private Map<Class<?>  ,Object> map = new HashMap<Class<?>, Object>();
+	
+	@SuppressWarnings("unchecked")
+	public <T> T getOne (Class<T> clas){
+		 
+		return (T) map.get(clas);
 	}
-
-	public void setLeft(L left) {
-		this.left = left;
+	
+	public <T> void add(T t ){
+		
+		map.put(t.getClass(), t);
+		
 	}
-
-	public R getRight() {
-		return right;
+	
+	public int size(){
+		return map.size();
 	}
-
-	public void setRight(R right) {
-		this.right = right;
-	}
-
-	public One2One() {
-
-	}
-
-	public One2One(L left, R right) {
-		this.left = left;
-		this.right = right;
-	}
-
+	
+	
 }

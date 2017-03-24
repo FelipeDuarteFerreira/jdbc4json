@@ -16,6 +16,7 @@ import com.sooncode.jdbc4json.page.Many2Many;
 import com.sooncode.jdbc4json.page.One2Many;
 import com.sooncode.jdbc4json.page.One2Many2Many;
 import com.sooncode.jdbc4json.page.One2One;
+import com.sooncode.jdbc4json.page.One2One;
 import com.sooncode.jdbc4json.page.Page;
 import com.sooncode.jdbc4json.reflect.RObject;
 import com.sooncode.jdbc4json.sql.ComSQL;
@@ -158,7 +159,7 @@ class QueryService {
 
 	public <L, R> Page getOne2Ones(long pageNum, long pageSize, Conditions conditions, Jdbc jdbc) {
 		DbBean leftDbBean = jdbc.getDbBean(conditions.getLeftBean());
-		List<One2One<L, R>> one2ones = new LinkedList<>();
+		
 		List<DbBean> otherDbBeans = getOtherDbBeans(jdbc, conditions);
 
 		// --------------------------------------------------------------------------
@@ -202,21 +203,23 @@ class QueryService {
 		sizeP.setReadySql(sizeSql);
 		Map<String, Object> map = jdbc.get(sizeP);
 		Long size = (Long) map.get(T2E.toField(SQL_KEY.SIZE));
-
+		List<One2One> one2ones = new LinkedList<>();
 		List<Bean<L>> lBeans = findBean(list, null, leftDbBean);
 		for (Bean<L> lb : lBeans) {
+			One2One  o2o = new One2One();//<L, R>(lb.getJavaBean(), rBean.getJavaBean());
 			for (DbBean dbBean : otherDbBeans) {
 				List<Bean<R>> beans = findBean(list, lb, dbBean);
 				if (beans != null && beans.size() == 1) {
 					Bean<R> rBean = beans.get(0);
-					One2One<L, R> o2o = new One2One<L, R>(lb.getJavaBean(), rBean.getJavaBean());
-					one2ones.add(o2o);
+					o2o.add(lb.getJavaBean());
+					o2o.add(rBean.getJavaBean());
 				}
 			}
+			one2ones.add(o2o);
 		}
 
 		Page page = new Page(pageNum, pageSize, size == null ? 0L : size);
-		page.setOne2Ones(one2ones);
+		page.setOne2One (one2ones);
 		return page;
 	}
 
@@ -320,11 +323,13 @@ class QueryService {
 			Many2Many<L, M, R> many2many = new Many2Many<>();
 			many2many.setOne(lBean.getJavaBean());
 			List<Bean<M>> mBeans = findBean(list, lBean, middleDbBean);
-			List<One2One<M, R>> o2os = new LinkedList<>();
+			List<One2One> o2os = new LinkedList<>();
 			for (Bean<M> mBean : mBeans) {
 				List<Bean<R>> rBeans = findBean(list, mBean, rightDbBean);
 				if (rBeans.size() > 0) {
-					One2One<M, R> o2o = new One2One<>(mBean.getJavaBean(), rBeans.get(0).getJavaBean());
+					One2One  o2o = new One2One ();//(mBean.getJavaBean(), rBeans.get(0).getJavaBean());
+					o2o.add(mBean.getJavaBean());
+					o2o.add(rBeans.get(0).getJavaBean());
 					o2os.add(o2o);
 				}
 			}
@@ -389,11 +394,13 @@ class QueryService {
 			Many2Many<L, M, R> many2many = new Many2Many<>();
 			many2many.setOne(lBean.getJavaBean());
 			List<Bean<M>> mBeans = findBean(list, lBean, middleDbBean);
-			List<One2One<M, R>> o2os = new LinkedList<>();
+			List<One2One > o2os = new LinkedList<>();
 			for (Bean<M> mBean : mBeans) {
 				List<Bean<R>> rBeans = findBean(list, mBean, rightDbBean);
 				if (rBeans.size() > 0) {
-					One2One<M, R> o2o = new One2One<>(mBean.getJavaBean(), rBeans.get(0).getJavaBean());
+					One2One  o2o = new One2One();//<>(mBean.getJavaBean(), rBeans.get(0).getJavaBean());
+					o2o.add(mBean.getJavaBean());
+					o2o.add(rBeans.get(0).getJavaBean());
 					o2os.add(o2o);
 				}
 			}

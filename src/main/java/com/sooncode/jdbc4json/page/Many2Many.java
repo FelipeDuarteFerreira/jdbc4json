@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Many2Many<L, M, R> {
 	private L one;
-	private List<One2One<M, R>> many;
+	private List<One2One> many;
 
 	public L getOne() {
 		return one;
@@ -14,11 +14,11 @@ public class Many2Many<L, M, R> {
 		this.one = one;
 	}
 
-	public List<One2One<M, R>> getMany() {
+	public List<One2One> getMany() {
 		return many;
 	}
 
-	public void setMany(List<One2One<M, R>> many) {
+	public void setMany(List<One2One> many) {
 		this.many = many;
 	}
 

@@ -22,6 +22,7 @@ import com.sooncode.jdbc4json.page.Many2Many;
 import com.sooncode.jdbc4json.page.One2Many;
 import com.sooncode.jdbc4json.page.One2Many2Many;
 import com.sooncode.jdbc4json.page.One2One;
+import com.sooncode.jdbc4json.page.One2One;
 import com.sooncode.jdbc4json.page.Page;
 import com.sooncode.jdbc4json.sql.condition.Conditions;
 import com.sooncode.jdbc4json.sql.condition.sign.LikeSign;
@@ -150,12 +151,12 @@ public class JdbcDao_Test {
 		Conditions c = new Conditions(s,id);
 		Page  page = dao.getPage(1L, 5L, c);
 		
-		List<One2One<Student,Identity>> list =  page.getOne2Ones() ;
+		List<One2One> list =  page.getOne2One()  ;
 		
 		logger.info("---------------------------------------------------------------");
-		for (One2One<Student, Identity> one2One : list) {
-			Student st = one2One.getLeft();
-			Identity ide = one2One.getRight();
+		for (One2One  one2One : list) {
+			Student st = one2One.getOne(Student.class);
+			Identity ide = one2One.getOne(Identity.class);
 			logger.info(st + " -------" + ide);
 		}
 		logger.info("---------------------------------------------------------------");
@@ -199,19 +200,42 @@ public class JdbcDao_Test {
 	    Many2Many<Student,ChooseCourse,Course> m2m = page.getMany2Many();
 
 	    Student stu = m2m.getOne();
-	    List<One2One<ChooseCourse, Course>> list = m2m.getMany();
+	    List<One2One > list = m2m.getMany();
 	    
 	    
 		logger.info("---------------------------------------------------------------");
 		logger.info(stu);
 		logger.info("---------------------------------------------------------------");
 		
-		for (One2One<ChooseCourse, Course> o2o : list) {
-			logger.info(o2o.getLeft() + " -------" + o2o.getRight());
+		for (One2One  o2o : list) {
+			//logger.info(o2o.getLeft() + " -------" + o2o.getRight());
 			 
 		}
 		logger.info("---------------------------------------------------------------");
 		 
+	}
+	/**
+	 * 1 对1  分页
+	 */
+	@Test
+	public void getPage41() {
+		Student s = new Student();
+		s.setStudentId("001");
+		ChooseCourse cc = new ChooseCourse();
+		Course  co= new Course ();
+		Conditions c = new Conditions(cc,s,co);
+		c.setBetweenCondition("chooseCourse.score", 50, 100);
+		Page page = dao.getPage(1L, 10L, c);
+		List<One2One> list = page.getOne2One();
+		logger.info("---------------------------------------------------------------");
+		for (One2One  o2o : list) {
+			ChooseCourse choos = o2o.getOne(ChooseCourse.class);
+			Student st = o2o.getOne(Student.class);
+			Course cours = o2o.getOne(Course.class);
+			logger.info(choos + " ## " + st + " ## "+ cours);
+		}
+		logger.info("---------------------------------------------------------------");
+		
 	}
 	/**
 	 * 多对多 分页
@@ -232,11 +256,11 @@ public class JdbcDao_Test {
 		for (Many2Many<Course, ChooseCourse, Student> many2Many : m2ms) {
 			Course cou = many2Many.getOne();
 			logger.info( cou);
-			List<One2One<ChooseCourse, Student>>list = many2Many.getMany();
-			for (One2One<ChooseCourse, Student> one2One : list) {
-				ChooseCourse choo = one2One.getLeft();
-				Student stude = one2One.getRight();
-				logger.info( choo +"---" + stude);
+			List<One2One >list = many2Many.getMany();
+			for (One2One  one2One : list) {
+				//ChooseCourse choo = one2One.getLeft();
+				//Student stude = one2One.getRight();
+				//logger.info( choo +"---" + stude);
 				
 			}
 			
@@ -258,12 +282,12 @@ public class JdbcDao_Test {
 		Conditions c = new Conditions(f,u);
 		 
 		Page page = dao.getPage(1L, 10L, c);
-		List<One2One<Friend,User> > o2os = page.getOne2Ones();
+		List<One2One  > o2os = page.getOne2One();
 		logger.info("---------------------------------------------------------------");
 		 
-		for (One2One<Friend, User> o : o2os) {
-		  Friend fr =	o.getLeft();
-		  User user =	o.getRight();
+		for (One2One  o : o2os) {
+		  Friend fr =	o.getOne(Friend.class);
+		  User user =	o.getOne(User.class);
 			logger.info(fr);
 			logger.info(user);
 			
@@ -290,10 +314,10 @@ public class JdbcDao_Test {
 		for (Many2Many<Course, ChooseCourse, Student> many2Many : m2ms) {
 			Course cou = many2Many.getOne();
 			logger.info( cou);
-			List<One2One<ChooseCourse, Student>>list = many2Many.getMany();
-			for (One2One<ChooseCourse, Student> one2One : list) {
-				ChooseCourse choo = one2One.getLeft();
-				Student stude = one2One.getRight();
+			List<One2One >list = many2Many.getMany();
+			for (One2One one2One : list) {
+				ChooseCourse choo = one2One.getOne(ChooseCourse.class);
+				Student stude = one2One.getOne(Student.class);
 				logger.info( choo +"---" + stude);
 				
 			}
