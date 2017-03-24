@@ -13,11 +13,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sooncode.jdbc4json.entity.ChooseCourse;
 import com.sooncode.jdbc4json.entity.Clazz;
 import com.sooncode.jdbc4json.entity.Course;
+import com.sooncode.jdbc4json.entity.Friend;
 import com.sooncode.jdbc4json.entity.Identity;
+import com.sooncode.jdbc4json.entity.School;
 import com.sooncode.jdbc4json.entity.Student;
 import com.sooncode.jdbc4json.entity.User;
 import com.sooncode.jdbc4json.page.Many2Many;
 import com.sooncode.jdbc4json.page.One2Many;
+import com.sooncode.jdbc4json.page.One2Many2Many;
 import com.sooncode.jdbc4json.page.One2One;
 import com.sooncode.jdbc4json.page.Page;
 import com.sooncode.jdbc4json.sql.condition.Conditions;
@@ -243,6 +246,34 @@ public class JdbcDao_Test {
 		 
 		
 	}
+	/**
+	 * 多对多 分页
+	 */
+	@Test
+	public void getPage51() {
+		 
+		User u = new User();
+		Friend f = new Friend();
+		f.setMeUserId(16);
+		Conditions c = new Conditions(f,u);
+		 
+		Page page = dao.getPage(1L, 10L, c);
+		List<One2One<Friend,User> > o2os = page.getOne2Ones();
+		logger.info("---------------------------------------------------------------");
+		 
+		for (One2One<Friend, User> o : o2os) {
+		  Friend fr =	o.getLeft();
+		  User user =	o.getRight();
+			logger.info(fr);
+			logger.info(user);
+			
+		}
+		 
+		logger.info("---------------------------------------------------------------");
+		
+		
+		
+	}
 	@Test
 	public void getPage6() {
 		Student s = new Student();
@@ -264,6 +295,41 @@ public class JdbcDao_Test {
 				ChooseCourse choo = one2One.getLeft();
 				Student stude = one2One.getRight();
 				logger.info( choo +"---" + stude);
+				
+			}
+			
+		}
+		logger.info("---------------------------------------------------------------");
+		
+		
+		
+	}
+	
+	
+	@Test
+	public void getPage7() {
+		School school = new School();
+		school.setSchoolId(1);
+		Clazz clazz = new Clazz();
+		Student student = new Student();
+		 
+	 
+		Conditions c = new Conditions(school,clazz,student);
+	 
+		Page page = dao.getPage(1L, 10L, c);
+		List<One2Many2Many<School, Clazz, Student>> o2m2ms = page.getOne2Many2Manys();
+		
+		
+		logger.info("---------------------------------------------------------------");
+		for (One2Many2Many<School, Clazz, Student> o2m2m : o2m2ms) {
+			School sc = o2m2m.getOne();
+			logger.info( sc );
+			List<One2Many<Clazz, Student>>list = o2m2m.getOne2manys(); 
+			for (One2Many<Clazz, Student> o2m : list) {
+				Clazz cl = o2m.getOne();
+				List<Student> stude = o2m.getMany();
+				logger.info( cl);
+				logger.info( stude );
 				
 			}
 			

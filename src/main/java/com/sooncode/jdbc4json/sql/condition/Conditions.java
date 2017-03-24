@@ -42,10 +42,7 @@ public class Conditions {
 		 this.init(leftBean, jsonBeans);
 	}
 	
-	public Conditions(JsonBean leftBean, JsonBean... otherBeans) {
-		 
-		 this.init(leftBean, otherBeans);
-	}
+	 
 
 	
 	

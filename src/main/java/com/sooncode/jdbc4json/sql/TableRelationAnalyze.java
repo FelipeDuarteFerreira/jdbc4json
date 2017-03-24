@@ -136,4 +136,31 @@ public class TableRelationAnalyze {
 			return false;
 		}
 	}
+	/**
+	 * 分析是否是"多对多"关系
+	 * 
+	 * @param leftDbBean
+	 * @param otherBeans
+	 * @return
+	 */
+	public static boolean isOne2Many2Many(DbBean leftDbBean, DbBean middleDbBean,DbBean rightDbBean) {
+		if (leftDbBean == null || middleDbBean == null || rightDbBean == null) {
+			return false;
+		}
+		String leftDbBeanName = leftDbBean.getBeanName().toUpperCase();
+		String middleDbBeanName = middleDbBean.getBeanName().toUpperCase();
+		List<ForeignKey> mFkes = middleDbBean.getForeignKeies();
+		List<ForeignKey> rFkes = rightDbBean.getForeignKeies();
+		 
+		for (ForeignKey mf : mFkes) {
+			if(mf.getReferDbBeanName().toUpperCase().equals(leftDbBeanName)){
+				for (ForeignKey rf : rFkes) {
+					if(rf.getReferDbBeanName().toUpperCase().equals(middleDbBeanName)){
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
 }
