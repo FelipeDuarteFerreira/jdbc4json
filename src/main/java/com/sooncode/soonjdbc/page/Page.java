@@ -260,7 +260,7 @@ public class Page {
 
 	public <L, M, R> void setOne2Many2Manys(List<One2Many2Many<L, M, R>> o2m2ms) {
 		List<One2Many2Many<?, ?, ?>> list = new LinkedList<>();
-		if (this.o2m2ms.size() > 0) {
+		if (o2m2ms.size() > 0) {
 			for (One2Many2Many<L, M, R> o2m2m : o2m2ms) {
 				list.add(o2m2m);
 			}

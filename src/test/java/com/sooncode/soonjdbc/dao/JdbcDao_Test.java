@@ -258,9 +258,6 @@ public class JdbcDao_Test {
 			logger.info( cou);
 			List<One2One >list = many2Many.getMany();
 			for (One2One  one2One : list) {
-				//ChooseCourse choo = one2One.getLeft();
-				//Student stude = one2One.getRight();
-				//logger.info( choo +"---" + stude);
 				
 			}
 			

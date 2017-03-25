@@ -17,7 +17,7 @@ public class StudentController__Test {
     public void addStudent(   ){
     	Student s = new Student();
     	s.setName("sdflkdjflskd");
-    	s.setStudentId("88998999888");
+    	s.setStudentId("88998999889");
     	sc.addStudent(s); 
     	
     }
