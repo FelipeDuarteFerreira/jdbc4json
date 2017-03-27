@@ -109,12 +109,12 @@ public class Conditions {
 	/**
 	 * 设置Between条件
 	 * 
-	 * @param key
-	 *            字段
-	 * @param start
-	 *            下线值
-	 * @param end
-	 *            上线值
+	 * @param key 字段
+	 *            
+	 * @param start 下线值
+	 *            
+	 * @param end 上线值
+	 *            
 	 * @return
 	 */
 	public Conditions setBetweenCondition(String key, Object start, Object end) {
@@ -190,10 +190,10 @@ public class Conditions {
 	/**
 	 * 设置排序
 	 * 
-	 * @param key
-	 *            字段
-	 * @param sort
-	 *            排序规则：升序；降序。
+	 * @param key 字段
+	 *            
+	 * @param sort 排序规则：升序；降序。
+	 *           
 	 * @return
 	 */
 	public Conditions setOderBy(String key, Sort sort) {
@@ -306,10 +306,10 @@ public class Conditions {
 
 
 
-	public void setLeftBean(DbBean leftBean) {
+	/*public void setLeftBean(DbBean leftBean) {
 		this.leftBean = leftBean;
 	}
-
+*/
 
 
 
@@ -322,9 +322,9 @@ public class Conditions {
 
 
 
-	public void setOtherBeans(DbBean[] otherBeans) {
+	/*public void setOtherBeans(DbBean[] otherBeans) {
 		this.otherBeans = otherBeans;
-	}
+	}*/
 
 
 

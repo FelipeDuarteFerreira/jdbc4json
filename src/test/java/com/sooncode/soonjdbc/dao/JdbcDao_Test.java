@@ -1,5 +1,6 @@
 package com.sooncode.soonjdbc.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -26,6 +27,7 @@ import com.sooncode.soonjdbc.page.One2Many2Many;
 import com.sooncode.soonjdbc.page.One2One;
 import com.sooncode.soonjdbc.page.Page;
 import com.sooncode.soonjdbc.sql.condition.Conditions;
+import com.sooncode.soonjdbc.sql.condition.Sort;
 import com.sooncode.soonjdbc.sql.condition.sign.LikeSign;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -39,14 +41,12 @@ public class JdbcDao_Test {
 	public void save() {
 		User u = new User();
 		u.setAge(123);
-		u.setName("ni hao");
+		u.setName("hello jdbc");
 		u.setSex("1");
+		u.setCreateDate(new Date());
+		u.setUpdateDate(new Date());
 		dao.save(u);
 
-		Student s = new Student();
-		s.setStudentId("374928393875");
-		s.setName("fjsldkjflsdkfj");
-		dao.save(s);
 	}
 
 	@Test
@@ -83,10 +83,11 @@ public class JdbcDao_Test {
 	public void get() {
 		User u = new User();
 		u.setSex("1");
-		u.setName("hechen");
+		u.setName("hello jdbc");
 		Conditions c = new Conditions(u);
 		c.setCondition("name", LikeSign.LIKE);
-
+		c.setOderBy("name", Sort.DESC);
+       
 		List<User> list = dao.gets(c);
 		logger.info(list);
 
@@ -97,7 +98,7 @@ public class JdbcDao_Test {
 		User u = new User();
 		u.setSex("1");
 		List<User> list = dao.gets(u);
-		logger.info(list.size());
+		logger.info(list);
 
 	}
 
@@ -131,6 +132,9 @@ public class JdbcDao_Test {
 		User u = new User();
 		u.setSex("1");
 		Conditions c = new Conditions(u);
+		c.setOderBy("age", Sort.DESC);
+		c.setIsNullCondition("createDate");
+	 
 		Page page = dao.getPage(1L, 5L, c);
 
 		List<User> list = page.getOnes();
