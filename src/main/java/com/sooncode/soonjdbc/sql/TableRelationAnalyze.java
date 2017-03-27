@@ -126,7 +126,7 @@ public class TableRelationAnalyze {
 		int n = 0;
 		for (ForeignKey fk : middleFkes) {
 			String referDbBeanName = fk.getReferDbBeanName().toUpperCase();
-			if (referDbBeanName.equals(leftDbBeanName) || referDbBeanName.equals(rightDbBeanName)) {
+			if (fk.isUnique() == false  &&  (referDbBeanName.equals(leftDbBeanName) || referDbBeanName.equals(rightDbBeanName))) {
 				n++;
 			}
 		}

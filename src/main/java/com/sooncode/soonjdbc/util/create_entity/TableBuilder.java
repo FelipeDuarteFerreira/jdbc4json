@@ -230,7 +230,7 @@ public class TableBuilder {
 	
 	 public static void main(String[] args) {
 		TableBuilder tb = new TableBuilder("127.0.0.1", "3306", "root", "hechenwe@gmail.com", "jdbc");
-		System.out.println(tb.getEntityClassCode("subassembly_area"));
+		System.out.println(tb.getEntityClassCode("teacher"));
 	}
 
 }

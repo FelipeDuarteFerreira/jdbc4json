@@ -163,7 +163,7 @@ public class JdbcDao {
 		return getPage(pageNum, pageSize, conditions);
 	}
 
-	public <L, M, R> Page getPage(long pageNum, long pageSize, Conditions conditions) {
+	public Page getPage(long pageNum, long pageSize, Conditions conditions) {
 
 		int n = queryService.getRelation(jdbc, conditions);
 

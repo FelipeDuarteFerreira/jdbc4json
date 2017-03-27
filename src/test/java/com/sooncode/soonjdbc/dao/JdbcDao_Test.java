@@ -20,6 +20,7 @@ import com.sooncode.soonjdbc.entity.Friend;
 import com.sooncode.soonjdbc.entity.Identity;
 import com.sooncode.soonjdbc.entity.School;
 import com.sooncode.soonjdbc.entity.Student;
+import com.sooncode.soonjdbc.entity.Teacher;
 import com.sooncode.soonjdbc.entity.User;
 import com.sooncode.soonjdbc.page.Many2Many;
 import com.sooncode.soonjdbc.page.One2Many;
@@ -357,6 +358,86 @@ public class JdbcDao_Test {
 		}
 		logger.info("---------------------------------------------------------------");
 
+	}
+	/**
+	 * 查询：班级id="001" 的班级的学校信息，和班长信息。
+	 */
+	@Test
+	public void getPage8() {
+		 
+		Clazz clazz = new Clazz();
+		//clazz.setClazzId("001");
+		Student student = new Student();
+		School school = new School();
+		Conditions c = new Conditions(clazz, school, student);
+		
+		Page page = dao.getPage(1L, 10L, c);
+		List<One2One> o2os = page.getOne2One();
+		
+		logger.info("---------------------------------------------------------------");
+		for (One2One o2o : o2os) {
+			School sc = o2o.getOne(School.class);
+			Clazz cl = o2o.getOne(Clazz.class);
+			Student s = o2o.getOne(Student.class);
+			logger.info(cl + " --- " + sc + " --- "+ s);
+			 
+			
+		}
+		logger.info("---------------------------------------------------------------");
+		
+	}
+	/**
+	 * 查询：班级id="001" 的班级的学校信息，和班长信息。
+	 */
+	@Test
+	public void getPage9() {
+		 
+		School school = new School();
+		school.setSchoolId(1);
+		Teacher teacher = new Teacher();
+		Conditions c = new Conditions(school,teacher);
+		
+		Page page = dao.getPage(1L, 10L, c);
+		List<One2One> o2os = page.getOne2One();
+		
+		logger.info("---------------------------------------------------------------");
+		for (One2One o2o : o2os) {
+			School s = o2o.getOne(School.class);
+			Teacher t = o2o.getOne(Teacher.class);
+			 
+			logger.info(s + " --- " + t );
+			
+			
+		}
+		logger.info("---------------------------------------------------------------");
+		
+	}
+	/**
+	 * 查询：班级id="001" 的班级的学校信息，和班长信息。
+	 */
+	@Test
+	public void getPage10() {
+		
+		School school = new School();
+		//school.setSchoolId(1);
+		Teacher teacher = new Teacher();
+		teacher.setTeacherId(4);
+		Conditions c = new Conditions(teacher,school);
+		
+		Page page = dao.getPage(1L, 10L, c);
+		List<One2One> o2os = page.getOne2One();
+		
+		logger.info("---------------------------------------------------------------");
+		for (One2One o2o : o2os) {
+			School s = o2o.getOne(School.class);
+			Teacher t = o2o.getOne(Teacher.class);
+			
+			logger.info(t + " --- " + s );
+			
+			
+		}
+		logger.info("---------------------------------------------------------------");
+		
 	}
 
 }
