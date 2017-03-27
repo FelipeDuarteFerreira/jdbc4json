@@ -17,13 +17,14 @@ import java.util.Map.Entry;
 
 
 import org.apache.log4j.Logger;
+import org.hamcrest.core.IsInstanceOf;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.sooncode.soonjdbc.bean.DbBean;
 import com.sooncode.soonjdbc.bean.DbBeanCache;
-import com.sooncode.soonjdbc.bean.JsonBean;
+ 
 import com.sooncode.soonjdbc.constant.DATE_FORMAT;
 import com.sooncode.soonjdbc.reflect.RObject;
 import com.sooncode.soonjdbc.sql.Parameter;
@@ -166,7 +167,7 @@ public class Jdbc {
 	}
 
 	public <T> DbBean getDbBean  (final T javaBean) {
-		
+		 
 		return jdbcTemplate.execute(new ConnectionCallback<DbBean>() {
 
 			@Override
@@ -179,7 +180,7 @@ public class Jdbc {
 		
 		
 	}
-	public <T> DbBean getDbBean  (final JsonBean jsonBean) {
+	/*public <T> DbBean getDbBean  (final JsonBean jsonBean) {
 		
 		return jdbcTemplate.execute(new ConnectionCallback<DbBean>() {
 			@Override
@@ -193,7 +194,7 @@ public class Jdbc {
 		
 		
 		
-	}
+	}*/
  
 	 
 	private Long getUpdateResult(Connection con, Parameter p) {

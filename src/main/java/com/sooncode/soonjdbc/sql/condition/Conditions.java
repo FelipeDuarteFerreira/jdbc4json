@@ -5,7 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.sooncode.soonjdbc.bean.JsonBean;
+import com.sooncode.soonjdbc.bean.DbBean;
+ 
 import com.sooncode.soonjdbc.constant.SQL_KEY;
 import com.sooncode.soonjdbc.constant.STRING;
 import com.sooncode.soonjdbc.sql.Parameter;
@@ -23,8 +24,8 @@ import java.util.TreeMap;
  */
 public class Conditions {
 
-	private JsonBean leftBean;
-	private JsonBean[] otherBeans;
+	private DbBean leftBean;
+	private DbBean[] otherBeans;
 	private Map<String, Condition> ces;
 	
 	private String keys;
@@ -35,12 +36,12 @@ public class Conditions {
 	private String oderByes = new String();
 
 	public Conditions(Object leftJavaBean,Object... otherJavaBeans){
-		JsonBean leftBean = new JsonBean(leftJavaBean);
-		JsonBean[] jsonBeans = new JsonBean[otherJavaBeans.length];
+		DbBean leftBean = new DbBean(leftJavaBean);
+		DbBean[] dbBeans = new DbBean[otherJavaBeans.length];
 		for (int i =0;i<otherJavaBeans.length;i++) {
-			jsonBeans[i]= new JsonBean(otherJavaBeans[i]);
+			dbBeans[i]= new DbBean(otherJavaBeans[i]);
 		}
-		 this.init(leftBean, jsonBeans);
+		 this.init(leftBean, dbBeans);
 	}
 	
 	 
@@ -295,16 +296,41 @@ public class Conditions {
 		return p;
 	}
 
-	public JsonBean getLeftBean() {
+ 
+
+	public DbBean getLeftBean() {
 		return leftBean;
 	}
 
-	public JsonBean[] getOtherBeans() {
+
+
+
+
+	public void setLeftBean(DbBean leftBean) {
+		this.leftBean = leftBean;
+	}
+
+
+
+
+
+	public DbBean[] getOtherBeans() {
 		return otherBeans;
 	}
 
 
-	private void init(JsonBean leftBean, JsonBean... otherBeans){
+
+
+
+	public void setOtherBeans(DbBean[] otherBeans) {
+		this.otherBeans = otherBeans;
+	}
+
+
+
+
+
+	private void init(DbBean leftBean, DbBean... otherBeans){
 		this.leftBean = leftBean;
 		this.otherBeans = otherBeans;
 		Map<String, Object> map = leftBean.getFields();
@@ -321,9 +347,9 @@ public class Conditions {
 		}
 		
 		if( otherBeans!=null  &&  otherBeans.length >0 ){
-			for (JsonBean bean : otherBeans) {
+			for (DbBean bean : otherBeans) {
 				Map<String, Object> otherMap = bean.getFields();
-				 for(Entry<String,Object> en:otherMap.entrySet()){
+				 for(Entry<String,Object> en : otherMap.entrySet()){
 					 String key = en.getKey();
 					 Object val = en.getValue();
 					 newMap.put(bean.getBeanName()+STRING.POINT+key, val);
