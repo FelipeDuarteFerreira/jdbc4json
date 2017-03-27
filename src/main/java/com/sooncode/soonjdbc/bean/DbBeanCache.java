@@ -69,7 +69,7 @@ public class DbBeanCache {
 		DbBean dbBean = new DbBean();
 		dbBean.setJavaBean(javaBean);
 		dbBean.setBeanName(beanName);
-		dbBean.setAliasTableName(T2E.toTableName(beanName));
+ 
 		dbBean.setPrimaryField(pkName);
 		dbBean.setForeignKeies(foreignKeies);
 		

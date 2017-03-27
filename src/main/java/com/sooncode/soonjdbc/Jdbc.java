@@ -17,7 +17,6 @@ import java.util.Map.Entry;
 
 
 import org.apache.log4j.Logger;
-import org.hamcrest.core.IsInstanceOf;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -26,7 +25,6 @@ import com.sooncode.soonjdbc.bean.DbBean;
 import com.sooncode.soonjdbc.bean.DbBeanCache;
  
 import com.sooncode.soonjdbc.constant.DATE_FORMAT;
-import com.sooncode.soonjdbc.reflect.RObject;
 import com.sooncode.soonjdbc.sql.Parameter;
 import com.sooncode.soonjdbc.sql.verification.SqlVerification;
 import com.sooncode.soonjdbc.util.T2E;
@@ -180,22 +178,6 @@ public class Jdbc {
 		
 		
 	}
-	/*public <T> DbBean getDbBean  (final JsonBean jsonBean) {
-		
-		return jdbcTemplate.execute(new ConnectionCallback<DbBean>() {
-			@Override
-			public DbBean doInConnection(Connection con) throws SQLException, DataAccessException {
-				String className = jsonBean.getClassName();
-				RObject<?> rObj = new RObject<>(className);
-				DbBean	db = DbBeanCache.getDbBean(con, rObj.getObject()); 
-				return db;
-			}
-		});
-		
-		
-		
-	}*/
- 
 	 
 	private Long getUpdateResult(Connection con, Parameter p) {
 

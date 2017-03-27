@@ -10,7 +10,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sooncode.soonjdbc.bean.Alias;
+ 
 import com.sooncode.soonjdbc.dao.JdbcDao;
 import com.sooncode.soonjdbc.entity.ChooseCourse;
 import com.sooncode.soonjdbc.entity.Clazz;
@@ -124,6 +124,7 @@ public class JdbcDao_Test {
 
 	/**
 	 * 单表分页
+	 * 查询：性别是‘男’的所有学生
 	 */
 	@Test
 	public void getPage1() {
@@ -141,12 +142,11 @@ public class JdbcDao_Test {
 	}
 
 	/**
-	 * 1对1 分页
+	 * 查询 学生和与之对应的身份详情
 	 */
 	@Test
 	public void getPage2() {
 		Student s = new Student();
-		// s.setStudentId("001");
 		Identity id = new Identity();
 		Conditions c = new Conditions(s, id);
 		Page page = dao.getPage(1L, 5L, c);
@@ -163,12 +163,12 @@ public class JdbcDao_Test {
 	}
 
 	/**
-	 * 1对1 分页
+	 * 查询 学生 ，身份 ，班级信息
 	 */
 	@Test
 	public void getPage21() {
 		Student s = new Student();
-		// s.setStudentId("001");
+		 
 		Identity id = new Identity();
 		Clazz cl = new Clazz();
 		Conditions c = new Conditions(s, id, cl);
@@ -188,7 +188,7 @@ public class JdbcDao_Test {
 	}
 
 	/**
-	 * 1对多 分页
+	 * 查询 班级id为‘002’的所有学生
 	 */
 	@Test
 	public void getPage3() {
@@ -212,7 +212,7 @@ public class JdbcDao_Test {
 	}
 
 	/**
-	 * 多对多 分页
+	 *  查询 学生id 为 "001" 选修的所有课程
 	 */
 	@Test
 	public void getPage4() {
@@ -230,18 +230,18 @@ public class JdbcDao_Test {
 
 		logger.info("---------------------------------------------------------------");
 		logger.info(stu);
-		logger.info("---------------------------------------------------------------");
 
 		for (One2One o2o : list) {
-			// logger.info(o2o.getLeft() + " -------" + o2o.getRight());
-
+			ChooseCourse chooseCourse = o2o.getOne(ChooseCourse.class); 
+			Course course = o2o.getOne(Course.class); 
+			logger.info(chooseCourse+"------------"+course);
 		}
 		logger.info("---------------------------------------------------------------");
 
 	}
 
 	/**
-	 * 1 对1 分页
+	 * 查询 学生 选修 课程 的情况
 	 */
 	@Test
 	public void getPage41() {
@@ -265,7 +265,7 @@ public class JdbcDao_Test {
 	}
 	
 	/**
-	 * 1对1 
+	 * 查询用户id 为 16 的所有好友 
 	 */
 	@Test
 	public void getPage42() {
@@ -291,7 +291,7 @@ public class JdbcDao_Test {
 	}
 
 	/**
-	 * 多对多 分页
+	 * 查询：选修 课程id为‘001’ 的所有学生
 	 */
 	@Test
 	public void getPage5() {
@@ -309,8 +309,10 @@ public class JdbcDao_Test {
 			Course cou = many2Many.getOne();
 			logger.info(cou);
 			List<One2One> list = many2Many.getMany();
-			for (One2One one2One : list) {
-
+			for (One2One o : list) {
+				ChooseCourse ChooseCourse  = o.getOne(ChooseCourse.class);
+				Student Student = o.getOne(Student.class);
+				logger.info(ChooseCourse + " -----  " + Student);
 			}
 
 		}
@@ -318,60 +320,10 @@ public class JdbcDao_Test {
 
 	}
 
+	 
 	/**
-	 * 1对多 分页
+	 * 查询 学校id为‘1’ 的所有班级，和班级对应 的所有学生 
 	 */
-	@Test
-	public void getPage51() {
-
-		User u = new User();
-		u.setId(16);
-		User u2 = new User();
-		u2.setId(16);
-        Alias al= new Alias(new User());
-		Friend f = new Friend();
-		Conditions c = new Conditions(u,f, al);
-
-		Page page = dao.getPage(1L, 10L, c);
-		One2Many<Friend, User> o2m = page.getOne2Many();
-		logger.info("---------------------------------------------------------------");
-
-		Friend fr = o2m.getOne();
-		List<User> user = o2m.getMany();
-		logger.info(fr);
-		logger.info(user);
-
-		logger.info("---------------------------------------------------------------");
-
-	}
-
-	@Test
-	public void getPage6() {
-		Student s = new Student();
-		ChooseCourse cc = new ChooseCourse();
-		Course co = new Course();
-		// co.setCourseId("001");
-		Conditions c = new Conditions(co, cc, s);
-		c.setBetweenCondition("chooseCourse.score", 50, 100);
-		Page page = dao.getPage(1L, 10L, co, cc, s);
-		List<Many2Many<Course, ChooseCourse, Student>> m2ms = page.getMany2Manys();
-
-		logger.info("---------------------------------------------------------------");
-		for (Many2Many<Course, ChooseCourse, Student> many2Many : m2ms) {
-			Course cou = many2Many.getOne();
-			logger.info(cou);
-			List<One2One> list = many2Many.getMany();
-			for (One2One one2One : list) {
-				ChooseCourse choo = one2One.getOne(ChooseCourse.class);
-				Student stude = one2One.getOne(Student.class);
-				logger.info(choo + "---" + stude);
-
-			}
-
-		}
-		logger.info("---------------------------------------------------------------");
-
-	}
 
 	@Test
 	public void getPage7() {
