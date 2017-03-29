@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import com.sooncode.soonjdbc.Jdbc;
 import com.sooncode.soonjdbc.bean.DbBean;
 import com.sooncode.soonjdbc.constant.SQL_KEY;
+import com.sooncode.soonjdbc.constant.TableRelation;
 import com.sooncode.soonjdbc.page.Page;
 import com.sooncode.soonjdbc.reflect.RObject;
 import com.sooncode.soonjdbc.sql.ComSQL;
@@ -158,33 +159,79 @@ public class JdbcDao {
 		return n;
 	}
 
-	public <L, M, R> Page getPage(long pageNum, long pageSize, L left, M middle, R right) {
-		Conditions conditions = new Conditions(left, middle, right);
+	public Page getPage(long pageNum, long pageSize, Object leftBean, Object... otherBean) {
+		Conditions conditions = new Conditions(leftBean, otherBean);
+		return getPage(pageNum, pageSize, conditions);
+	}
+
+	public Page getPage(long pageNum, long pageSize, TableRelation TableRelation, Object leftBean, Object... otherBean) {
+		Conditions conditions = new Conditions(leftBean, TableRelation, otherBean);
 		return getPage(pageNum, pageSize, conditions);
 	}
 
 	public Page getPage(long pageNum, long pageSize, Conditions conditions) {
 
-		int n = queryService.getRelation(jdbc, conditions);
-
 		Page page = new Page();
-		if (n == 1) {// 1.单表
-			page = queryService.getOnes(pageNum, pageSize, conditions, jdbc);
+		List<Integer> nes = queryService.getRelation(jdbc, conditions);
+		if (nes.size() > 1) {
+			logger.warn("【表关系分析】：分析存在歧义！");
+		} else if (nes.size() == 0) {
+			logger.warn("【表关系分析】:没有合适的关系模型！");
+		} else {
+			int n = nes.get(0);
+			if (n == 1) {// 1.单表
+				Page onesPage = queryService.getOnes(pageNum, pageSize, conditions, jdbc);
+				page = queryService.clonePage(page, onesPage);
+			}
+			if (n == 2) {// 1对1
+				Page one2onesPage = queryService.getOne2Ones(pageNum, pageSize, conditions, jdbc);
+				page = queryService.clonePage(page, one2onesPage);
+			}
+			if (n == 3) { // 一对多
 
-		} else if (n == 2) {// 1对1
-			page = queryService.getOne2Ones(pageNum, pageSize, conditions, jdbc);
+				Page one2ManysPage = queryService.getOne2Manys(pageNum, pageSize, conditions, jdbc);
+				page = queryService.clonePage(page, one2ManysPage);
+			}
+			if (n == 4) {// 多对多
+				Page many2ManysPage = queryService.getMany2Manys(pageNum, pageSize, conditions, jdbc);
+				page = queryService.clonePage(page, many2ManysPage);
+			}
+			if (n == 5) { // 1对多对多
+				Page one2Many2ManysPage = queryService.getOne2Many2Manys(pageNum, pageSize, conditions, jdbc);
+				page = queryService.clonePage(page, one2Many2ManysPage);
+			}
 
-		} else if (n == 3) { // 一对多
-
-			page = queryService.getOne2Manys(pageNum, pageSize, conditions, jdbc);
-
-		} else if (n == 4) {// 多对多
-			page = queryService.getMany2Manys(pageNum, pageSize, conditions, jdbc);
 		}
-		if (n == 5) {
-			page = queryService.getOne2Many2Manys(pageNum, pageSize, conditions, jdbc);
-		} else {// 未知
 
+		return page;
+
+	}
+
+	public Page getPage(long pageNum, long pageSize, TableRelation TableRelation, Conditions conditions) {
+
+		int n = TableRelation.ordinal() + 1;
+		Page page = new Page();
+
+		if (n == 1) {// 1.单表
+			Page onesPage = queryService.getOnes(pageNum, pageSize, conditions, jdbc);
+			page = queryService.clonePage(page, onesPage);
+		}
+		if (n == 2) {// 1对1
+			Page one2onesPage = queryService.getOne2Ones(pageNum, pageSize, conditions, jdbc);
+			page = queryService.clonePage(page, one2onesPage);
+		}
+		if (n == 3) { // 一对多
+
+			Page one2ManysPage = queryService.getOne2Manys(pageNum, pageSize, conditions, jdbc);
+			page = queryService.clonePage(page, one2ManysPage);
+		}
+		if (n == 4) {// 多对多
+			Page many2ManysPage = queryService.getMany2Manys(pageNum, pageSize, conditions, jdbc);
+			page = queryService.clonePage(page, many2ManysPage);
+		}
+		if (n == 5) { // 1对多对多
+			Page one2Many2ManysPage = queryService.getOne2Many2Manys(pageNum, pageSize, conditions, jdbc);
+			page = queryService.clonePage(page, one2Many2ManysPage);
 		}
 
 		return page;

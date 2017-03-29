@@ -32,24 +32,23 @@ class QueryService {
 	 * @return 单表 ：1 ; 一对一：2 一对多：3 ; 多对多：4 ;一对多对多 ：5 ; 6:未知
 	 */
 
-	public int getRelation(Jdbc jdbc, Conditions conditions) {
-
+	public List<Integer> getRelation(Jdbc jdbc, Conditions conditions) {
+        List<Integer> nes = new LinkedList<>();
 		DbBean leftDbBean = jdbc.getDbBean(conditions.getLeftBean().getJavaBean());
 		List<DbBean> list = getOtherDbBeans(jdbc, conditions);
 		DbBean[] otherBeans = list.toArray(new DbBean[list.size()]);
 		if (TableRelationAnalyze.isOne(leftDbBean, otherBeans)) {
-			return 1;
-		} else if (TableRelationAnalyze.isOne2One(leftDbBean, otherBeans)) {
-			return 2;
-		} else if (TableRelationAnalyze.isOne2Many(leftDbBean, otherBeans)) {
-			return 3;
-		} else if (TableRelationAnalyze.isMany2Many(leftDbBean, otherBeans)) {
-			return 4;
-		} else if (otherBeans.length == 2 && TableRelationAnalyze.isOne2Many2Many(leftDbBean, otherBeans[0], otherBeans[1])) {
-			return 5;
-		} else {
-			return 6;
-		}
+			nes.add(1);
+		}   if (TableRelationAnalyze.isOne2One(leftDbBean, otherBeans)) {
+			nes.add(2);
+		}   if (TableRelationAnalyze.isOne2Many(leftDbBean, otherBeans)) {
+			nes.add(3);
+		}   if (TableRelationAnalyze.isMany2Many(leftDbBean, otherBeans)) {
+			nes.add(4);
+		}   if (otherBeans.length == 2 && TableRelationAnalyze.isOne2Many2Many(leftDbBean, otherBeans[0], otherBeans[1])) {
+			nes.add(5);
+		} 
+		return nes;
 
 	}
 
@@ -155,23 +154,21 @@ class QueryService {
 		return page;
 	}
 
-	private List<ForeignKey> comparison (List<ForeignKey> fkes,List<DbBean> dbBeans){
+	private List<ForeignKey> comparison(List<ForeignKey> fkes, List<DbBean> dbBeans) {
 		List<ForeignKey> list = new LinkedList<>();
 		for (DbBean dbBean : dbBeans) {
 			String tableName = T2E.toTableName(dbBean.getBeanName());
 			for (ForeignKey fk : fkes) {
 				String referName = T2E.toTableName(fk.getReferDbBeanName());
-				if(tableName.equals(referName)){
+				if (tableName.equals(referName)) {
 					list.add(fk);
 				}
 			}
-			
+
 		}
 		return list;
 	}
-	
-	
-	
+
 	public <L, R> Page getOne2Ones(long pageNum, long pageSize, Conditions conditions, Jdbc jdbc) {
 		DbBean leftDbBean = jdbc.getDbBean(conditions.getLeftBean().getJavaBean());
 
@@ -180,6 +177,7 @@ class QueryService {
 		// --------------------------------------------------------------------------
 
 		String leftTableName = T2E.toTableName(leftDbBean.getBeanName());
+		String leftPk = T2E.toColumn(leftDbBean.getPrimaryField());
 		List<DbBean> newDbBeans = new ArrayList<>();
 		newDbBeans.add(leftDbBean);
 		newDbBeans.addAll(otherDbBeans);
@@ -190,22 +188,41 @@ class QueryService {
 		String otherTableNames = new String();
 		String condition = new String();
 
-		List<ForeignKey> leftFkes =     leftDbBean.getForeignKeies();
+		List<ForeignKey> leftFkes = leftDbBean.getForeignKeies();
 		leftFkes = comparison(leftFkes, otherDbBeans);
-		for (DbBean dbBean : otherDbBeans) {
-			 
-			for (int i = 0; i < otherDbBeans.size(); i++) {
-				ForeignKey fk = leftFkes.get(i);
-				String fkName = T2E.toColumn(fk.getForeignProperty());
-				String referTableName = T2E.toTableName(fk.getReferDbBeanName());
-				String otherTableName = T2E.toTableName(dbBean.getBeanName());
-				if (referTableName.equals(otherTableName)) {
-					otherTableNames = otherTableNames + STRING.SPACING + STRING.COMMA + STRING.SPACING + otherTableName + STRING.SPACING;
-					String otherTablePkName = T2E.toColumn(dbBean.getPrimaryField());
-					condition = condition + SQL_KEY.AND + leftTableName + STRING.POINT + fkName + STRING.SPACING + STRING.EQ + STRING.SPACING + otherTableName + STRING.POINT + otherTablePkName + STRING.SPACING;
+		if (leftFkes.size() > 0) {
+			for (DbBean dbBean : otherDbBeans) {
+
+				for (int i = 0; i < otherDbBeans.size(); i++) {
+					ForeignKey fk = leftFkes.get(i);
+					String fkName = T2E.toColumn(fk.getForeignProperty());
+					String referTableName = T2E.toTableName(fk.getReferDbBeanName());
+					String otherTableName = T2E.toTableName(dbBean.getBeanName());
+					if (referTableName.equals(otherTableName)) {
+						otherTableNames = otherTableNames + STRING.SPACING + STRING.COMMA + STRING.SPACING + otherTableName + STRING.SPACING;
+						String otherTablePkName = T2E.toColumn(dbBean.getPrimaryField());
+						condition = condition + SQL_KEY.AND + leftTableName + STRING.POINT + fkName + STRING.SPACING + STRING.EQ + STRING.SPACING + otherTableName + STRING.POINT + otherTablePkName + STRING.SPACING;
+					}
 				}
+
 			}
-			 
+		} else {
+
+			for (DbBean other : otherDbBeans) {
+				List<ForeignKey> fkes = other.getForeignKeies();
+				String otherTableName = T2E.toTableName(other.getBeanName());
+				for (ForeignKey f : fkes) {
+					String referTableName = T2E.toTableName(f.getReferDbBeanName());
+					String fkName = T2E.toColumn(f.getForeignProperty());
+					if(leftTableName.equals(referTableName)){
+						otherTableNames = otherTableNames + STRING.SPACING + STRING.COMMA + STRING.SPACING + otherTableName + STRING.SPACING;
+						 
+						condition = condition + SQL_KEY.AND + leftTableName + STRING.POINT +leftPk + STRING.SPACING + STRING.EQ + STRING.SPACING + otherTableName + STRING.POINT + fkName + STRING.SPACING;
+					}
+				}
+				
+			}
+			
 		}
 
 		String sql = SQL_KEY.SELECT + columns + SQL_KEY.FROM + leftTableName + otherTableNames + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + condition + where;
@@ -310,7 +327,6 @@ class QueryService {
 		DbBean rightDbBean = otherDbBeans.get(1);
 		String leftTablePk = T2E.toColumn(leftDbBean.getPrimaryField());
 		String rightTablePk = T2E.toColumn(rightDbBean.getPrimaryField());
-		 
 
 		String leftTableName = T2E.toTableName(leftDbBean.getBeanName());
 		String middleTableName = T2E.toTableName(middleDbBean.getBeanName());
@@ -391,9 +407,9 @@ class QueryService {
 		DbBean rightDbBean = otherDbBeans.get(1);
 		String rightTablePk = T2E.toColumn(rightDbBean.getPrimaryField());
 		String leftTablePk = T2E.toColumn(leftDbBean.getPrimaryField());
-		String leftTableName =   T2E.toTableName(leftDbBean.getBeanName());
-		String middleTableName =  T2E.toTableName(middleDbBean.getBeanName());
-		String rightTableName =   T2E.toTableName(rightDbBean.getBeanName());
+		String leftTableName = T2E.toTableName(leftDbBean.getBeanName());
+		String middleTableName = T2E.toTableName(middleDbBean.getBeanName());
+		String rightTableName = T2E.toTableName(rightDbBean.getBeanName());
 		tableNames = leftTableName + STRING.SPACING + STRING.COMMA + STRING.SPACING + middleTableName + STRING.SPACING + STRING.COMMA + STRING.SPACING + rightTableName + STRING.SPACING;
 		List<ForeignKey> fkes = middleDbBean.getForeignKeies();
 		for (ForeignKey f : fkes) {
@@ -462,9 +478,9 @@ class QueryService {
 		String mPK = T2E.toColumn(middleDbBean.getPrimaryField());
 		String leftTablePk = T2E.toColumn(leftDbBean.getPrimaryField());
 		DbBean rightDbBean = otherDbBeans.get(1);
-		String leftTableName =  T2E.toTableName(leftDbBean.getBeanName());
-		String middleTableName =  T2E.toTableName(middleDbBean.getBeanName());
-		String rightTableName =   T2E.toTableName(rightDbBean.getBeanName());
+		String leftTableName = T2E.toTableName(leftDbBean.getBeanName());
+		String middleTableName = T2E.toTableName(middleDbBean.getBeanName());
+		String rightTableName = T2E.toTableName(rightDbBean.getBeanName());
 
 		tableNames = leftTableName + STRING.SPACING + STRING.COMMA + STRING.SPACING + middleTableName + STRING.SPACING + STRING.COMMA + STRING.SPACING + rightTableName + STRING.SPACING;
 		List<ForeignKey> mFkes = middleDbBean.getForeignKeies();
@@ -544,4 +560,25 @@ class QueryService {
 		}
 		return otherDbBeans;
 	}
+	public  Page clonePage (Page oldPage  , Page newPage){
+		 oldPage.initPage(newPage.getPageNumber(), newPage.getPageSize(), newPage.getTotal());
+		 if(oldPage.getOnes() == null || oldPage.getOnes().size() == 0){
+			 oldPage.setOnes(newPage.getOnes()); 
+		 }
+		 if(oldPage.getOne2One()  == null || oldPage.getOne2One().size() == 0){
+			 oldPage.setOne2One(newPage.getOne2One()); 
+		 }
+		 if(oldPage.getOne2Manys()  == null || oldPage.getOne2Manys().size() == 0){
+			 oldPage.setOne2Manys(newPage.getOne2Manys()); 
+		 }
+		 if(oldPage.getMany2Manys() == null || oldPage.getMany2Manys().size() == 0){
+			 oldPage.setMany2Manys(newPage.getMany2Manys()); 
+		 }
+		 if(oldPage.getOne2Many2Manys()  == null || oldPage.getOne2Many2Manys().size() == 0){
+			 oldPage.setOne2Many2Manys(newPage.getOne2Many2Manys()); 
+		 }
+		 
+		 return oldPage;
+		 
+	 }
 }

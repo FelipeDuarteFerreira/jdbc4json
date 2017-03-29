@@ -49,6 +49,11 @@ public class ForeignKey {
 		this.referDbBeanName = referDbBeanName;
 	}
 
+	@Override
+	public String toString() {
+		return "ForeignKey [foreignProperty=" + foreignProperty + ", isUnique=" + isUnique + ", referDbBeanName=" + referDbBeanName + "]";
+	}
+
 	 
 
 

@@ -67,7 +67,7 @@ public class TableRelationAnalyze {
 				}
 
 			}
-			if(n>0 ){
+			if(n > 0  &&  n >= otherBeans.length){
 				return true;
 			}else{
 				return false;

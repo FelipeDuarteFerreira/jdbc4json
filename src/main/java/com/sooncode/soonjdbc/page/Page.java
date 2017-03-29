@@ -50,6 +50,11 @@ public class Page {
 		// this.ones = (List<Object>) ones;
 	}
 
+	public void initPage(long pageNumber, long pageSize, long total){
+		init(total, pageNumber, pageSize);
+	}
+	
+	
 	public <L, R> Page(long pageNumber, long pageSize, long total, List<One2Many<L, R>> o2ms) {
 		init(total, pageNumber, pageSize);
 		List<One2Many<?, ?>> o2mes = new LinkedList<>();
@@ -60,6 +65,16 @@ public class Page {
 		this.o2ms = o2mes;
 	}
 
+	public <L,R> void setOne2Manys (List<One2Many<L, R>> o2ms){
+		List<One2Many<?, ?>> o2mes = new LinkedList<>();
+		for (One2Many<?, ?> result : o2ms) {
+			One2Many<?, ?> o2m = result;
+			o2mes.add(o2m);
+		}
+		this.o2ms = o2mes;
+	}
+	
+	
 	public <L, M, R> Page(long pageNumber, long pageSize, long total, LinkedList<Many2Many<L, M, R>> m2ms) {
 		init(total, pageNumber, pageSize);
 		List<Many2Many<?, ?, ?>> m2mes = new LinkedList<>();
@@ -70,6 +85,15 @@ public class Page {
 		this.m2ms = m2mes;
 	}
 
+	public <L, M, R> void setMany2Manys(List<Many2Many<L, M, R>> m2ms){
+		List<Many2Many<?, ?, ?>> m2mes = new LinkedList<>();
+		for (Many2Many<?, ?, ?> result : m2ms) {
+			Many2Many<?, ?, ?> m2m = result;
+			m2mes.add(m2m);
+		}
+		this.m2ms = m2mes;
+	}
+	
 	public Page() {
 
 	}
@@ -207,7 +231,7 @@ public class Page {
 
 	public <L, R> List<One2Many<L, R>> getOne2Manys() {
 		List<One2Many<L, R>> o2ms = new LinkedList<>();
-		if (this.o2ms.size() > 0) {
+		if (this.o2ms != null && this.o2ms.size() > 0) {
 			for (One2Many<?, ?> result : this.o2ms) {
 				@SuppressWarnings("unchecked")
 				One2Many<L, R> o2m = (One2Many<L, R>) result;
@@ -219,7 +243,7 @@ public class Page {
 
 	public <L, M, R> List<Many2Many<L, M, R>> getMany2Manys() {
 		List<Many2Many<L, M, R>> m2ms = new LinkedList<>();
-		if (this.m2ms.size() > 0) {
+		if (this.m2ms != null && this.m2ms.size() > 0) {
 			for (Many2Many<?, ?, ?> result : this.m2ms) {
 				@SuppressWarnings("unchecked")
 				Many2Many<L, M, R> m2m = (Many2Many<L, M, R>) result;
@@ -239,7 +263,7 @@ public class Page {
 	@SuppressWarnings("unchecked")
 	public <L, M, R> List<One2Many2Many<L, M, R>> getOne2Many2Manys() {
 		List<One2Many2Many<L, M, R>> list = new LinkedList<>();
-		if (this.o2m2ms.size() > 0) {
+		if (this.o2m2ms != null && this.o2m2ms.size() > 0) {
 			for (One2Many2Many<?, ?, ?> o2m2m : this.o2m2ms) {
 				list.add((One2Many2Many<L, M, R>) o2m2m);
 			}
@@ -250,7 +274,7 @@ public class Page {
 	@SuppressWarnings("unchecked")
 	public <L, M, R> One2Many2Many<L, M, R> getOne2Many2Many() {
 		List<One2Many2Many<L, M, R>> list = new LinkedList<>();
-		if (this.o2m2ms.size() > 0) {
+		if (this.o2m2ms != null && this.o2m2ms.size() > 0) {
 			for (One2Many2Many<?, ?, ?> o2m2m : this.o2m2ms) {
 				list.add((One2Many2Many<L, M, R>) o2m2m);
 			}

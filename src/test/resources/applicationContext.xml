@@ -32,6 +32,10 @@
 	<bean id="jdbcService" class="com.sooncode.soonjdbc.service.JdbcService">
 		<property name="jdbcDao" ref="jdbcDao" />
 	</bean>
+	<bean id="javaBeanBuilder" class="com.sooncode.soonjdbc.util.create_entity.JavaBeanBuilder">
+		<property name="jdbcTemplate" ref="jdbcTemplate" />
+		<property name="codePath" value="com\sooncode\soonjdbc\entity"/>
+	</bean>
 
 	<!-- (事务管理)transaction manager, use JtaTransactionManager for global tx -->
 	
