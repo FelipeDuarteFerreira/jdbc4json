@@ -4,9 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import org.apache.log4j.Logger;
-
+ 
 import com.sooncode.soonjdbc.Jdbc;
 import com.sooncode.soonjdbc.bean.DbBean;
 import com.sooncode.soonjdbc.constant.SQL_KEY;
@@ -27,7 +25,7 @@ import com.sooncode.soonjdbc.util.T2E;
 
 public class JdbcDao {
 
-	public final static Logger logger = Logger.getLogger("JdbcDao.class");
+	 
 
 	private QueryService queryService = new QueryService();
 
@@ -138,6 +136,25 @@ public class JdbcDao {
 		return gets(c);
 	}
 
+	public <T> T get(T javaBean) {
+		Conditions c = new Conditions(javaBean);
+		List<T> list = gets(c);
+		T t = null;
+		if (list.size() == 1) {
+			t = list.get(0);
+		}
+		return t;
+	}
+	
+	public <T> T get(Conditions  conditions) {
+		List<T> list = gets(conditions);
+		T t = null;
+		if (list.size() == 1) {
+			t = list.get(0);
+		}
+		return t;
+	}
+
 	public long count(final String key, final Conditions conditions) {
 
 		RObject<?> rObj = new RObject<>(conditions.getLeftBean().getClassName());
@@ -174,9 +191,9 @@ public class JdbcDao {
 		Page page = new Page();
 		List<Integer> nes = queryService.getRelation(jdbc, conditions);
 		if (nes.size() > 1) {
-			logger.warn("【表关系分析】：分析存在歧义！");
+			//logger.warn("【表关系分析】：分析存在歧义！");
 		} else if (nes.size() == 0) {
-			logger.warn("【表关系分析】:没有合适的关系模型！");
+			//logger.warn("【表关系分析】:没有合适的关系模型！");
 		} else {
 			int n = nes.get(0);
 			if (n == 1) {// 1.单表

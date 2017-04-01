@@ -202,7 +202,7 @@ public class JdbcDao_Test {
 		Clazz clazz = new Clazz();
 		clazz.setClazzId("002");
 		Conditions c = new Conditions(clazz, s);
-		Page page = dao.getPage(1L, 3L,TableRelation.ONE_ONE, c);
+		Page page = dao.getPage(1L, 3L,TableRelation.ONE_MANY, c);
 		One2Many<Clazz, Student> o2m = page.getOne2Many();
 		Clazz cl = o2m.getOne();
 		List<Student> stues = o2m.getMany();

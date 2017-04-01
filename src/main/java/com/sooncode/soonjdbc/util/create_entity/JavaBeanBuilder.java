@@ -25,8 +25,10 @@ public class JavaBeanBuilder {
 	private static Logger logger = Logger.getLogger("JavaBeanBuilder.class");
 	private JdbcTemplate jdbcTemplate;
     private String codePath;
+    private String packageName;
 	public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
+		init();
 	}
 
 	
@@ -37,22 +39,31 @@ public class JavaBeanBuilder {
 		for (String string : str) {
 			s = s + string + File.separatorChar;
 		}
-		this.codePath = PathUtil.getClassPath()+ s;
-		 
-		logger.debug("【JavaBean代码生成路径】："+this.codePath);
-		
-		List<Table> list = getTables();
-		for (Table table : list) {
-			String javaName = T2E.toClassName(  table.getTableName());
-			String fName = this.codePath  + javaName +".java";
-			String code = getEntityClassCode(table.getTableName());
-			writeFile(fName, code, "UTF-8");
-		}
-		
+		 this.codePath = s;
+		 init();
 	}
 
 	
+	
+    public void setPackageName(String packageName) {
+		this.packageName = packageName;
+		init();
+	}
 
+
+
+	private void init(){
+    	if(this.codePath != null  &&  this.jdbcTemplate != null && this.packageName != null){
+    		logger.debug("【JavaBean代码生成路径】："+this.codePath);
+    		List<Table> list = getTables();
+    		for (Table table : list) {
+    			String javaName = T2E.toClassName(  table.getTableName());
+    			String fName = this.codePath  + javaName +".java";
+    			String code = getEntityClassCode(table.getTableName());
+    			writeFile(fName, code, "UTF-8");
+    		}
+    	}
+    }
 
 	public Table getTable( final String tableName) {
 
@@ -198,6 +209,7 @@ public class JavaBeanBuilder {
 
 		String code = "";
 		String importString = "\r\n";
+		importString += "package "+ this.packageName +";\r\n";
 		importString += "import java.io.Serializable;\r\n";
 		String an = "/**\r\n";
 		an += "*" + t.getTableRemarks() + "\r\n";

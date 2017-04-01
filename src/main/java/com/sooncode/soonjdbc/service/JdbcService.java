@@ -2,7 +2,6 @@ package com.sooncode.soonjdbc.service;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 
 import com.sooncode.soonjdbc.dao.JdbcDao;
 import com.sooncode.soonjdbc.page.Page;
@@ -14,16 +13,12 @@ import com.sooncode.soonjdbc.sql.condition.Conditions;
  * @author pc
  * 
  */
-public class JdbcService   {
-
-	public final static Logger logger = Logger.getLogger("JdbcDao.class");
+public class JdbcService {
 
 	/**
 	 * 数据处理对象JDBC
 	 */
 	private JdbcDao jdbcDao;
-
-	 
 
 	public JdbcDao getJdbcDao() {
 		return jdbcDao;
@@ -33,13 +28,14 @@ public class JdbcService   {
 		this.jdbcDao = jdbcDao;
 	}
 
-	public <L,M,R> Page getPage(long pageNum, long pageSize,L left,M middle,R right ) {
-		return jdbcDao.getPage(pageNum, pageSize, left,middle,right);
+	public <L, M, R> Page getPage(long pageNum, long pageSize, L left, M middle, R right) {
+		return jdbcDao.getPage(pageNum, pageSize, left, middle, right);
 	}
+
 	public Page getPage(long pageNum, long pageSize, Conditions conditions) {
 		return jdbcDao.getPage(pageNum, pageSize, conditions);
 	}
- 
+
 	public <T> long save(T javaBean) {
 		return jdbcDao.save(javaBean);
 	}
@@ -62,6 +58,14 @@ public class JdbcService   {
 
 	public <T> List<T> gets(T javaBean) {
 		return jdbcDao.gets(javaBean);
+	}
+
+	public <T> T get(Conditions conditions) {
+		return jdbcDao.get(conditions);
+	}
+
+	public <T> T get(T javaBean) {
+		return jdbcDao.get(javaBean);
 	}
 
 	public <T> long count(String key, T javaBean) {
