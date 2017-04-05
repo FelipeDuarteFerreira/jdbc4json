@@ -9,6 +9,8 @@ import com.sooncode.soonjdbc.Jdbc;
 import com.sooncode.soonjdbc.bean.DbBean;
 import com.sooncode.soonjdbc.constant.SQL_KEY;
 import com.sooncode.soonjdbc.constant.TableRelation;
+import com.sooncode.soonjdbc.exception.SqlException;
+import com.sooncode.soonjdbc.exception.TableRelationAnalyzeException;
 import com.sooncode.soonjdbc.page.Page;
 import com.sooncode.soonjdbc.reflect.RObject;
 import com.sooncode.soonjdbc.sql.ComSQL;
@@ -169,7 +171,44 @@ public class JdbcDao {
 		return n;
 
 	}
+	
+	public <T> T  max(final String key, final Conditions conditions) {
+		
+		RObject<?> rObj = new RObject<>(conditions.getLeftBean().getClassName());
+		DbBean dbBean = jdbc.getDbBean(rObj.getObject());
+		String tableName = T2E.toTableName(dbBean.getBeanName());
+		String sql = "SELECT MAX(" +T2E.toColumn(key)  + ") AS MAX" + " FROM " + tableName + " WHERE 1=1 " + conditions.getWhereParameter().getReadySql();
+		Parameter parameter = new Parameter();
+		parameter.setReadySql(sql);
+		parameter.setParams(conditions.getWhereParameter().getParams());
+		Map<String, Object> map = jdbc.get(parameter);
+		@SuppressWarnings("unchecked")
+		T max =  (T) map.get("max");
+		return max;
+		
+	}
+	public <T> T  min(final String key, final Conditions conditions) {
+		
+		RObject<?> rObj = new RObject<>(conditions.getLeftBean().getClassName());
+		DbBean dbBean = jdbc.getDbBean(rObj.getObject());
+		String tableName = T2E.toTableName(dbBean.getBeanName());
+		String sql = "SELECT MIN(" +T2E.toColumn(key)  + ") AS MIN" + " FROM " + tableName + " WHERE 1=1 " + conditions.getWhereParameter().getReadySql();
+		Parameter parameter = new Parameter();
+		parameter.setReadySql(sql);
+		parameter.setParams(conditions.getWhereParameter().getParams());
+		Map<String, Object> map = jdbc.get(parameter);
+		@SuppressWarnings("unchecked")
+		T max =  (T) map.get("min");
+		return max;
+		
+	}
 
+	public <T,E>  T  max(String key, E javaBean) {
+		Conditions c = new Conditions(javaBean);
+		return this.max(key, c) ;
+	}
+	
+	
 	public <T> long count(String key, T javaBean) {
 		Conditions c = new Conditions(javaBean);
 		long n = this.count(key, c);
@@ -191,9 +230,17 @@ public class JdbcDao {
 		Page page = new Page();
 		List<Integer> nes = queryService.getRelation(jdbc, conditions);
 		if (nes.size() > 1) {
-			//logger.warn("【表关系分析】：分析存在歧义！");
+			try {
+				throw new TableRelationAnalyzeException("数据库表关系分析异常，存在多种关系，无法识别！");
+			} catch (TableRelationAnalyzeException e) {
+				e.printStackTrace();
+			}
 		} else if (nes.size() == 0) {
-			//logger.warn("【表关系分析】:没有合适的关系模型！");
+			try {
+				throw new TableRelationAnalyzeException("数据库表关系分析异常，没有合适的关系模型！");
+			} catch (TableRelationAnalyzeException e) {
+				e.printStackTrace();
+			}
 		} else {
 			int n = nes.get(0);
 			if (n == 1) {// 1.单表

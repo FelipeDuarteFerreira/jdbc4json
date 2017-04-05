@@ -80,7 +80,30 @@ public class JdbcDao_Test {
 		u.setName("hh");
 		dao.update(u);
 	}
+	
+	
+	@Test
+	public void max() {
+		User u = new User();
+		Conditions c = new Conditions(u);
+		int max = dao.max("age",c);
+		logger.info(max); 
+	}
+	
+	@Test
+	public void max2() {
+		User u = new User();
+		u.setSex("1");
+		//Conditions c = new Conditions(u);
+		int max = dao.max("age",u);
+		logger.info(max); 
+	}
 
+	
+	
+	
+	
+	
 	@Test
 	public void get() {
 		User u = new User();
@@ -202,7 +225,7 @@ public class JdbcDao_Test {
 		Clazz clazz = new Clazz();
 		clazz.setClazzId("002");
 		Conditions c = new Conditions(clazz, s);
-		Page page = dao.getPage(1L, 3L,TableRelation.ONE_MANY, c);
+		Page page = dao.getPage(1L, 3L,  c);
 		One2Many<Clazz, Student> o2m = page.getOne2Many();
 		Clazz cl = o2m.getOne();
 		List<Student> stues = o2m.getMany();

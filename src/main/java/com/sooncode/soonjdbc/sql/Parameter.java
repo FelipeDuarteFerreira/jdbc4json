@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.sooncode.soonjdbc.constant.SQL_KEY;
 import com.sooncode.soonjdbc.constant.STRING;
-import com.sooncode.soonjdbc.exception.sql.SqlException;
+import com.sooncode.soonjdbc.exception.SqlException;
 
 /**
  * 预编译SQL和参数 模型
