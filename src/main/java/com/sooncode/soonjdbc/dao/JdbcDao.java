@@ -9,7 +9,6 @@ import com.sooncode.soonjdbc.Jdbc;
 import com.sooncode.soonjdbc.bean.DbBean;
 import com.sooncode.soonjdbc.constant.SQL_KEY;
 import com.sooncode.soonjdbc.constant.TableRelation;
-import com.sooncode.soonjdbc.exception.SqlException;
 import com.sooncode.soonjdbc.exception.TableRelationAnalyzeException;
 import com.sooncode.soonjdbc.page.Page;
 import com.sooncode.soonjdbc.reflect.RObject;
@@ -206,6 +205,10 @@ public class JdbcDao {
 	public <T,E>  T  max(String key, E javaBean) {
 		Conditions c = new Conditions(javaBean);
 		return this.max(key, c) ;
+	}
+	public <T,E>  T  min(String key, E javaBean) {
+		Conditions c = new Conditions(javaBean);
+		return this.min(key, c) ;
 	}
 	
 	

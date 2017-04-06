@@ -1,5 +1,6 @@
 package com.sooncode.soonjdbc.page;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class Many2Many<L, M, R> {
@@ -16,6 +17,20 @@ public class Many2Many<L, M, R> {
 
 	public List<One2One> getMany() {
 		return many;
+	}
+	/*public List<M> getMany(Class<M> mClass) {
+		List<M> list = new LinkedList<>();
+		for (One2One o2o : many) {
+			list.add(o2o.getOne(mClass));
+		}
+		return list;
+	}*/
+	public List<R> getMany(Class<R> rClass) {
+		List<R> list = new LinkedList<>();
+		for (One2One o2o : many) {
+			list.add(o2o.getOne(rClass));
+		}
+		return list;
 	}
 
 	public void setMany(List<One2One> many) {

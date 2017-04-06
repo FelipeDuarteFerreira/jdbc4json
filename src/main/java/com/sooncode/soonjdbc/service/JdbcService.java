@@ -28,8 +28,13 @@ public class JdbcService {
 		this.jdbcDao = jdbcDao;
 	}
 
-	public <L, M, R> Page getPage(long pageNum, long pageSize, L left, M middle, R right) {
+	/*public <L, M, R> Page getPage(long pageNum, long pageSize, L left, M middle, R right) {
 		return jdbcDao.getPage(pageNum, pageSize, left, middle, right);
+	}*/
+	
+	
+	public   Page getPage(long pageNum, long pageSize, Object left, Object... other) {
+		return jdbcDao.getPage(pageNum, pageSize, left, other);
 	}
 
 	public Page getPage(long pageNum, long pageSize, Conditions conditions) {
@@ -72,4 +77,18 @@ public class JdbcService {
 		return jdbcDao.count(key, javaBean);
 	}
 
+	
+	public <T,E> T max (String key,E javaBean){
+		return jdbcDao.max(key, javaBean);
+	}
+	
+	public <T> T  max(  String key,   Conditions conditions) {
+		return jdbcDao.max(key,conditions);
+	}
+	public <T> T  min(  String key,   Conditions conditions) {
+		return jdbcDao.min(key,conditions);
+	}
+	public <T,E> T min (String key,E javaBean){
+		return jdbcDao.min(key, javaBean);
+	}
 }
