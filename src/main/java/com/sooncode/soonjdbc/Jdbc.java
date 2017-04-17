@@ -1,11 +1,13 @@
 package com.sooncode.soonjdbc;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-
 import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
@@ -23,7 +24,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.sooncode.soonjdbc.bean.DbBean;
 import com.sooncode.soonjdbc.bean.DbBeanCache;
- 
+
 import com.sooncode.soonjdbc.constant.DATE_FORMAT;
 import com.sooncode.soonjdbc.sql.Parameter;
 import com.sooncode.soonjdbc.sql.verification.SqlVerification;
@@ -36,32 +37,22 @@ import com.sooncode.soonjdbc.util.T2E;
  *
  */
 
-
 public class Jdbc {
 
 	public final static Logger logger = Logger.getLogger("Jdbc.class");
 	private JdbcTemplate jdbcTemplate;
- 
-	public Jdbc(){
-		 
+
+	public Jdbc() {
+
 	}
-	
-	
-	 
 
 	public JdbcTemplate getJdbcTemplate() {
 		return jdbcTemplate;
 	}
 
-
-
-
 	public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
 	}
-
-
-
 
 	/**
 	 * 执行更新(包含添加,删除,修改)
@@ -82,8 +73,8 @@ public class Jdbc {
 		if (SqlVerification.isUpdateSql(sql) == false) {
 			return 0L;
 		}
-        logger.debug("【SQL】"+parameter.getFormatSql());
-        logger.debug("【参数】"+parameter.getParams());
+		logger.debug("【SQL】" + parameter.getFormatSql());
+		logger.debug("【参数】" + parameter.getParams());
 		return jdbcTemplate.execute(new ConnectionCallback<Long>() {
 
 			@Override
@@ -118,8 +109,8 @@ public class Jdbc {
 		if (SqlVerification.isSelectSql(parameter.getReadySql()) == false) {
 			return new LinkedList<>();
 		}
-        logger.debug("【SQL】"+parameter.getFormatSql());
-        logger.debug("【参数】"+parameter.getParams());
+		logger.debug("【SQL】" + parameter.getFormatSql());
+		logger.debug("【参数】" + parameter.getParams());
 		return jdbcTemplate.execute(new ConnectionCallback<List<Map<String, Object>>>() {
 
 			@Override
@@ -148,11 +139,12 @@ public class Jdbc {
 
 	/**
 	 * 执行查询语句 (只有一条返回记录)。
+	 * 
 	 * @param parameter
 	 * @return
 	 */
 	public Map<String, Object> get(Parameter parameter) {
-		 
+
 		if (SqlVerification.isSelectSql(parameter.getReadySql()) == false) {
 			return new HashMap<>();
 		}
@@ -164,21 +156,72 @@ public class Jdbc {
 		}
 	}
 
-	public <T> DbBean getDbBean  (final T javaBean) {
-		 
+	public <T> DbBean getDbBean(final T javaBean) {
+
 		return jdbcTemplate.execute(new ConnectionCallback<DbBean>() {
 
 			@Override
 			public DbBean doInConnection(Connection con) throws SQLException, DataAccessException {
-				DbBean	db = DbBeanCache.getDbBean(con, javaBean); 
+				DbBean db = DbBeanCache.getDbBean(con, javaBean);
 				return db;
 			}
 		});
-		
-		
-		
+
 	}
-	 
+
+	/**
+	 * 执行存储过程
+	 * @param callName  存储过程名称
+	 * @param ins 入参
+	 * @return 出参
+	 */
+	public Object executeProcedure(final String callName, final Object... ins) {
+		return jdbcTemplate.execute(new ConnectionCallback<Object>() {
+			@Override
+			public Object doInConnection(Connection con) throws SQLException, DataAccessException {
+				String sql = getProcedureSql(callName, ins);
+				CallableStatement callableStatement = null;
+				// sql 中参数的个数
+				int n = ins.length;
+				// 创建调用存储过程的预定义SQL语句
+				// 创建过程执行器
+				callableStatement = con.prepareCall(sql);
+				// 设置入参和出参
+				for (int i = 1; i <= ins.length; i++) {
+					callableStatement.setObject(i, ins[i - 1]);
+				}
+				if (n - ins.length == 1) {
+					callableStatement.registerOutParameter(n, Types.JAVA_OBJECT); // 注册出参
+					callableStatement.executeUpdate();
+					Object result = callableStatement.getObject(n);
+					return result;
+				} else if (n == ins.length) { // 没有输出参数
+					callableStatement.executeUpdate();
+					return null;
+				} else { // 参数不匹配
+					return null;
+				}
+			}
+		});
+	}
+ 
+
+	private String getProcedureSql(String callName, Object... paras) {
+
+		String sql = new String();
+		sql = sql + "{call " + callName + "(";
+		for (int i = 0; i < paras.length; i++) {
+			if (i == 0) {
+				sql = sql + "?";
+
+			} else {
+				sql = sql + ",?";
+			}
+		}
+		sql = sql + ")}";
+		return sql;
+	}
+
 	private Long getUpdateResult(Connection con, Parameter p) {
 
 		Long n;

@@ -5,20 +5,26 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.sooncode.soonjdbc.Jdbc;
 import com.sooncode.soonjdbc.sql.Parameter;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("/applicationContext.xml")
 public class Jdbc_Test {
 	private static Logger logger = Logger.getLogger("Jdbc_Test.class");
+	@Autowired
 	private Jdbc jdbc ;
 
 	@Test
 	public void executeProcedure() {
-		String sql = "{call proc_name2(?,?)}";
 		Integer in = 1;
-	//	Object r = jdbc.procedure(sql, in);
-	//	logger.info(r);
+		Object r = jdbc.executeProcedure("proc_name2", in,2);
+		logger.info(r);
 	}
 	
 	@Test

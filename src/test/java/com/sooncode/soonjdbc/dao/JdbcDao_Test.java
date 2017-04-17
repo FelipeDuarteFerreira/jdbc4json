@@ -11,7 +11,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sooncode.soonjdbc.constant.TableRelation;
 import com.sooncode.soonjdbc.dao.JdbcDao;
 import com.sooncode.soonjdbc.entity.ChooseCourse;
 import com.sooncode.soonjdbc.entity.Clazz;
@@ -29,7 +28,9 @@ import com.sooncode.soonjdbc.page.One2Many2Many;
 import com.sooncode.soonjdbc.page.One2One;
 import com.sooncode.soonjdbc.page.Page;
 import com.sooncode.soonjdbc.sql.condition.Conditions;
+import com.sooncode.soonjdbc.sql.condition.DateFormat4Sql;
 import com.sooncode.soonjdbc.sql.condition.Sort;
+import com.sooncode.soonjdbc.sql.condition.sign.EqualSign;
 import com.sooncode.soonjdbc.sql.condition.sign.LikeSign;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -108,9 +109,11 @@ public class JdbcDao_Test {
 	public void get() {
 		User u = new User();
 		u.setSex("1");
-		u.setName("hello jdbc");
+	//	u.setName("hello jdbc");
 		Conditions c = new Conditions(u);
-		c.setCondition("name", LikeSign.LIKE);
+		c.setCondition("name", LikeSign.LIKE , "hello jdbc");
+		c.setCondition( "createDate" ,EqualSign.LT,new DateFormat4Sql().ymd(new Date()));
+		c.setCondition( "createDate" ,EqualSign.GT,new DateFormat4Sql().ymd(new Date()));
 		c.setOderBy("name", Sort.DESC);
 
 		List<User> list = dao.gets(c);
@@ -146,6 +149,19 @@ public class JdbcDao_Test {
 		long n = dao.count("*", c);
 		logger.info("------------:" + n);
 
+	}
+	
+	
+	@Test
+	public void getOne2One() {
+		Student s = new Student();
+		s.setStudentId("001");
+	    
+		One2One o2o = dao.getOne2One(s, new Clazz());
+		s = o2o.getOne(Student.class);
+		Clazz cl = o2o.getOne(Clazz.class);
+		logger.info(s+"------------:" + cl);
+		
 	}
 
 	/**
@@ -491,6 +507,10 @@ public class JdbcDao_Test {
 		}
 		logger.info("---------------------------------------------------------------");
 
+	}
+	
+	public static void main(String[] args) {
+		System.out.println(new Date().getTime());
 	}
 
 }

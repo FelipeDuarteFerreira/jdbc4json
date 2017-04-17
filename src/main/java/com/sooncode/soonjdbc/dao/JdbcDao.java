@@ -4,12 +4,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
- 
+
 import com.sooncode.soonjdbc.Jdbc;
 import com.sooncode.soonjdbc.bean.DbBean;
 import com.sooncode.soonjdbc.constant.SQL_KEY;
 import com.sooncode.soonjdbc.constant.TableRelation;
 import com.sooncode.soonjdbc.exception.TableRelationAnalyzeException;
+import com.sooncode.soonjdbc.page.One2Many;
+import com.sooncode.soonjdbc.page.One2One;
 import com.sooncode.soonjdbc.page.Page;
 import com.sooncode.soonjdbc.reflect.RObject;
 import com.sooncode.soonjdbc.sql.ComSQL;
@@ -25,8 +27,6 @@ import com.sooncode.soonjdbc.util.T2E;
  */
 
 public class JdbcDao {
-
-	 
 
 	private QueryService queryService = new QueryService();
 
@@ -146,8 +146,8 @@ public class JdbcDao {
 		}
 		return t;
 	}
-	
-	public <T> T get(Conditions  conditions) {
+
+	public <T> T get(Conditions conditions) {
 		List<T> list = gets(conditions);
 		T t = null;
 		if (list.size() == 1) {
@@ -170,48 +170,49 @@ public class JdbcDao {
 		return n;
 
 	}
-	
-	public <T> T  max(final String key, final Conditions conditions) {
-		
+
+	public <T> T max(final String key, final Conditions conditions) {
+
 		RObject<?> rObj = new RObject<>(conditions.getLeftBean().getClassName());
 		DbBean dbBean = jdbc.getDbBean(rObj.getObject());
 		String tableName = T2E.toTableName(dbBean.getBeanName());
-		String sql = "SELECT MAX(" +T2E.toColumn(key)  + ") AS MAX" + " FROM " + tableName + " WHERE 1=1 " + conditions.getWhereParameter().getReadySql();
+		String sql = "SELECT MAX(" + T2E.toColumn(key) + ") AS MAX" + " FROM " + tableName + " WHERE 1=1 " + conditions.getWhereParameter().getReadySql();
 		Parameter parameter = new Parameter();
 		parameter.setReadySql(sql);
 		parameter.setParams(conditions.getWhereParameter().getParams());
 		Map<String, Object> map = jdbc.get(parameter);
 		@SuppressWarnings("unchecked")
-		T max =  (T) map.get("max");
+		T max = (T) map.get("max");
 		return max;
-		
-	}
-	public <T> T  min(final String key, final Conditions conditions) {
-		
-		RObject<?> rObj = new RObject<>(conditions.getLeftBean().getClassName());
-		DbBean dbBean = jdbc.getDbBean(rObj.getObject());
-		String tableName = T2E.toTableName(dbBean.getBeanName());
-		String sql = "SELECT MIN(" +T2E.toColumn(key)  + ") AS MIN" + " FROM " + tableName + " WHERE 1=1 " + conditions.getWhereParameter().getReadySql();
-		Parameter parameter = new Parameter();
-		parameter.setReadySql(sql);
-		parameter.setParams(conditions.getWhereParameter().getParams());
-		Map<String, Object> map = jdbc.get(parameter);
-		@SuppressWarnings("unchecked")
-		T max =  (T) map.get("min");
-		return max;
-		
+
 	}
 
-	public <T,E>  T  max(String key, E javaBean) {
-		Conditions c = new Conditions(javaBean);
-		return this.max(key, c) ;
+	public <T> T min(final String key, final Conditions conditions) {
+
+		RObject<?> rObj = new RObject<>(conditions.getLeftBean().getClassName());
+		DbBean dbBean = jdbc.getDbBean(rObj.getObject());
+		String tableName = T2E.toTableName(dbBean.getBeanName());
+		String sql = "SELECT MIN(" + T2E.toColumn(key) + ") AS MIN" + " FROM " + tableName + " WHERE 1=1 " + conditions.getWhereParameter().getReadySql();
+		Parameter parameter = new Parameter();
+		parameter.setReadySql(sql);
+		parameter.setParams(conditions.getWhereParameter().getParams());
+		Map<String, Object> map = jdbc.get(parameter);
+		@SuppressWarnings("unchecked")
+		T max = (T) map.get("min");
+		return max;
+
 	}
-	public <T,E>  T  min(String key, E javaBean) {
+
+	public <T, E> T max(String key, E javaBean) {
 		Conditions c = new Conditions(javaBean);
-		return this.min(key, c) ;
+		return this.max(key, c);
 	}
-	
-	
+
+	public <T, E> T min(String key, E javaBean) {
+		Conditions c = new Conditions(javaBean);
+		return this.min(key, c);
+	}
+
 	public <T> long count(String key, T javaBean) {
 		Conditions c = new Conditions(javaBean);
 		long n = this.count(key, c);
@@ -228,6 +229,32 @@ public class JdbcDao {
 		return getPage(pageNum, pageSize, conditions);
 	}
 
+	public One2One getOne2One(Object left, Object... other) {
+		Conditions conditions = new Conditions(left, other);
+		return this.getOne2One(conditions);
+	}
+	public One2One getOne2One(Conditions conditions) {
+		Page page = this.getPage(1L, 1L, conditions);
+		List<One2One> list = page.getOne2One();
+		One2One o2o = null;
+		if (list.size() == 1) {
+			o2o = list.get(0);
+		}
+		return o2o;
+	}
+
+	public <L,R> One2Many<L,R> getOne2Many(Object left,Object...others){
+		Conditions conditions = new Conditions(left, others);
+		return this.getOne2Many(conditions);
+	}
+	
+	public <L,R> One2Many<L,R> getOne2Many(Conditions conditions){
+		Page page = this.getPage(1L, Long.MAX_VALUE, conditions);
+		One2Many<L,R> o2m = page.getOne2Many();
+		return o2m;
+	}
+	
+	
 	public Page getPage(long pageNum, long pageSize, Conditions conditions) {
 
 		Page page = new Page();

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+
 import com.sooncode.soonjdbc.util.T2E;
  
 
@@ -98,10 +99,19 @@ public class JavaBeanBuilder {
 			public List<Table> doInConnection(Connection con) throws SQLException, DataAccessException {
 				
 				DatabaseMetaData dm = con.getMetaData();
+				String url = dm.getURL();
+				
+				int n = url.indexOf('?');
+				int m = url.lastIndexOf('/');
+				String dataName  =  url.substring(m+1, n);
+				 
 				String[] types = { "Table" };
+				 
+				 
+				 
 				// 数据库名称/ userName/ 表名称 / 类型
 				List<Table> list = new ArrayList<>();
-				ResultSet tableSet = dm.getTables(null,  null, null, types);//
+				ResultSet tableSet = dm.getTables(dataName,  null, null, types);//
 				while (tableSet.next()) { // 遍历数据库的表
 					
 					Table t = new Table();
