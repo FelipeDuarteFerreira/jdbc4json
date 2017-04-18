@@ -131,8 +131,8 @@ public class ComSQL {
 		param.put(1, dbBean.getPrimaryFieldValue());
 		int index=2;
 		for (Entry<String, Object> entry : map.entrySet()) {
-			
-			if (entry.getValue() != null && !entry.getKey().trim().equals(pk)) {
+			String key = T2E.toColumn(entry.getKey().trim());
+			if (entry.getValue() != null && !key.equals(pk)) {
 				 
 				s = s +SQL_KEY.COMMA + T2E.toColumn(entry.getKey())  + SQL_KEY.EQ + STRING.QUESTION ;
 				param.put(index,entry.getValue());
