@@ -34,7 +34,7 @@ public class TableRelationAnalyze {
 			return false;
 		}
 
-		String leftDbName = leftDbBean.getBeanName().toUpperCase();
+		String leftDbName = leftDbBean.getTableName();
 		boolean b = true;
 		for (DbBean dbBean : otherBeans) {
 			List<ForeignKey> fkes = dbBean.getForeignKeies();
@@ -89,7 +89,7 @@ public class TableRelationAnalyze {
 			return false;
 		}
 
-		String leftDbName = leftDbBean.getBeanName().toUpperCase();
+		String leftDbName = leftDbBean.getTableName();
 		boolean b = true;
 		for (DbBean dbBean : otherBeans) {
 			List<ForeignKey> fkes = dbBean.getForeignKeies();
@@ -120,8 +120,8 @@ public class TableRelationAnalyze {
 		if (leftDbBean == null || otherBeans == null || otherBeans.length != 2) {
 			return false;
 		}
-		String leftDbBeanName = leftDbBean.getBeanName().toUpperCase();
-		String rightDbBeanName = otherBeans[1].getBeanName().toUpperCase();
+		String leftDbBeanName = leftDbBean.getTableName();
+		String rightDbBeanName = otherBeans[1].getTableName();
 		List<ForeignKey> middleFkes = otherBeans[0].getForeignKeies();
 		int n = 0;
 		for (ForeignKey fk : middleFkes) {
@@ -147,8 +147,8 @@ public class TableRelationAnalyze {
 		if (leftDbBean == null || middleDbBean == null || rightDbBean == null) {
 			return false;
 		}
-		String leftDbBeanName = leftDbBean.getBeanName().toUpperCase();
-		String middleDbBeanName = middleDbBean.getBeanName().toUpperCase();
+		String leftDbBeanName = leftDbBean.getTableName();
+		String middleDbBeanName = middleDbBean.getTableName();
 		List<ForeignKey> mFkes = middleDbBean.getForeignKeies();
 		List<ForeignKey> rFkes = rightDbBean.getForeignKeies();
 		 

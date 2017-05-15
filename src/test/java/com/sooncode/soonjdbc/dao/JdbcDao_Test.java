@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sooncode.soonjdbc.ModelTransform;
 import com.sooncode.soonjdbc.dao.JdbcDao;
+import com.sooncode.soonjdbc.entity.ChineseDog;
+import com.sooncode.soonjdbc.entity.ChineseMan;
 import com.sooncode.soonjdbc.entity.ChooseCourse;
 import com.sooncode.soonjdbc.entity.Clazz;
 import com.sooncode.soonjdbc.entity.Course;
@@ -55,10 +57,10 @@ public class JdbcDao_Test {
 		u.setCreateDate(new Date());
 		u.setUpdateDate(new Date());
 
-     for (int i = 0 ;i<1000;i++) {
+    /* for (int i = 0 ;i<1000;i++) {
 	     dao.save(u);
 			
-		}
+		}*/
 		 
 	
 	}
@@ -529,16 +531,13 @@ public class JdbcDao_Test {
 	}
 	@Test
 	public void getPage12() {
-		School sc = new School();
-		sc.setSchoolId(1);
-		Clazz clazz = new Clazz();
-		Page page = dao.getPage(1L, 10L, sc,clazz);
+		ChineseMan cm = new ChineseMan();
+		cm.setId(1);
+		ChineseDog cd = new ChineseDog();
+		Page page = dao.getPage(1L, 10L, cm,cd);
 		 
 		logger.info(page.getOne2Many());
 	}
 	
-	public static void main(String[] args) {
-		System.out.println(new Date().getTime());
-	}
-
+	 
 }
