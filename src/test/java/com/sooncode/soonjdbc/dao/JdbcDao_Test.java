@@ -11,6 +11,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.sooncode.soonjdbc.ModelTransform;
 import com.sooncode.soonjdbc.dao.JdbcDao;
 import com.sooncode.soonjdbc.entity.ChooseCourse;
 import com.sooncode.soonjdbc.entity.Clazz;
@@ -22,6 +23,7 @@ import com.sooncode.soonjdbc.entity.Student;
 import com.sooncode.soonjdbc.entity.Teacher;
 import com.sooncode.soonjdbc.entity.Teaching;
 import com.sooncode.soonjdbc.entity.User;
+import com.sooncode.soonjdbc.model.StudentAndIdentity;
 import com.sooncode.soonjdbc.page.Many2Many;
 import com.sooncode.soonjdbc.page.One2Many;
 import com.sooncode.soonjdbc.page.One2Many2Many;
@@ -32,6 +34,10 @@ import com.sooncode.soonjdbc.sql.condition.DateFormat4Sql;
 import com.sooncode.soonjdbc.sql.condition.Sort;
 import com.sooncode.soonjdbc.sql.condition.sign.EqualSign;
 import com.sooncode.soonjdbc.sql.condition.sign.LikeSign;
+import com.sooncode.soontest.Comput;
+import com.sooncode.soontest.ManyTheadTest;
+import com.sooncode.soontest.OpenInterfaceTest;
+import com.sooncode.soontest.SoonTest;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/applicationContext.xml")
@@ -48,8 +54,13 @@ public class JdbcDao_Test {
 		u.setSex("1");
 		u.setCreateDate(new Date());
 		u.setUpdateDate(new Date());
-		dao.save(u);
 
+     for (int i = 0 ;i<1000;i++) {
+	     dao.save(u);
+			
+		}
+		 
+	
 	}
 
 	@Test
@@ -76,10 +87,11 @@ public class JdbcDao_Test {
 	@Transactional
 	public void transactional() {
 		User u = new User();
-		u.setId(16);
+		u.setId(20);
 		dao.delete(u);
-		u.setName("hh");
-		dao.update(u);
+		//u.setName("hh");
+		//dao.update(u);
+		//int n = 1/0;
 	}
 	
 	
@@ -109,15 +121,20 @@ public class JdbcDao_Test {
 	public void get() {
 		User u = new User();
 		u.setSex("1");
-	//	u.setName("hello jdbc");
+		u.setName("hello jdbc");
 		Conditions c = new Conditions(u);
-		c.setCondition("name", LikeSign.LIKE , "hello jdbc");
-		c.setCondition( "createDate" ,EqualSign.LT,new DateFormat4Sql().ymd(new Date()));
-		c.setCondition( "createDate" ,EqualSign.GT,new DateFormat4Sql().ymd(new Date()));
-		c.setOderBy("name", Sort.DESC);
+		//c.setCondition("name", LikeSign.LIKE , "hello jdbc");
+		c.setCondition("sex", EqualSign.NOT_EQ, "0");
+		//c.setCondition( "createDate" ,EqualSign.LT,new DateFormat4Sql().ymd(new Date()));
+		//c.setCondition( "createDate" ,EqualSign.GT,new DateFormat4Sql().ymd(new Date()));
+		//c.setOderBy("name", Sort.DESC);
 
-		List<User> list = dao.gets(c);
+		
+		Page p = dao.getPage(1L, 2L, c);
+		
+		List<User> list = p.getOnes();
 		logger.info(list);
+		
 
 	}
 
@@ -202,6 +219,9 @@ public class JdbcDao_Test {
 			Student st = one2One.getOne(Student.class);
 			Identity ide = one2One.getOne(Identity.class);
 			logger.info(st + " -------" + ide);
+			
+			StudentAndIdentity si = ModelTransform.getModel(one2One, StudentAndIdentity.class);
+			logger.info(si);
 		}
 		logger.info("---------------------------------------------------------------");
 	}
@@ -212,7 +232,6 @@ public class JdbcDao_Test {
 	@Test
 	public void getPage21() {
 		Student s = new Student();
-
 		Identity id = new Identity();
 		Clazz cl = new Clazz();
 		Conditions c = new Conditions(s, id, cl);
@@ -240,8 +259,8 @@ public class JdbcDao_Test {
 		// s.setAge(22);
 		Clazz clazz = new Clazz();
 		clazz.setClazzId("002");
-		Conditions c = new Conditions(clazz, s);
-		Page page = dao.getPage(1L, 3L,  c);
+		//Conditions c = new Conditions(clazz, s);
+		Page page = dao.getPage(1L, 3L,  clazz,s);
 		One2Many<Clazz, Student> o2m = page.getOne2Many();
 		Clazz cl = o2m.getOne();
 		List<Student> stues = o2m.getMany();
@@ -507,6 +526,15 @@ public class JdbcDao_Test {
 		}
 		logger.info("---------------------------------------------------------------");
 
+	}
+	@Test
+	public void getPage12() {
+		School sc = new School();
+		sc.setSchoolId(1);
+		Clazz clazz = new Clazz();
+		Page page = dao.getPage(1L, 10L, sc,clazz);
+		 
+		logger.info(page.getOne2Many());
 	}
 	
 	public static void main(String[] args) {

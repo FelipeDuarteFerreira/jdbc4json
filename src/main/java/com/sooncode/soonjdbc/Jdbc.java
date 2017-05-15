@@ -79,7 +79,7 @@ public class Jdbc {
 
 			@Override
 			public Long doInConnection(Connection con) throws SQLException, DataAccessException {
-
+				logger.debug("****"+con.toString());
 				return getUpdateResult(con, parameter);
 			}
 		});
@@ -115,6 +115,8 @@ public class Jdbc {
 
 			@Override
 			public List<Map<String, Object>> doInConnection(Connection con) throws SQLException, DataAccessException {
+				
+				logger.debug(con.toString());
 				PreparedStatement preparedStatement = con.prepareStatement(parameter.getReadySql());
 				preparedStatement = preparedStatementSet(preparedStatement, parameter);
 

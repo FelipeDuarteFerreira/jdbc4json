@@ -32,11 +32,11 @@
 	<bean id="jdbcService" class="com.sooncode.soonjdbc.service.JdbcService">
 		<property name="jdbcDao" ref="jdbcDao" />
 	</bean>
-	<bean id="javaBeanBuilder" class="com.sooncode.soonjdbc.util.create_entity.JavaBeanBuilder">
+	<!-- <bean id="javaBeanBuilder" class="com.sooncode.soonjdbc.util.create_entity.JavaBeanBuilder">
 		<property name="jdbcTemplate" ref="jdbcTemplate" />
 		<property name="codePath" value="C:\Users\pc\git\peng_yun_service\src\main\java\com\eeduspace\cibn\persist\entity"/>
 		<property name="packageName" value="com.eeduspace.cibn.persist.entity"/>
-	</bean>
+	</bean> -->
 
 	<!-- (事务管理)transaction manager, use JtaTransactionManager for global tx -->
 	

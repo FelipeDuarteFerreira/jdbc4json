@@ -150,7 +150,7 @@ public class DbBeanCache {
 				String pkTableName = foreignKeyResultSet.getString("PKTABLE_NAME").toUpperCase();
 				ForeignKey f = new ForeignKey();
 				f.setForeignProperty(T2E.toField(fkColumnName));
-				f.setReferDbBeanName(T2E.toClassName(pkTableName));
+				f.setReferDbBeanName(pkTableName);
 				list.add(f);
 			}
 			return list;
