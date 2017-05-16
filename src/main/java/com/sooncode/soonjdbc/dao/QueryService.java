@@ -132,7 +132,7 @@ class QueryService {
 
 	public <L> Page getOnes(long pageNum, long pageSize, Conditions conditions, Jdbc jdbc) {
 		DbBean leftDbBean = jdbc.getDbBean(conditions.getLeftBean().getJavaBean());
-		String leftTableName = T2E.toTableName(leftDbBean.getBeanName());
+		String leftTableName =  leftDbBean.getTableName();
 		String columns = ComSQL.columns4One(leftDbBean);
 		String where = conditions.getWhereParameter().getReadySql() + getLimit(pageNum, pageSize);
 		String sql = SQL_KEY.SELECT + columns + SQL_KEY.FROM + leftTableName + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + where;
@@ -157,9 +157,9 @@ class QueryService {
 	private List<ForeignKey> comparison(List<ForeignKey> fkes, List<DbBean> dbBeans) {
 		List<ForeignKey> list = new LinkedList<>();
 		for (DbBean dbBean : dbBeans) {
-			String tableName = T2E.toTableName(dbBean.getBeanName());
+			String tableName =  dbBean.getTableName();
 			for (ForeignKey fk : fkes) {
-				String referName = T2E.toTableName(fk.getReferDbBeanName());
+				String referName = fk.getReferDbBeanName();
 				if (tableName.equals(referName)) {
 					list.add(fk);
 				}
@@ -176,7 +176,7 @@ class QueryService {
 
 		// --------------------------------------------------------------------------
 
-		String leftTableName = T2E.toTableName(leftDbBean.getBeanName());
+		String leftTableName =  leftDbBean.getTableName();
 		String leftPk = T2E.toColumn(leftDbBean.getPrimaryField());
 		List<DbBean> newDbBeans = new ArrayList<>();
 		newDbBeans.add(leftDbBean);
@@ -196,8 +196,8 @@ class QueryService {
 				for (int i = 0; i < otherDbBeans.size(); i++) {
 					ForeignKey fk = leftFkes.get(i);
 					String fkName = T2E.toColumn(fk.getForeignProperty());
-					String referTableName = T2E.toTableName(fk.getReferDbBeanName());
-					String otherTableName = T2E.toTableName(dbBean.getBeanName());
+					String referTableName =  fk.getReferDbBeanName() ;
+					String otherTableName =  dbBean.getTableName() ;
 					if (referTableName.equals(otherTableName)) {
 						otherTableNames = otherTableNames + STRING.SPACING + STRING.COMMA + STRING.SPACING + otherTableName + STRING.SPACING;
 						String otherTablePkName = T2E.toColumn(dbBean.getPrimaryField());
@@ -210,9 +210,9 @@ class QueryService {
 
 			for (DbBean other : otherDbBeans) {
 				List<ForeignKey> fkes = other.getForeignKeies();
-				String otherTableName = T2E.toTableName(other.getBeanName());
+				String otherTableName = other.getTableName();
 				for (ForeignKey f : fkes) {
-					String referTableName = T2E.toTableName(f.getReferDbBeanName());
+					String referTableName =  f.getReferDbBeanName();
 					String fkName = T2E.toColumn(f.getForeignProperty());
 					if(leftTableName.equals(referTableName)){
 						otherTableNames = otherTableNames + STRING.SPACING + STRING.COMMA + STRING.SPACING + otherTableName + STRING.SPACING;
@@ -259,7 +259,7 @@ class QueryService {
 		DbBean leftDbBean = jdbc.getDbBean(conditions.getLeftBean().getJavaBean());
 		List<DbBean> otherDbBeans = getOtherDbBeans(jdbc, conditions);
 
-		String leftTableName = T2E.toTableName(leftDbBean.getBeanName());
+		String leftTableName =  leftDbBean.getTableName() ;
 		String leftTablePk = T2E.toColumn(leftDbBean.getPrimaryField());
 		List<DbBean> newDbBeans = new ArrayList<>();
 		newDbBeans.add(leftDbBean);
@@ -271,7 +271,7 @@ class QueryService {
 		String otherTableName = new String();
 		String condition = new String();
 		for (DbBean dbBean : otherDbBeans) {
-			String tableName = T2E.toTableName(dbBean.getBeanName());
+			String tableName =  dbBean.getTableName() ;
 
 			otherTableName = otherTableName + STRING.SPACING + STRING.COMMA + STRING.SPACING + tableName + STRING.SPACING;
 			List<ForeignKey> fkes = dbBean.getForeignKeies();
@@ -328,15 +328,15 @@ class QueryService {
 		String leftTablePk = T2E.toColumn(leftDbBean.getPrimaryField());
 		String rightTablePk = T2E.toColumn(rightDbBean.getPrimaryField());
 
-		String leftTableName = T2E.toTableName(leftDbBean.getBeanName());
-		String middleTableName = T2E.toTableName(middleDbBean.getBeanName());
-		String rightTableName = T2E.toTableName(rightDbBean.getBeanName());
+		String leftTableName =  leftDbBean.getTableName() ;
+		String middleTableName =  middleDbBean.getTableName() ;
+		String rightTableName =  rightDbBean.getTableName() ;
 
 		tableNames = leftTableName + STRING.SPACING + STRING.COMMA + STRING.SPACING + middleTableName + STRING.SPACING + STRING.COMMA + STRING.SPACING + rightTableName + STRING.SPACING;
 		List<ForeignKey> fkes = middleDbBean.getForeignKeies();
 
-		String lTableName = T2E.toTableName(leftDbBean.getJavaBean().getClass().getSimpleName());
-		String rTableName = T2E.toTableName(rightDbBean.getJavaBean().getClass().getSimpleName());
+		String lTableName = leftDbBean.getTableName();
+		String rTableName =  rightDbBean.getTableName();
 
 		if (lTableName.equals(rTableName)) {
 
@@ -367,8 +367,8 @@ class QueryService {
 			for (Bean<M> mBean : mBeans) {
 				List<Bean<R>> rBeans = findBean(list, mBean, rightDbBean);
 				if (rBeans.size() > 0) {
-					One2One o2o = new One2One();// (mBean.getJavaBean(),
-												// rBeans.get(0).getJavaBean());
+					One2One o2o = new One2One(); 
+												 
 					o2o.add(mBean.getJavaBean());
 					o2o.add(rBeans.get(0).getJavaBean());
 					o2os.add(o2o);
@@ -407,9 +407,9 @@ class QueryService {
 		DbBean rightDbBean = otherDbBeans.get(1);
 		String rightTablePk = T2E.toColumn(rightDbBean.getPrimaryField());
 		String leftTablePk = T2E.toColumn(leftDbBean.getPrimaryField());
-		String leftTableName = T2E.toTableName(leftDbBean.getBeanName());
-		String middleTableName = T2E.toTableName(middleDbBean.getBeanName());
-		String rightTableName = T2E.toTableName(rightDbBean.getBeanName());
+		String leftTableName =  leftDbBean.getTableName() ;
+		String middleTableName = middleDbBean.getTableName();
+		String rightTableName =  rightDbBean.getTableName() ;
 		tableNames = leftTableName + STRING.SPACING + STRING.COMMA + STRING.SPACING + middleTableName + STRING.SPACING + STRING.COMMA + STRING.SPACING + rightTableName + STRING.SPACING;
 		List<ForeignKey> fkes = middleDbBean.getForeignKeies();
 		for (ForeignKey f : fkes) {
@@ -478,9 +478,9 @@ class QueryService {
 		String mPK = T2E.toColumn(middleDbBean.getPrimaryField());
 		String leftTablePk = T2E.toColumn(leftDbBean.getPrimaryField());
 		DbBean rightDbBean = otherDbBeans.get(1);
-		String leftTableName = T2E.toTableName(leftDbBean.getBeanName());
-		String middleTableName = T2E.toTableName(middleDbBean.getBeanName());
-		String rightTableName = T2E.toTableName(rightDbBean.getBeanName());
+		String leftTableName =  leftDbBean.getTableName() ;
+		String middleTableName =  middleDbBean.getTableName() ;
+		String rightTableName =  rightDbBean.getTableName() ;
 
 		tableNames = leftTableName + STRING.SPACING + STRING.COMMA + STRING.SPACING + middleTableName + STRING.SPACING + STRING.COMMA + STRING.SPACING + rightTableName + STRING.SPACING;
 		List<ForeignKey> mFkes = middleDbBean.getForeignKeies();

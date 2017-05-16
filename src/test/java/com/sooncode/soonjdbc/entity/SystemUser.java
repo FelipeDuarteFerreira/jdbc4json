@@ -1,13 +1,15 @@
 package com.sooncode.soonjdbc.entity;
+
 import java.io.Serializable;
 /**
 *用户
 * @author hechen 
 * 
 */ 
-public class User implements Serializable{ 
+public class SystemUser implements Serializable{ 
 	 private static final long serialVersionUID = 1L;
-	
+	 /** 编号 */ 
+	 private Integer id; 
 	 /** 姓名 */
 	 private String name ;
 	 /**  */
@@ -21,9 +23,6 @@ public class User implements Serializable{
 	 /**  */
 	 private java.util.Date createDate ;
 
-	 /** 编号 */ 
-	 private Integer id; 
-	 
 	 /** 姓名 */
 	 public String getName() { 
 	 	 return name;
@@ -86,9 +85,6 @@ public class User implements Serializable{
 	 public void setCreateDate(java.util.Date createDate) {
 	 	 this.createDate = createDate;
 	 }
-	@Override
-	public String toString() {
-		return "User [name=" + name + ", age=" + age + ", updateDate=" + updateDate + ", sex=" + sex + ", address=" + address + ", createDate=" + createDate + ", id=" + id + "]";
-	}
 
 }
+

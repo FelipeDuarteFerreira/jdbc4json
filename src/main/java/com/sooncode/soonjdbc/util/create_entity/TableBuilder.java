@@ -225,8 +225,8 @@ public class TableBuilder {
 	}
 
 	 public static void main(String[] args) {
-		TableBuilder tb = new TableBuilder("211.157.179.212", "3006", "root", "FRIGHTadmin", "base_data_manager");
-		String code = tb.getEntityClassCode("setting_cell");
+		TableBuilder tb = new TableBuilder("127.0.0.1", "3306", "root", "hechenwe@gmail.com", "jdbc");
+		String code = tb.getEntityClassCode("Student");
 		System.out.println(code);
 	}
 

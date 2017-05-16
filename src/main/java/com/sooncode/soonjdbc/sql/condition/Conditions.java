@@ -26,6 +26,8 @@ public class Conditions {
 	private DbBean[] otherBeans;
 	private Map<String, Condition> ces;
 
+	
+	
 	private String keys;
 
 	/**
@@ -127,14 +129,14 @@ public class Conditions {
 	 * @param key
 	 * @return
 	 */
-	public Conditions setIsNullCondition(String key) {
+	public Conditions setIsNullCondition(String key) {//createDate
 
-		Condition c = ces.get(key);
-		c.setType("0");
+		Condition c =  getCondition(key);
 		if (c != null) {
+			c.setType("0");
 			String sql = STRING.SPACING + T2E.toColumn(key) + SQL_KEY.IS + SQL_KEY.NULL + STRING.SPACING; 
 			c.setCondition(sql);
-			ces.put(c.getKey(), c);
+			//ces.put(c.getKey(), c);
 		}
 		return this;
 	}
@@ -147,9 +149,9 @@ public class Conditions {
 	 */
 	public Conditions setIsNotNullCondition(String key) {
 
-		Condition c = ces.get(key);
-		c.setType("0");
+		Condition c = getCondition(key);
 		if (c != null) {
+			c.setType("0");
 			String sql = STRING.SPACING + T2E.toColumn(key) + SQL_KEY.IS + SQL_KEY.NOT + SQL_KEY.NULL + STRING.SPACING; 
 			c.setCondition(sql);
 			ces.put(c.getKey(), c);
@@ -165,7 +167,7 @@ public class Conditions {
 	 */
 	public Conditions setInCondition(String key, Object[] values) {
 
-		Condition c = ces.get(key);
+		Condition c = getCondition(key);
 		if (c != null) {
 			c.setType("1");
 			c.setVales(values);
@@ -344,6 +346,15 @@ public class Conditions {
 			}
 		}
 		return false;
+	}
+	private Condition getCondition(String key){
+		for (Entry<String, Condition> en : this.ces.entrySet()) {
+			String k = en.getKey();
+			if(k.equals(key)){
+				return en.getValue();
+			}
+		}
+		return null;
 	}
 	
 	

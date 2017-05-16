@@ -13,7 +13,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.sooncode.soonjdbc.entity.Student;
-import com.sooncode.soonjdbc.entity.User;
 import com.sooncode.soontest.ManyTheadTest;
 import com.sooncode.soontest.OpenInterfaceTest;
 import com.sooncode.soontest.SoonTest;

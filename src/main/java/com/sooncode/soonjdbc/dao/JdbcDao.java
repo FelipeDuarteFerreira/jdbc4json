@@ -225,8 +225,8 @@ public class JdbcDao {
 	}
 
 	public Page getPage(long pageNum, long pageSize, TableRelation TableRelation, Object leftBean, Object... otherBean) {
-		Conditions conditions = new Conditions(leftBean, TableRelation, otherBean);
-		return getPage(pageNum, pageSize, conditions);
+		Conditions conditions = new Conditions(leftBean, otherBean);
+		return getPage(pageNum, pageSize, TableRelation ,conditions);
 	}
 
 	public One2One getOne2One(Object left, Object... other) {

@@ -1,13 +1,13 @@
 package com.sooncode.soonjdbc.entity;
 
- 
+import java.io.Serializable;
 /**
 *学生
 * @author hechen 
 * 
 */ 
-public class Student { 
-	  
+public class Student implements Serializable{ 
+	 private static final long serialVersionUID = 1L;
 	 /** 学生编号 */ 
 	 private String studentId; 
 	 /** 姓名 */

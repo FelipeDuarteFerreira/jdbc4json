@@ -12,6 +12,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sooncode.soonjdbc.ModelTransform;
+import com.sooncode.soonjdbc.constant.TableRelation;
 import com.sooncode.soonjdbc.dao.JdbcDao;
 import com.sooncode.soonjdbc.entity.ChineseDog;
 import com.sooncode.soonjdbc.entity.ChineseMan;
@@ -24,7 +25,7 @@ import com.sooncode.soonjdbc.entity.School;
 import com.sooncode.soonjdbc.entity.Student;
 import com.sooncode.soonjdbc.entity.Teacher;
 import com.sooncode.soonjdbc.entity.Teaching;
-import com.sooncode.soonjdbc.entity.User;
+import com.sooncode.soonjdbc.entity.SystemUser;
 import com.sooncode.soonjdbc.model.StudentAndIdentity;
 import com.sooncode.soonjdbc.page.Many2Many;
 import com.sooncode.soonjdbc.page.One2Many;
@@ -50,7 +51,7 @@ public class JdbcDao_Test {
 
 	@Test
 	public void save() {
-		User u = new User();
+		SystemUser u = new SystemUser();
 		u.setAge(123);
 		u.setName("hello jdbc");
 		u.setSex("1");
@@ -67,7 +68,7 @@ public class JdbcDao_Test {
 
 	@Test
 	public void update() {
-		User u = new User();
+		SystemUser u = new SystemUser();
 		u.setId(11);
 		u.setAge(34);
 		u.setName("ioouuy");
@@ -78,7 +79,7 @@ public class JdbcDao_Test {
 	@Test
 
 	public void delete() {
-		User u = new User();
+		SystemUser u = new SystemUser();
 		u.setId(9);
 		dao.delete(u);
 		u.setName("hh");
@@ -88,7 +89,7 @@ public class JdbcDao_Test {
 	@Test
 	@Transactional
 	public void transactional() {
-		User u = new User();
+		SystemUser u = new SystemUser();
 		u.setId(20);
 		dao.delete(u);
 		//u.setName("hh");
@@ -99,7 +100,7 @@ public class JdbcDao_Test {
 	
 	@Test
 	public void max() {
-		User u = new User();
+		SystemUser u = new SystemUser();
 		Conditions c = new Conditions(u);
 		int max = dao.max("age",c);
 		logger.info(max); 
@@ -107,7 +108,7 @@ public class JdbcDao_Test {
 	
 	@Test
 	public void max2() {
-		User u = new User();
+		SystemUser u = new SystemUser();
 		u.setSex("1");
 		//Conditions c = new Conditions(u);
 		int max = dao.max("age",u);
@@ -121,7 +122,7 @@ public class JdbcDao_Test {
 	
 	@Test
 	public void get() {
-		User u = new User();
+		SystemUser u = new SystemUser();
 		u.setSex("1");
 		u.setName("hello jdbc");
 		Conditions c = new Conditions(u);
@@ -134,7 +135,7 @@ public class JdbcDao_Test {
 		
 		Page p = dao.getPage(1L, 2L, c);
 		
-		List<User> list = p.getOnes();
+		List<SystemUser> list = p.getOnes();
 		logger.info(list);
 		
 
@@ -142,16 +143,16 @@ public class JdbcDao_Test {
 
 	@Test
 	public void get2() {
-		User u = new User();
+		SystemUser u = new SystemUser();
 		u.setSex("1");
-		List<User> list = dao.gets(u);
+		List<SystemUser> list = dao.gets(u);
 		logger.info(list);
 
 	}
 
 	@Test
 	public void saveOrUpdate() {
-		User u = new User();
+		SystemUser u = new SystemUser();
 		u.setId(9);
 		u.setSex("1");
 		u.setName("hello jdbc");
@@ -162,7 +163,7 @@ public class JdbcDao_Test {
 
 	@Test
 	public void count() {
-		User u = new User();
+		SystemUser u = new SystemUser();
 		u.setSex("1");
 		Conditions c = new Conditions(u);
 		long n = dao.count("*", c);
@@ -188,18 +189,18 @@ public class JdbcDao_Test {
 	 */
 	@Test
 	public void getPage1() {
-		User u = new User();
+		SystemUser u = new SystemUser();
 		u.setSex("1");
 		Conditions c = new Conditions(u);
 		c.setOderBy("age", Sort.DESC);
 		c.setIsNullCondition("createDate");
-
+       // c.setInCondition("sex", new String[]{"1"});
 		Page page = dao.getPage(1L, 5L, c);
 
-		List<User> list = page.getOnes();
+		List<SystemUser> list = page.getOnes();
 		logger.info("---------------------------------------------------------------");
-		for (User user : list) {
-			logger.info(user);
+		for (SystemUser SystemUser : list) {
+			logger.info(SystemUser);
 		}
 		logger.info("---------------------------------------------------------------");
 	}
@@ -253,7 +254,7 @@ public class JdbcDao_Test {
 	}
 
 	/**
-	 * 查询 班级id为‘002’的所有学生
+	 * 查询 班级id为‘002’的所有学生  ()
 	 */
 	@Test
 	public void getPage3() {
@@ -262,7 +263,7 @@ public class JdbcDao_Test {
 		Clazz clazz = new Clazz();
 		clazz.setClazzId("002");
 		//Conditions c = new Conditions(clazz, s);
-		Page page = dao.getPage(1L, 3L,  clazz,s);
+		Page page = dao.getPage(1L, 10L, TableRelation.ONE_MANY, clazz,s);//you qi yi shi shi yong 
 		One2Many<Clazz, Student> o2m = page.getOne2Many();
 		Clazz cl = o2m.getOne();
 		List<Student> stues = o2m.getMany();
@@ -270,10 +271,10 @@ public class JdbcDao_Test {
 		logger.info(cl);
 		logger.info(stues);
 		logger.info("---------------------------------------------------------------");
-		Clazz cla = page.getOne2One().get(0).getOne(Clazz.class);
-		Student mo = page.getOne2One().get(0).getOne(Student.class);
-		logger.info(cla);
-		logger.info(mo);
+		//Clazz cla = page.getOne2One().get(0).getOne(Clazz.class);
+		//Student mo = page.getOne2One().get(0).getOne(Student.class);
+		//logger.info(cla);
+		//logger.info(mo);
 		logger.info("---------------------------------------------------------------");
 
 	}
@@ -336,7 +337,7 @@ public class JdbcDao_Test {
 	 */
 	@Test
 	public void getPage42() {
-		User u = new User();
+		SystemUser u = new SystemUser();
 
 		Friend f = new Friend();
 		f.setMeUserId(16);
@@ -347,7 +348,7 @@ public class JdbcDao_Test {
 		logger.info("---------------------------------------------------------------");
 		for (One2One o2o : o2os) {
 			Friend fr = o2o.getOne(Friend.class);
-			User user = o2o.getOne(User.class);
+			SystemUser user = o2o.getOne(SystemUser.class);
 			logger.info(fr + " ----" + user);
 		}
 

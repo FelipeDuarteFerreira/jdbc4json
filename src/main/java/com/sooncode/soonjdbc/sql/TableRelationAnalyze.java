@@ -60,7 +60,7 @@ public class TableRelationAnalyze {
 			for (ForeignKey fk : leftFkes) {
 				String referDbBeanName = fk.getReferDbBeanName().toUpperCase();
 				for (DbBean dbBean : otherBeans) {
-					String dbBeanName = dbBean.getBeanName().toUpperCase();
+					String dbBeanName = dbBean.getTableName();
 					if (dbBeanName.equals(referDbBeanName)) {
 						n++;
 					}

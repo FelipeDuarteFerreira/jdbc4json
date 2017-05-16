@@ -1,4 +1,7 @@
 package com.sooncode.soonjdbc.sql.condition;
+
+import java.util.Arrays;
+
 /**
  * 查询条件 最小单位
  * @author pc
@@ -99,7 +102,12 @@ public class Condition {
 	public void setVales(Object[] vales) {
 		this.vales = vales;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "Condition [key=" + key + ", val=" + val + ", vales=" + Arrays.toString(vales) + ", conditionSign=" + conditionSign + ", type=" + type + ", condition=" + condition + "]";
+	}
+ 
 	
 	
 }

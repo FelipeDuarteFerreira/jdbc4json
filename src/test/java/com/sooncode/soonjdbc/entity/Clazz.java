@@ -14,9 +14,13 @@ public class Clazz implements Serializable{
 	 private String clazzName ;
 	 /**  */
 	 private Integer studentNumber ;
+	 /** 班长编号 */
+	 private String monitorId ;
+	 /** 班主任编号 */
+	 private Integer mainTeacherId ;
+	 /** 学校编号 */
+	 private Integer schoolId ;
 
-	 
-	 
 	 /** 班级名称 */
 	 public String getClazzName() { 
 	 	 return clazzName;
@@ -35,6 +39,33 @@ public class Clazz implements Serializable{
 	 	 this.studentNumber = studentNumber;
 	 }
 
+	 /** 班长编号 */
+	 public String getMonitorId() { 
+	 	 return monitorId;
+	 }
+	 /** 班长编号 */
+	 public void setMonitorId(String monitorId) {
+	 	 this.monitorId = monitorId;
+	 }
+
+	 /** 班主任编号 */
+	 public Integer getMainTeacherId() { 
+	 	 return mainTeacherId;
+	 }
+	 /** 班主任编号 */
+	 public void setMainTeacherId(Integer mainTeacherId) {
+	 	 this.mainTeacherId = mainTeacherId;
+	 }
+
+	 /** 学校编号 */
+	 public Integer getSchoolId() { 
+	 	 return schoolId;
+	 }
+	 /** 学校编号 */
+	 public void setSchoolId(Integer schoolId) {
+	 	 this.schoolId = schoolId;
+	 }
+
 	 /** 班级编号 */
 	 public String getClazzId() { 
 	 	 return clazzId;
@@ -45,7 +76,7 @@ public class Clazz implements Serializable{
 	 }
 	@Override
 	public String toString() {
-		return "Clazz [clazzId=" + clazzId + ", clazzName=" + clazzName + ", studentNumber=" + studentNumber + "]";
+		return "Clazz [clazzId=" + clazzId + ", clazzName=" + clazzName + ", studentNumber=" + studentNumber + ", monitorId=" + monitorId + ", mainTeacherId=" + mainTeacherId + ", schoolId=" + schoolId + "]";
 	}
 
 }
