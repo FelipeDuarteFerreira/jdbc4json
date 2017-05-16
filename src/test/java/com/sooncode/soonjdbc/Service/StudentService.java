@@ -5,20 +5,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sooncode.soonjdbc.dao.JdbcDao;
-import com.sooncode.soonjdbc.entity.Student;
+import com.sooncode.soonjdbc.entity.SooncodeStudent;
 @Service
 public class StudentService implements StudentServiceI {
     @Autowired
 	private JdbcDao jdbcDao;
     
     @Override
-    public long saveStudent (Student s){
+    public long saveStudent (SooncodeStudent s){
     	return jdbcDao.save(s);
     }
     
     @Override
     @Transactional
-    public long updateStudetn (Student s){
+    public long updateStudetn (SooncodeStudent s){
     	
     	jdbcDao.delete(s);
     	return jdbcDao.update(s);

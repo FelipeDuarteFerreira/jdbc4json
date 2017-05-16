@@ -25,11 +25,7 @@ public class Conditions {
 	private DbBean leftBean;
 	private DbBean[] otherBeans;
 	private Map<String, Condition> ces;
-
-	
-	
-	private String keys;
-
+	 
 	/**
 	 * 排序的SQL片段
 	 */
@@ -56,21 +52,7 @@ public class Conditions {
 		return this;
 	}
 
-	/**
-	 * 设置条件
-	 * 
-	 * @param key
-	 *            字段
-	 * @param sign
-	 *            条件使用的符号
-	 * @return
-	 */
-	public Conditions setCondition(String key1, String key2) {
-		if (keys == null) {
-			keys = key1 + SQL_KEY.EQ + key2;
-		}
-		return this;
-	}
+	 
 
 	/**
 	 * 设置条件
@@ -112,13 +94,13 @@ public class Conditions {
 	 * @return
 	 */
 	public Conditions setBetweenCondition(String key, Object start, Object end) {
-
-		Condition c = ces.get(key);
-		if (c != null) {
+		if (this.containsKey(key)) {
+			Condition c = new Condition();
+			c.setKey(key);
 			c.setType("0");
 			String sql = STRING.SPACING + T2E.toColumn(key) + SQL_KEY.BETWEEN + start + SQL_KEY.AND + end + STRING.SPACING;
 			c.setCondition(sql);
-			ces.put(c.getKey(), c);
+			ces.put(new String(key), c);
 		}
 		return this;
 	}
@@ -131,12 +113,14 @@ public class Conditions {
 	 */
 	public Conditions setIsNullCondition(String key) {//createDate
 
-		Condition c =  getCondition(key);
-		if (c != null) {
+		 
+	if (this.containsKey(key)) {
+			Condition c = new Condition();
+			c.setKey(key);
 			c.setType("0");
 			String sql = STRING.SPACING + T2E.toColumn(key) + SQL_KEY.IS + SQL_KEY.NULL + STRING.SPACING; 
 			c.setCondition(sql);
-			//ces.put(c.getKey(), c);
+			ces.put(new String(key), c);
 		}
 		return this;
 	}
@@ -149,8 +133,9 @@ public class Conditions {
 	 */
 	public Conditions setIsNotNullCondition(String key) {
 
-		Condition c = getCondition(key);
-		if (c != null) {
+	if (this.containsKey(key)) {
+			Condition c = new Condition();
+			c.setKey(key);
 			c.setType("0");
 			String sql = STRING.SPACING + T2E.toColumn(key) + SQL_KEY.IS + SQL_KEY.NOT + SQL_KEY.NULL + STRING.SPACING; 
 			c.setCondition(sql);
@@ -167,12 +152,13 @@ public class Conditions {
 	 */
 	public Conditions setInCondition(String key, Object[] values) {
 
-		Condition c = getCondition(key);
-		if (c != null) {
+		if (this.containsKey(key)) {
+			Condition c = new Condition();
+		    c.setKey(key);
 			c.setType("1");
 			c.setVales(values);
 			c.setConditionSign("IN");
-			ces.put(c.getKey(), c);
+			ces.put(new String(key), c);
 		}
 		return this;
 	}
@@ -254,7 +240,7 @@ public class Conditions {
 							index++;
 						}
 
-					} else if (sign != null && sign.equals(SQL_KEY.IN)) {
+					} else if (sign != null && sign.equals(SQL_KEY.IN.trim())) {
 
 						String vales = SQL_KEY.L_BRACKET;// "(";
 						for (int i = 0; i < c.getVales().length; i++) {
@@ -347,15 +333,6 @@ public class Conditions {
 		}
 		return false;
 	}
-	private Condition getCondition(String key){
-		for (Entry<String, Condition> en : this.ces.entrySet()) {
-			String k = en.getKey();
-			if(k.equals(key)){
-				return en.getValue();
-			}
-		}
-		return null;
-	}
-	
+	 
 	
 }

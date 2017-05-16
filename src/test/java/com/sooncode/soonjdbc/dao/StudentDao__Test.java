@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.sooncode.soonjdbc.entity.Student;
+import com.sooncode.soonjdbc.entity.SooncodeStudent;
 import com.sooncode.soontest.ManyTheadTest;
 import com.sooncode.soontest.OpenInterfaceTest;
 import com.sooncode.soontest.SoonTest;
@@ -47,7 +47,7 @@ public void getStudentByStudentId(){
 public void getStudentAndIdentity(){
 	
 	String studentId = "001";
-	Student s = sd.getStudentAndIdentity(studentId);
+	SooncodeStudent s = sd.getStudentAndIdentity(studentId);
 	logger.info(s);
 	
 }

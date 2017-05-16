@@ -14,17 +14,15 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sooncode.soonjdbc.ModelTransform;
 import com.sooncode.soonjdbc.constant.TableRelation;
 import com.sooncode.soonjdbc.dao.JdbcDao;
-import com.sooncode.soonjdbc.entity.ChineseDog;
-import com.sooncode.soonjdbc.entity.ChineseMan;
 import com.sooncode.soonjdbc.entity.ChooseCourse;
-import com.sooncode.soonjdbc.entity.Clazz;
-import com.sooncode.soonjdbc.entity.Course;
-import com.sooncode.soonjdbc.entity.Friend;
-import com.sooncode.soonjdbc.entity.Identity;
-import com.sooncode.soonjdbc.entity.School;
-import com.sooncode.soonjdbc.entity.Student;
-import com.sooncode.soonjdbc.entity.Teacher;
-import com.sooncode.soonjdbc.entity.Teaching;
+import com.sooncode.soonjdbc.entity.SooncodeClazz;
+import com.sooncode.soonjdbc.entity.SooncodeCourse;
+import com.sooncode.soonjdbc.entity.SooncodeIdentity;
+import com.sooncode.soonjdbc.entity.SooncodeSchool;
+import com.sooncode.soonjdbc.entity.SooncodeStudent;
+import com.sooncode.soonjdbc.entity.SooncodeTeacher;
+import com.sooncode.soonjdbc.entity.SooncodeTeaching;
+import com.sooncode.soonjdbc.entity.SystemFriend;
 import com.sooncode.soonjdbc.entity.SystemUser;
 import com.sooncode.soonjdbc.model.StudentAndIdentity;
 import com.sooncode.soonjdbc.page.Many2Many;
@@ -37,10 +35,6 @@ import com.sooncode.soonjdbc.sql.condition.DateFormat4Sql;
 import com.sooncode.soonjdbc.sql.condition.Sort;
 import com.sooncode.soonjdbc.sql.condition.sign.EqualSign;
 import com.sooncode.soonjdbc.sql.condition.sign.LikeSign;
-import com.sooncode.soontest.Comput;
-import com.sooncode.soontest.ManyTheadTest;
-import com.sooncode.soontest.OpenInterfaceTest;
-import com.sooncode.soontest.SoonTest;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/applicationContext.xml")
@@ -123,21 +117,18 @@ public class JdbcDao_Test {
 	@Test
 	public void get() {
 		SystemUser u = new SystemUser();
-		u.setSex("1");
-		u.setName("hello jdbc");
 		Conditions c = new Conditions(u);
-		//c.setCondition("name", LikeSign.LIKE , "hello jdbc");
+		c.setCondition("name", LikeSign.LIKE , "hello jdbc");
 		c.setCondition("sex", EqualSign.NOT_EQ, "0");
-		//c.setCondition( "createDate" ,EqualSign.LT,new DateFormat4Sql().ymd(new Date()));
-		//c.setCondition( "createDate" ,EqualSign.GT,new DateFormat4Sql().ymd(new Date()));
-		//c.setOderBy("name", Sort.DESC);
-
-		
+		c.setCondition( "createDate" ,EqualSign.LT,new DateFormat4Sql().ymd(new Date()));
+		c.setBetweenCondition("age", 10, 100);
+		c.setInCondition("type", new String[]{"AA","BB"});
+		c.setIsNullCondition("name");
+		c.setIsNotNullCondition("sex");
+		c.setOderBy("name", Sort.DESC);
 		Page p = dao.getPage(1L, 2L, c);
-		
 		List<SystemUser> list = p.getOnes();
 		logger.info(list);
-		
 
 	}
 
@@ -174,12 +165,12 @@ public class JdbcDao_Test {
 	
 	@Test
 	public void getOne2One() {
-		Student s = new Student();
+		SooncodeStudent s = new SooncodeStudent();
 		s.setStudentId("001");
 	    
-		One2One o2o = dao.getOne2One(s, new Clazz());
-		s = o2o.getOne(Student.class);
-		Clazz cl = o2o.getOne(Clazz.class);
+		One2One o2o = dao.getOne2One(s, new SooncodeClazz());
+		s = o2o.getOne(SooncodeStudent.class);
+		SooncodeClazz cl = o2o.getOne(SooncodeClazz.class);
 		logger.info(s+"------------:" + cl);
 		
 	}
@@ -210,8 +201,8 @@ public class JdbcDao_Test {
 	 */
 	@Test
 	public void getPage2() {
-		Student s = new Student();
-		Identity id = new Identity();
+		SooncodeStudent s = new SooncodeStudent();
+		SooncodeIdentity id = new SooncodeIdentity();
 		Conditions c = new Conditions(s, id);
 		Page page = dao.getPage(1L, 5L, c);
 
@@ -219,8 +210,8 @@ public class JdbcDao_Test {
 
 		logger.info("---------------------------------------------------------------");
 		for (One2One one2One : list) {
-			Student st = one2One.getOne(Student.class);
-			Identity ide = one2One.getOne(Identity.class);
+			SooncodeStudent st = one2One.getOne(SooncodeStudent.class);
+			SooncodeIdentity ide = one2One.getOne(SooncodeIdentity.class);
 			logger.info(st + " -------" + ide);
 			
 			StudentAndIdentity si = ModelTransform.getModel(one2One, StudentAndIdentity.class);
@@ -234,9 +225,9 @@ public class JdbcDao_Test {
 	 */
 	@Test
 	public void getPage21() {
-		Student s = new Student();
-		Identity id = new Identity();
-		Clazz cl = new Clazz();
+		SooncodeStudent s = new SooncodeStudent();
+		SooncodeIdentity id = new SooncodeIdentity();
+		SooncodeClazz cl = new SooncodeClazz();
 		Conditions c = new Conditions(s, id, cl);
 		Page page = dao.getPage(1L, 5L, c);
 
@@ -244,9 +235,9 @@ public class JdbcDao_Test {
 
 		logger.info("---------------------------------------------------------------");
 		for (One2One one2One : list) {
-			Student st = one2One.getOne(Student.class);
-			Identity ide = one2One.getOne(Identity.class);
-			Clazz c1 = one2One.getOne(Clazz.class);
+			SooncodeStudent st = one2One.getOne(SooncodeStudent.class);
+			SooncodeIdentity ide = one2One.getOne(SooncodeIdentity.class);
+			SooncodeClazz c1 = one2One.getOne(SooncodeClazz.class);
 			ChooseCourse cc1 = one2One.getOne(ChooseCourse.class);
 			logger.info(st + " -------" + ide + " -------" + c1 + " -------" + cc1);
 		}
@@ -258,21 +249,21 @@ public class JdbcDao_Test {
 	 */
 	@Test
 	public void getPage3() {
-		Student s = new Student();
+		SooncodeStudent s = new SooncodeStudent();
 		// s.setAge(22);
-		Clazz clazz = new Clazz();
+		SooncodeClazz clazz = new SooncodeClazz();
 		clazz.setClazzId("002");
 		//Conditions c = new Conditions(clazz, s);
 		Page page = dao.getPage(1L, 10L, TableRelation.ONE_MANY, clazz,s);//you qi yi shi shi yong 
-		One2Many<Clazz, Student> o2m = page.getOne2Many();
-		Clazz cl = o2m.getOne();
-		List<Student> stues = o2m.getMany();
+		One2Many<SooncodeClazz, SooncodeStudent> o2m = page.getOne2Many();
+		SooncodeClazz cl = o2m.getOne();
+		List<SooncodeStudent> stues = o2m.getMany();
 		logger.info("---------------------------------------------------------------");
 		logger.info(cl);
 		logger.info(stues);
 		logger.info("---------------------------------------------------------------");
-		//Clazz cla = page.getOne2One().get(0).getOne(Clazz.class);
-		//Student mo = page.getOne2One().get(0).getOne(Student.class);
+		//SooncodeClazz cla = page.getOne2One().get(0).getOne(SooncodeClazz.class);
+		//SooncodeStudent mo = page.getOne2One().get(0).getOne(SooncodeStudent.class);
 		//logger.info(cla);
 		//logger.info(mo);
 		logger.info("---------------------------------------------------------------");
@@ -284,16 +275,16 @@ public class JdbcDao_Test {
 	 */
 	@Test
 	public void getPage4() {
-		Student s = new Student();
+		SooncodeStudent s = new SooncodeStudent();
 		s.setStudentId("001");
 		ChooseCourse cc = new ChooseCourse();
-		Course co = new Course();
+		SooncodeCourse co = new SooncodeCourse();
 		Conditions c = new Conditions(s, cc, co);
 		// c.setBetweenCondition("chooseCourse.score", 50, 100);
 		Page page = dao.getPage(1L, 10L, c);
-		Many2Many<Student, ChooseCourse, Course> m2m = page.getMany2Many();
+		Many2Many<SooncodeStudent, ChooseCourse, SooncodeCourse> m2m = page.getMany2Many();
 
-		Student stu = m2m.getOne();
+		SooncodeStudent stu = m2m.getOne();
 		List<One2One> list = m2m.getMany();
 
 		logger.info("---------------------------------------------------------------");
@@ -301,7 +292,7 @@ public class JdbcDao_Test {
 
 		for (One2One o2o : list) {
 			ChooseCourse chooseCourse = o2o.getOne(ChooseCourse.class);
-			Course course = o2o.getOne(Course.class);
+			SooncodeCourse course = o2o.getOne(SooncodeCourse.class);
 			logger.info(chooseCourse + "------------" + course);
 		}
 		logger.info("---------------------------------------------------------------");
@@ -313,10 +304,10 @@ public class JdbcDao_Test {
 	 */
 	@Test
 	public void getPage41() {
-		Student s = new Student();
+		SooncodeStudent s = new SooncodeStudent();
 		s.setStudentId("001");
 		ChooseCourse cc = new ChooseCourse();
-		Course co = new Course();
+		SooncodeCourse co = new SooncodeCourse();
 		Conditions c = new Conditions(cc, s, co);
 		c.setBetweenCondition("chooseCourse.score", 50, 100);
 		Page page = dao.getPage(1L, 10L, c);
@@ -324,8 +315,8 @@ public class JdbcDao_Test {
 		logger.info("---------------------------------------------------------------");
 		for (One2One o2o : list) {
 			ChooseCourse choos = o2o.getOne(ChooseCourse.class);
-			Student st = o2o.getOne(Student.class);
-			Course cours = o2o.getOne(Course.class);
+			SooncodeStudent st = o2o.getOne(SooncodeStudent.class);
+			SooncodeCourse cours = o2o.getOne(SooncodeCourse.class);
 			logger.info(choos + " ## " + st + " ## " + cours);
 		}
 		logger.info("---------------------------------------------------------------");
@@ -339,7 +330,7 @@ public class JdbcDao_Test {
 	public void getPage42() {
 		SystemUser u = new SystemUser();
 
-		Friend f = new Friend();
+		SystemFriend f = new SystemFriend();
 		f.setMeUserId(16);
 		Conditions c = new Conditions(f, u);
 
@@ -347,7 +338,7 @@ public class JdbcDao_Test {
 		List<One2One> o2os = page.getOne2One();
 		logger.info("---------------------------------------------------------------");
 		for (One2One o2o : o2os) {
-			Friend fr = o2o.getOne(Friend.class);
+			SystemFriend fr = o2o.getOne(SystemFriend.class);
 			SystemUser user = o2o.getOne(SystemUser.class);
 			logger.info(fr + " ----" + user);
 		}
@@ -361,24 +352,24 @@ public class JdbcDao_Test {
 	 */
 	@Test
 	public void getPage5() {
-		Student s = new Student();
+		SooncodeStudent s = new SooncodeStudent();
 		ChooseCourse cc = new ChooseCourse();
-		Course co = new Course();
+		SooncodeCourse co = new SooncodeCourse();
 		co.setCourseId("001");
 		Conditions c = new Conditions(co, cc, s);
 		c.setBetweenCondition("chooseCourse.score", 50, 100);
 		Page page = dao.getPage(1L, 10L, c);
-		List<Many2Many<Course, ChooseCourse, Student>> m2ms = page.getMany2Manys();
+		List<Many2Many<SooncodeCourse, ChooseCourse, SooncodeStudent>> m2ms = page.getMany2Manys();
 
 		logger.info("---------------------------------------------------------------");
-		for (Many2Many<Course, ChooseCourse, Student> many2Many : m2ms) {
-			Course cou = many2Many.getOne();
+		for (Many2Many<SooncodeCourse, ChooseCourse, SooncodeStudent> many2Many : m2ms) {
+			SooncodeCourse cou = many2Many.getOne();
 			logger.info(cou);
 			List<One2One> list = many2Many.getMany();
 			for (One2One o : list) {
 				ChooseCourse ChooseCourse = o.getOne(ChooseCourse.class);
-				Student Student = o.getOne(Student.class);
-				logger.info(ChooseCourse + " -----  " + Student);
+				SooncodeStudent SooncodeStudent = o.getOne(SooncodeStudent.class);
+				logger.info(ChooseCourse + " -----  " + SooncodeStudent);
 			}
 
 		}
@@ -392,24 +383,24 @@ public class JdbcDao_Test {
 
 	@Test
 	public void getPage7() {
-		School school = new School();
+		SooncodeSchool school = new SooncodeSchool();
 		school.setSchoolId(1);
-		Clazz clazz = new Clazz();
-		Student student = new Student();
+		SooncodeClazz clazz = new SooncodeClazz();
+		SooncodeStudent student = new SooncodeStudent();
 
 		Conditions c = new Conditions(school, clazz, student);
 
 		Page page = dao.getPage(1L, 10L, c);
-		List<One2Many2Many<School, Clazz, Student>> o2m2ms = page.getOne2Many2Manys();
+		List<One2Many2Many<SooncodeSchool, SooncodeClazz, SooncodeStudent>> o2m2ms = page.getOne2Many2Manys();
 
 		logger.info("---------------------------------------------------------------");
-		for (One2Many2Many<School, Clazz, Student> o2m2m : o2m2ms) {
-			School sc = o2m2m.getOne();
+		for (One2Many2Many<SooncodeSchool, SooncodeClazz, SooncodeStudent> o2m2m : o2m2ms) {
+			SooncodeSchool sc = o2m2m.getOne();
 			logger.info(sc);
-			List<One2Many<Clazz, Student>> list = o2m2m.getOne2manys();
-			for (One2Many<Clazz, Student> o2m : list) {
-				Clazz cl = o2m.getOne();
-				List<Student> stude = o2m.getMany();
+			List<One2Many<SooncodeClazz, SooncodeStudent>> list = o2m2m.getOne2manys();
+			for (One2Many<SooncodeClazz, SooncodeStudent> o2m : list) {
+				SooncodeClazz cl = o2m.getOne();
+				List<SooncodeStudent> stude = o2m.getMany();
 				logger.info(cl);
 				logger.info(stude);
 
@@ -426,11 +417,11 @@ public class JdbcDao_Test {
 	@Test
 	public void getPage8() {
 
-		Clazz clazz = new Clazz();
+		SooncodeClazz clazz = new SooncodeClazz();
 		// clazz.setClazzId("001");
-		Student student = new Student();
-		School school = new School();
-		Teacher teacher = new Teacher();
+		SooncodeStudent student = new SooncodeStudent();
+		SooncodeSchool school = new SooncodeSchool();
+		SooncodeTeacher teacher = new SooncodeTeacher();
 		Conditions c = new Conditions(clazz, school, student, teacher);
 
 		Page page = dao.getPage(1L, 10L, c);
@@ -438,10 +429,10 @@ public class JdbcDao_Test {
 
 		logger.info("---------------------------------------------------------------");
 		for (One2One o2o : o2os) {
-			School sc = o2o.getOne(School.class);
-			Clazz cl = o2o.getOne(Clazz.class);
-			Student s = o2o.getOne(Student.class);
-			Teacher t = o2o.getOne(Teacher.class);
+			SooncodeSchool sc = o2o.getOne(SooncodeSchool.class);
+			SooncodeClazz cl = o2o.getOne(SooncodeClazz.class);
+			SooncodeStudent s = o2o.getOne(SooncodeStudent.class);
+			SooncodeTeacher t = o2o.getOne(SooncodeTeacher.class);
 			logger.info(cl + " --- " + sc + " --- " + s + "---" + t);
 
 		}
@@ -455,9 +446,9 @@ public class JdbcDao_Test {
 	@Test
 	public void getPage9() {
 
-		School school = new School();
+		SooncodeSchool school = new SooncodeSchool();
 		school.setSchoolId(1);
-		Teacher teacher = new Teacher();
+		SooncodeTeacher teacher = new SooncodeTeacher();
 		Conditions c = new Conditions(school, teacher);
 
 		Page page = dao.getPage(1L, 10L, c);
@@ -465,8 +456,8 @@ public class JdbcDao_Test {
 
 		logger.info("---------------------------------------------------------------");
 		for (One2One o2o : o2os) {
-			School s = o2o.getOne(School.class);
-			Teacher t = o2o.getOne(Teacher.class);
+			SooncodeSchool s = o2o.getOne(SooncodeSchool.class);
+			SooncodeTeacher t = o2o.getOne(SooncodeTeacher.class);
 
 			logger.info(s + " --- " + t);
 
@@ -481,9 +472,9 @@ public class JdbcDao_Test {
 	@Test
 	public void getPage10() {
 
-		School school = new School();
+		SooncodeSchool school = new SooncodeSchool();
 		// school.setSchoolId(1);
-		Teacher teacher = new Teacher();
+		SooncodeTeacher teacher = new SooncodeTeacher();
 		teacher.setTeacherId(4);
 		Conditions c = new Conditions(teacher, school);
 
@@ -492,8 +483,8 @@ public class JdbcDao_Test {
 
 		logger.info("---------------------------------------------------------------");
 		for (One2One o2o : o2os) {
-			School s = o2o.getOne(School.class);
-			Teacher t = o2o.getOne(Teacher.class);
+			SooncodeSchool s = o2o.getOne(SooncodeSchool.class);
+			SooncodeTeacher t = o2o.getOne(SooncodeTeacher.class);
 
 			logger.info(t + " --- " + s);
 
@@ -505,24 +496,24 @@ public class JdbcDao_Test {
 	@Test
 	public void getPage11() {
 
-		Clazz clazz = new Clazz();
+		SooncodeClazz clazz = new SooncodeClazz();
 		clazz.setClazzId("001");
-		Teaching teaching = new Teaching();
-		Teacher teacher = new Teacher();
+		SooncodeTeaching teaching = new SooncodeTeaching();
+		SooncodeTeacher teacher = new SooncodeTeacher();
 		Conditions c = new Conditions(clazz, teaching, teacher);
 
 		Page page = dao.getPage(1L, 10L, c);
-		List<Many2Many<Clazz, Teaching, Teacher>> m2ms = page.getMany2Manys();
+		List<Many2Many<SooncodeClazz, SooncodeTeaching, SooncodeTeacher>> m2ms = page.getMany2Manys();
 
 		logger.info("---------------------------------------------------------------");
-		for (Many2Many<Clazz, Teaching, Teacher> m2m : m2ms) {
+		for (Many2Many<SooncodeClazz, SooncodeTeaching, SooncodeTeacher> m2m : m2ms) {
 
-			Clazz cl = m2m.getOne();
+			SooncodeClazz cl = m2m.getOne();
 			logger.info(cl);
 			List<One2One> o2o = m2m.getMany();
 			for (One2One o : o2o) {
-				Teaching th = o.getOne(Teaching.class);
-				Teacher te = o.getOne(Teacher.class);
+				SooncodeTeaching th = o.getOne(SooncodeTeaching.class);
+				SooncodeTeacher te = o.getOne(SooncodeTeacher.class);
 				logger.info(th + "---" + te);
 			}
 
@@ -532,12 +523,7 @@ public class JdbcDao_Test {
 	}
 	@Test
 	public void getPage12() {
-		ChineseMan cm = new ChineseMan();
-		cm.setId(1);
-		ChineseDog cd = new ChineseDog();
-		Page page = dao.getPage(1L, 10L, cm,cd);
 		 
-		logger.info(page.getOne2Many());
 	}
 	
 	 

@@ -7,8 +7,8 @@ import org.springframework.stereotype.Repository;
 
 import com.sooncode.soonjdbc.Entity;
 import com.sooncode.soonjdbc.Jdbc;
-import com.sooncode.soonjdbc.entity.Identity;
-import com.sooncode.soonjdbc.entity.Student;
+import com.sooncode.soonjdbc.entity.SooncodeIdentity;
+import com.sooncode.soonjdbc.entity.SooncodeStudent;
 import com.sooncode.soonjdbc.sql.Parameter;
 import com.sooncode.soonjdbc.sql.xml.SqlXml;
 
@@ -19,31 +19,31 @@ public class StudentDao {
 
 	private SqlXml sqlXml = new SqlXml("com/sooncode/jdbc4json/dao/studentDao.xml");
 
-	public Student getStudent(String studentId) {
+	public SooncodeStudent getStudent(String studentId) {
 
-		Student student = new Student();
+		SooncodeStudent student = new SooncodeStudent();
 		student.setStudentId(studentId);
 		Parameter para = sqlXml.getParameter("getStudentByStudentId", student);
 
 		Map<String, Object> map = jdbc.get(para);
 
-		Student s = Entity.findEntity(map, Student.class);
+		SooncodeStudent s = Entity.findEntity(map, SooncodeStudent.class);
 		return s;
 
 	}
 
 	 
 
-	public Student getStudentAndIdentity(String studentId) {
+	public SooncodeStudent getStudentAndIdentity(String studentId) {
 
-		Student student = new Student();
+		SooncodeStudent student = new SooncodeStudent();
 		student.setStudentId(studentId);
 		Parameter para = sqlXml.getParameter("getStudentAndIdentity", student);
 
 		Map<String, Object> map = jdbc.get(para);
 
-		Student s = Entity.findEntity(map, Student.class);
-		Identity i = Entity.findEntity(map, Identity.class);
+		SooncodeStudent s = Entity.findEntity(map, SooncodeStudent.class);
+		SooncodeIdentity i = Entity.findEntity(map, SooncodeIdentity.class);
 		System.out.println("-------------------" + i + "---------------------");
 		return s;
 

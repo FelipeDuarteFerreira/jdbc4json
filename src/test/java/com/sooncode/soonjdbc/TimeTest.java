@@ -5,8 +5,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.sooncode.soonjdbc.entity.Clazz;
-import com.sooncode.soonjdbc.entity.Student;
+ 
 import com.sooncode.soonjdbc.page.One2One;
 
  
@@ -30,17 +29,7 @@ public class TimeTest {
 	 
 	
 		 
-			Student s = new Student();
-			s.setName("AA");
-			Clazz c = new Clazz();
-			c.setClazzName("高一（2）班");
-			One2One o = new One2One();
-			o.add(s);
-			o.add(c);
-			
-			Student st = o.getOne(Student.class);
-			
-			System.out.println(st.getName());
+			 
 		 
 	
 	

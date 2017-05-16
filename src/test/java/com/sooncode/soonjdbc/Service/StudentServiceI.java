@@ -1,8 +1,8 @@
 package com.sooncode.soonjdbc.Service;
 
-import com.sooncode.soonjdbc.entity.Student;
+import com.sooncode.soonjdbc.entity.SooncodeStudent;
 
 public interface StudentServiceI {
-	    public long saveStudent (Student s) ;
-	    public long updateStudetn (Student s);
+	    public long saveStudent (SooncodeStudent s) ;
+	    public long updateStudetn (SooncodeStudent s);
 }
