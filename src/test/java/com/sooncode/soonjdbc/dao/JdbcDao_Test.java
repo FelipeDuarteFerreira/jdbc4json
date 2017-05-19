@@ -12,8 +12,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sooncode.soonjdbc.ModelTransform;
-import com.sooncode.soonjdbc.constant.TableRelation;
+ 
 import com.sooncode.soonjdbc.dao.JdbcDao;
+import com.sooncode.soonjdbc.dao.tabletype.TableRelation;
 import com.sooncode.soonjdbc.entity.ChooseCourse;
 import com.sooncode.soonjdbc.entity.SooncodeClazz;
 import com.sooncode.soonjdbc.entity.SooncodeCourse;
@@ -35,6 +36,7 @@ import com.sooncode.soonjdbc.sql.condition.DateFormat4Sql;
 import com.sooncode.soonjdbc.sql.condition.Sort;
 import com.sooncode.soonjdbc.sql.condition.sign.EqualSign;
 import com.sooncode.soonjdbc.sql.condition.sign.LikeSign;
+import com.sooncode.util.SJson;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/applicationContext.xml")
@@ -63,7 +65,7 @@ public class JdbcDao_Test {
 	@Test
 	public void update() {
 		SystemUser u = new SystemUser();
-		u.setId(11);
+		//u.setId(11);
 		u.setAge(34);
 		u.setName("ioouuy");
 		u.setSex("1");
@@ -200,10 +202,12 @@ public class JdbcDao_Test {
 	 * 查询 学生和与之对应的身份详情
 	 */
 	@Test
-	public void getPage2() {
+	public void getPage4One2One() {
 		SooncodeStudent s = new SooncodeStudent();
 		SooncodeIdentity id = new SooncodeIdentity();
-		Conditions c = new Conditions(s, id);
+		SooncodeClazz sc = new SooncodeClazz();
+		Conditions c = new Conditions(s, id,sc);
+		 
 		Page page = dao.getPage(1L, 5L, c);
 
 		List<One2One> list = page.getOne2One();
@@ -212,10 +216,15 @@ public class JdbcDao_Test {
 		for (One2One one2One : list) {
 			SooncodeStudent st = one2One.getOne(SooncodeStudent.class);
 			SooncodeIdentity ide = one2One.getOne(SooncodeIdentity.class);
-			logger.info(st + " -------" + ide);
+			SooncodeClazz sc2 = one2One.getOne(SooncodeClazz.class);
 			
-			StudentAndIdentity si = ModelTransform.getModel(one2One, StudentAndIdentity.class);
-			logger.info(si);
+		 
+			logger.info(new SJson(st));
+			logger.info(new SJson(ide));
+			logger.info(new SJson(sc2));
+			logger.info("---------------------------------------------------------------");
+			//StudentAndIdentity si = ModelTransform.getModel(one2One, StudentAndIdentity.class);
+			//logger.info(new SJson(si));
 		}
 		logger.info("---------------------------------------------------------------");
 	}

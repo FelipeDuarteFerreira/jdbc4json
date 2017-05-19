@@ -14,11 +14,9 @@ import com.sooncode.soonjdbc.bean.ForeignKey;
 public class TableRelationAnalyze {
 
 	public static boolean isOne(DbBean leftDbBean, DbBean... otherBeans) {
-		if (leftDbBean != null && otherBeans.length == 0) {
-			return true;
-		} else {
-			return false;
-		}
+		boolean isOne = (leftDbBean != null && otherBeans.length == 0);
+		return isOne;
+
 	}
 
 	/**
@@ -30,50 +28,21 @@ public class TableRelationAnalyze {
 	 */
 	public static boolean isOne2One(DbBean leftDbBean, DbBean... otherBeans) {
 
-		if (leftDbBean == null || otherBeans == null || otherBeans.length == 0) {
-			return false;
-		}
-
-		String leftDbName = leftDbBean.getTableName();
-		boolean b = true;
+		boolean otherBeansIsMany = false;
+		boolean refer = true;
+		boolean dbBeanIsHave = true;
 		for (DbBean dbBean : otherBeans) {
-			List<ForeignKey> fkes = dbBean.getForeignKeies();
-			boolean bool = false;
-			for (ForeignKey fk : fkes) {
-				String referDbBeanName = fk.getReferDbBeanName().toUpperCase();
-				boolean isUnique = fk.isUnique();
-				if (leftDbName.equals(referDbBeanName) && isUnique == true) {
-					bool = true;
-				}
-			}
-			b = b && bool;
-			if (bool == false) {
+			otherBeansIsMany = true;
+			if (dbBean == null || leftDbBean == null) {
+				dbBeanIsHave = false;
 				break;
 			}
+			boolean isPassivityUniqueRefer = isPassivityUniqueRefer(leftDbBean, dbBean);
+			boolean isRefer = isRefer(leftDbBean, dbBean);
+			refer = refer && (isPassivityUniqueRefer || isRefer);
 		}
+		return otherBeansIsMany && dbBeanIsHave && refer;
 
-		if (b == true) {
-			return true;
-		} else {
-			List<ForeignKey> leftFkes = leftDbBean.getForeignKeies();
-			int n = 0;
-			for (ForeignKey fk : leftFkes) {
-				String referDbBeanName = fk.getReferDbBeanName().toUpperCase();
-				for (DbBean dbBean : otherBeans) {
-					String dbBeanName = dbBean.getTableName();
-					if (dbBeanName.equals(referDbBeanName)) {
-						n++;
-					}
-				}
-
-			}
-			if(n > 0  &&  n >= otherBeans.length){
-				return true;
-			}else{
-				return false;
-			}
-		}
- 
 	}
 
 	/**
@@ -84,14 +53,18 @@ public class TableRelationAnalyze {
 	 * @return
 	 */
 	public static boolean isOne2Many(DbBean leftDbBean, DbBean... otherBeans) {
-
-		if (leftDbBean == null || otherBeans == null || otherBeans.length == 0) {
-			return false;
-		}
+		boolean otherBeansIsMany = false;
+		boolean dbBeanIsHave = true;
 
 		String leftDbName = leftDbBean.getTableName();
-		boolean b = true;
+		boolean refer = true;
 		for (DbBean dbBean : otherBeans) {
+			otherBeansIsMany = true;
+			if (dbBean == null || leftDbBean == null) {
+				dbBeanIsHave = false;
+				break;
+			}
+
 			List<ForeignKey> fkes = dbBean.getForeignKeies();
 			boolean bool = false;
 			for (ForeignKey fk : fkes) {
@@ -101,12 +74,12 @@ public class TableRelationAnalyze {
 					bool = true;
 				}
 			}
-			b = b && bool;
+			refer = refer && bool;
 			if (bool == false) {
 				break;
 			}
 		}
-		return b;
+		return otherBeansIsMany && dbBeanIsHave && refer;
 	}
 
 	/**
@@ -126,7 +99,7 @@ public class TableRelationAnalyze {
 		int n = 0;
 		for (ForeignKey fk : middleFkes) {
 			String referDbBeanName = fk.getReferDbBeanName().toUpperCase();
-			if (fk.isUnique() == false  &&  (referDbBeanName.equals(leftDbBeanName) || referDbBeanName.equals(rightDbBeanName))) {
+			if (fk.isUnique() == false && (referDbBeanName.equals(leftDbBeanName) || referDbBeanName.equals(rightDbBeanName))) {
 				n++;
 			}
 		}
@@ -136,6 +109,7 @@ public class TableRelationAnalyze {
 			return false;
 		}
 	}
+
 	/**
 	 * 分析是否是"多对多"关系
 	 * 
@@ -143,7 +117,7 @@ public class TableRelationAnalyze {
 	 * @param otherBeans
 	 * @return
 	 */
-	public static boolean isOne2Many2Many(DbBean leftDbBean, DbBean middleDbBean,DbBean rightDbBean) {
+	public static boolean isOne2Many2Many(DbBean leftDbBean, DbBean middleDbBean, DbBean rightDbBean) {
 		if (leftDbBean == null || middleDbBean == null || rightDbBean == null) {
 			return false;
 		}
@@ -151,11 +125,11 @@ public class TableRelationAnalyze {
 		String middleDbBeanName = middleDbBean.getTableName();
 		List<ForeignKey> mFkes = middleDbBean.getForeignKeies();
 		List<ForeignKey> rFkes = rightDbBean.getForeignKeies();
-		 
+
 		for (ForeignKey mf : mFkes) {
-			if(mf.getReferDbBeanName().toUpperCase().equals(leftDbBeanName)){
+			if (mf.getReferDbBeanName().toUpperCase().equals(leftDbBeanName)) {
 				for (ForeignKey rf : rFkes) {
-					if(rf.getReferDbBeanName().toUpperCase().equals(middleDbBeanName)){
+					if (rf.getReferDbBeanName().toUpperCase().equals(middleDbBeanName)) {
 						return true;
 					}
 				}
@@ -163,4 +137,45 @@ public class TableRelationAnalyze {
 		}
 		return false;
 	}
+
+	/**
+	 * leftDbBean 是否 被参照( 唯一 ) rightDbBean
+	 * 
+	 * @param leftDbBean
+	 * @param rightDbBean
+	 * @return
+	 */
+	private static boolean isPassivityUniqueRefer(DbBean leftDbBean, DbBean rightDbBean) {
+		String leftDbName = leftDbBean.getTableName();
+		List<ForeignKey> fkes = rightDbBean.getForeignKeies();
+		boolean bool = false;
+		for (ForeignKey fk : fkes) {
+			String referDbBeanName = fk.getReferDbBeanName().toUpperCase();
+			if (leftDbName.equals(referDbBeanName) && fk.isUnique() == true) {
+				bool = true;
+			}
+		}
+		return bool;
+	}
+
+	/**
+	 * leftDbBean 是否参照 rightDbBean
+	 * 
+	 * @param leftDbBean
+	 * @param rightDbBean
+	 * @return
+	 */
+	private static boolean isRefer(DbBean leftDbBean, DbBean rightDbBean) {
+		boolean bool = true;
+		List<ForeignKey> leftFkes = leftDbBean.getForeignKeies();
+		String rightTabeName = rightDbBean.getTableName();
+		for (ForeignKey f : leftFkes) {
+			String referDbBeanName = f.getReferDbBeanName().toUpperCase();
+			if (rightTabeName.equals(referDbBeanName)) {
+				bool = bool || true;
+			}
+		}
+		return bool;
+	}
+
 }

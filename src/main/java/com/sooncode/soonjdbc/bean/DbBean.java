@@ -3,6 +3,7 @@ package com.sooncode.soonjdbc.bean;
 import java.util.List;
 import java.util.Map;
 
+import com.sooncode.soonjdbc.exception.JavaBeanException;
 import com.sooncode.soonjdbc.reflect.RObject;
 import com.sooncode.soonjdbc.util.T2E;
 
@@ -21,9 +22,16 @@ public class DbBean {
 	}
 
 	public <T> DbBean(T t) {
+		if(t==null){
+			try {
+				throw new JavaBeanException("数据库表 对应的Java Bean 为空!");
+			} catch (JavaBeanException e) {
+				e.printStackTrace();
+			}
+		}
+		
 			this.javaBean = t;
 			this.className = t.getClass().getName();
-			
 			this.beanName = t.getClass().getSimpleName();
 			this.tableName = T2E.toTableName(this.beanName );
 			RObject<T> rObj = new RObject<T>(t);

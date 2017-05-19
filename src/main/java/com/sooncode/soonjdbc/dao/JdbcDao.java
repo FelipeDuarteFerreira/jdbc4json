@@ -8,7 +8,9 @@ import java.util.Map.Entry;
 import com.sooncode.soonjdbc.Jdbc;
 import com.sooncode.soonjdbc.bean.DbBean;
 import com.sooncode.soonjdbc.constant.SQL_KEY;
-import com.sooncode.soonjdbc.constant.TableRelation;
+import com.sooncode.soonjdbc.dao.tabletype.TableRelation;
+import com.sooncode.soonjdbc.dao.tabletype.TableType;
+import com.sooncode.soonjdbc.exception.PrimaryKeyValueInexistence;
 import com.sooncode.soonjdbc.exception.TableRelationAnalyzeException;
 import com.sooncode.soonjdbc.page.One2Many;
 import com.sooncode.soonjdbc.page.One2One;
@@ -61,7 +63,12 @@ public class JdbcDao {
 		DbBean dbBean = jdbc.getDbBean(javaBean);
 		Object pkValue = dbBean.getPrimaryFieldValue();
 		if (pkValue == null) {
-			return 0L;
+			try {
+				throw new PrimaryKeyValueInexistence("主键值不存在!");
+			} catch (PrimaryKeyValueInexistence e) {
+				e.printStackTrace();
+				return 0L;
+			}
 		}
 		Parameter parameter = ComSQL.update(dbBean);
 		return jdbc.update(parameter);
@@ -73,7 +80,12 @@ public class JdbcDao {
 		DbBean dbBean = jdbc.getDbBean(javaBean);
 		Object pkValue = dbBean.getPrimaryFieldValue();
 		if (pkValue == null) {
-			return 0L;
+			try {
+				throw new PrimaryKeyValueInexistence("主键值不存在!");
+			} catch (PrimaryKeyValueInexistence e) {
+				e.printStackTrace();
+				return 0L;
+			}
 		}
 		Parameter parameter = ComSQL.delete(dbBean);
 		return jdbc.update(parameter);
@@ -226,13 +238,14 @@ public class JdbcDao {
 
 	public Page getPage(long pageNum, long pageSize, TableRelation TableRelation, Object leftBean, Object... otherBean) {
 		Conditions conditions = new Conditions(leftBean, otherBean);
-		return getPage(pageNum, pageSize, TableRelation ,conditions);
+		return getPage(pageNum, pageSize, TableRelation, conditions);
 	}
 
 	public One2One getOne2One(Object left, Object... other) {
 		Conditions conditions = new Conditions(left, other);
 		return this.getOne2One(conditions);
 	}
+
 	public One2One getOne2One(Conditions conditions) {
 		Page page = this.getPage(1L, 1L, conditions);
 		List<One2One> list = page.getOne2One();
@@ -243,23 +256,26 @@ public class JdbcDao {
 		return o2o;
 	}
 
-	public <L,R> One2Many<L,R> getOne2Many(Object left,Object...others){
+	public <L, R> One2Many<L, R> getOne2Many(Object left, Object... others) {
 		Conditions conditions = new Conditions(left, others);
 		return this.getOne2Many(conditions);
 	}
-	
-	public <L,R> One2Many<L,R> getOne2Many(Conditions conditions){
+
+	public <L, R> One2Many<L, R> getOne2Many(Conditions conditions) {
 		Page page = this.getPage(1L, Long.MAX_VALUE, conditions);
-		One2Many<L,R> o2m = page.getOne2Many();
+		One2Many<L, R> o2m = page.getOne2Many();
 		return o2m;
 	}
-	
-	
+
 	public Page getPage(long pageNum, long pageSize, Conditions conditions) {
 
 		Page page = new Page();
-		List<Integer> nes = queryService.getRelation(jdbc, conditions);
-		if (nes.size() > 1) {
+		List<TableType> nes = queryService.getTableType(jdbc, conditions);
+
+		if (nes.size() == 1) {
+			TableType tableType = nes.get(0);
+			page = tableType.getPage(pageNum, pageSize, conditions, jdbc);
+		} else if (nes.size() > 1) {
 			try {
 				throw new TableRelationAnalyzeException("数据库表关系分析异常，存在多种关系，无法识别！");
 			} catch (TableRelationAnalyzeException e) {
@@ -271,30 +287,6 @@ public class JdbcDao {
 			} catch (TableRelationAnalyzeException e) {
 				e.printStackTrace();
 			}
-		} else {
-			int n = nes.get(0);
-			if (n == 1) {// 1.单表
-				Page onesPage = queryService.getOnes(pageNum, pageSize, conditions, jdbc);
-				page = queryService.clonePage(page, onesPage);
-			}
-			if (n == 2) {// 1对1
-				Page one2onesPage = queryService.getOne2Ones(pageNum, pageSize, conditions, jdbc);
-				page = queryService.clonePage(page, one2onesPage);
-			}
-			if (n == 3) { // 一对多
-
-				Page one2ManysPage = queryService.getOne2Manys(pageNum, pageSize, conditions, jdbc);
-				page = queryService.clonePage(page, one2ManysPage);
-			}
-			if (n == 4) {// 多对多
-				Page many2ManysPage = queryService.getMany2Manys(pageNum, pageSize, conditions, jdbc);
-				page = queryService.clonePage(page, many2ManysPage);
-			}
-			if (n == 5) { // 1对多对多
-				Page one2Many2ManysPage = queryService.getOne2Many2Manys(pageNum, pageSize, conditions, jdbc);
-				page = queryService.clonePage(page, one2Many2ManysPage);
-			}
-
 		}
 
 		return page;
@@ -302,33 +294,8 @@ public class JdbcDao {
 	}
 
 	public Page getPage(long pageNum, long pageSize, TableRelation TableRelation, Conditions conditions) {
-
-		int n = TableRelation.ordinal() + 1;
-		Page page = new Page();
-
-		if (n == 1) {// 1.单表
-			Page onesPage = queryService.getOnes(pageNum, pageSize, conditions, jdbc);
-			page = queryService.clonePage(page, onesPage);
-		}
-		if (n == 2) {// 1对1
-			Page one2onesPage = queryService.getOne2Ones(pageNum, pageSize, conditions, jdbc);
-			page = queryService.clonePage(page, one2onesPage);
-		}
-		if (n == 3) { // 一对多
-
-			Page one2ManysPage = queryService.getOne2Manys(pageNum, pageSize, conditions, jdbc);
-			page = queryService.clonePage(page, one2ManysPage);
-		}
-		if (n == 4) {// 多对多
-			Page many2ManysPage = queryService.getMany2Manys(pageNum, pageSize, conditions, jdbc);
-			page = queryService.clonePage(page, many2ManysPage);
-		}
-		if (n == 5) { // 1对多对多
-			Page one2Many2ManysPage = queryService.getOne2Many2Manys(pageNum, pageSize, conditions, jdbc);
-			page = queryService.clonePage(page, one2Many2ManysPage);
-		}
-
-		return page;
+		TableType tableType = TableRelation.getTableType();
+		return tableType.getPage(pageNum, pageSize, conditions, jdbc);
 	}
 
 }
