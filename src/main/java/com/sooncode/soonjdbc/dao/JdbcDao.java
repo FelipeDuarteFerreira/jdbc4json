@@ -22,9 +22,9 @@ import com.sooncode.soonjdbc.sql.condition.Conditions;
 import com.sooncode.soonjdbc.util.T2E;
 
 /**
- * Jdbc Dao 服务
+ * Jdbc Dao  
  * 
- * @author pc
+ * @author hechenwe@gmail.com
  * 
  */
 
@@ -63,12 +63,7 @@ public class JdbcDao {
 		DbBean dbBean = jdbc.getDbBean(javaBean);
 		Object pkValue = dbBean.getPrimaryFieldValue();
 		if (pkValue == null) {
-			try {
-				throw new PrimaryKeyValueInexistence("主键值不存在!");
-			} catch (PrimaryKeyValueInexistence e) {
-				e.printStackTrace();
-				return 0L;
-			}
+				throw new PrimaryKeyValueInexistence("primary key value inexistence ! (主键值不存在!)");
 		}
 		Parameter parameter = ComSQL.update(dbBean);
 		return jdbc.update(parameter);
@@ -80,12 +75,7 @@ public class JdbcDao {
 		DbBean dbBean = jdbc.getDbBean(javaBean);
 		Object pkValue = dbBean.getPrimaryFieldValue();
 		if (pkValue == null) {
-			try {
-				throw new PrimaryKeyValueInexistence("主键值不存在!");
-			} catch (PrimaryKeyValueInexistence e) {
-				e.printStackTrace();
-				return 0L;
-			}
+				throw new PrimaryKeyValueInexistence("primary key value inexistence ! (主键值不存在!)");
 		}
 		Parameter parameter = ComSQL.delete(dbBean);
 		return jdbc.update(parameter);
@@ -97,20 +87,19 @@ public class JdbcDao {
 
 		DbBean dbBean = jdbc.getDbBean(javaBean);
 		Object pkValue = dbBean.getPrimaryFieldValue();
-		Parameter p = new Parameter();
+		Parameter p = null ;
 		if (pkValue != null) {
 			RObject<?> rObj = new RObject<>(dbBean.getClassName());
 			rObj.invokeSetMethod(dbBean.getPrimaryField(), pkValue);
 			List<T> list = gets((T) rObj.getObject());
 			if (list.size() == 1) {
-				dbBean = jdbc.getDbBean(javaBean);
 				p = ComSQL.update(dbBean);
-			}
-
-		} else {
+			} 
+		}  
+		
+		if(p==null){
 			p = ComSQL.insert(dbBean);
 		}
-
 		return jdbc.update(p);
 
 	}

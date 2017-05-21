@@ -65,7 +65,7 @@ public class JdbcDao_Test {
 	@Test
 	public void update() {
 		SystemUser u = new SystemUser();
-		//u.setId(11);
+		u.setId(11);
 		u.setAge(34);
 		u.setName("ioouuy");
 		u.setSex("1");
@@ -73,7 +73,17 @@ public class JdbcDao_Test {
 	}
 
 	@Test
-
+	public void saveOrUpdate(){
+		SystemUser u = new SystemUser();
+		u.setId(11809);
+		u.setAge(34);
+		u.setName("ioouuy");
+		u.setSex("1");
+		dao.saveOrUpdate(u);
+	}
+	
+	
+	@Test
 	public void delete() {
 		SystemUser u = new SystemUser();
 		u.setId(9);
@@ -143,16 +153,7 @@ public class JdbcDao_Test {
 
 	}
 
-	@Test
-	public void saveOrUpdate() {
-		SystemUser u = new SystemUser();
-		u.setId(9);
-		u.setSex("1");
-		u.setName("hello jdbc");
-		long n = dao.saveOrUpdate(u);
-		logger.info("------------:" + n);
-
-	}
+	 
 
 	@Test
 	public void count() {
@@ -532,6 +533,9 @@ public class JdbcDao_Test {
 	}
 	@Test
 	public void getPage12() {
+		 String str = null;
+		 str.trim();
+		 
 		 
 	}
 	

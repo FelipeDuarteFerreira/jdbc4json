@@ -15,8 +15,7 @@ import com.sooncode.soonjdbc.util.T2E;
 
 public class DbBeanCache {
     
-	
-	private static Map<String,Map<String, Object>> fieldsCache = new HashMap<>();
+	private static Map<String,List<String>> fieldsCache = new HashMap<>();
 	private static Map<String,String> pkCache = new HashMap<>();
 	private static Map<String,List<ForeignKey>> fkCache = new HashMap<>();
 	private static Map<String,List<Index>> indexCache = new HashMap<>();
@@ -27,10 +26,10 @@ public class DbBeanCache {
 		 
 		String  beanName =javaBean.getClass().getSimpleName(); 
 		
-		Map<String, Object> fields = fieldsCache.get(beanName);
+		List<String> fields = fieldsCache.get(beanName);
 		if(fields==null){
 			fields =  getFields(connection,beanName);
-			fieldsCache.put(beanName, fields);
+			  fieldsCache.put(beanName, fields);
 		}
 		
 		String pkName = pkCache.get(beanName);
@@ -76,16 +75,15 @@ public class DbBeanCache {
 		RObject<?> rObj = new RObject<>(javaBean);
 		
 		Map<String,Object> map = rObj.getFiledAndValue();
-		 
+		Map<String, Object> fes = new HashMap<>();
 		for(Entry<String, Object> en : map.entrySet()){
 			String key = en.getKey();
 			Object val = en.getValue();
-			if(fields.containsKey(key)==true ){
-				fields.remove(key);
-				fields.put(key, val);
+			if(fields.contains(key)==true ){
+				fes.put(key, val);
 			}
 		}
-		dbBean.setFields(fields);
+		dbBean.setFields(fes);
 		Object primaryFieldValue = map.get(pkName);
 		dbBean.setPrimaryFieldValue(primaryFieldValue);
 		dbBean.setClassName(javaBean.getClass().getName());
@@ -100,19 +98,19 @@ public class DbBeanCache {
 	 * @return
 	 * @throws SQLException
 	 */
-	private static synchronized Map<String, Object> getFields(Connection connextion, String beanName) {
+	private static synchronized List<String> getFields(Connection connextion, String beanName) {
 		String tableName = T2E.toTableName(beanName);
 		 
 		String dataBaseName = null ;//db.getDataName();
 		try {
 
 			ResultSet columnSet = connextion.getMetaData().getColumns(dataBaseName, STRING.PERCENT, tableName, STRING.PERCENT);
-			Map<String, Object> map = new HashMap<>();
+			List<String> list = new ArrayList<>();
 			while (columnSet.next()) { // 遍历某个表的字段
 				String columnName = columnSet.getString("COLUMN_NAME");// .toUpperCase());
-				map.put(T2E.toField(columnName), null);
+				list.add(T2E.toField(columnName));
 			}
-			return map;
+			return list;
 		} catch (Exception e) {
 			return null;
 		}
@@ -121,7 +119,6 @@ public class DbBeanCache {
 
 	private static synchronized String getPrimaryField( Connection connection, String beanName) {
 		String tableName = T2E.toTableName(beanName);
-		//DB db = DBs.dBcache.get(dbKey);
 		String dataBaseName = null;// db.getDataName();
 		String primaryKeyName = null;
 		try {
@@ -139,7 +136,6 @@ public class DbBeanCache {
 
 	private static synchronized List<ForeignKey> getForeignKeies(Connection connection, String beanName) {
 		String tableName = T2E.toTableName(beanName);
-		//DB db = DBs.dBcache.get(dbKey);
 		String dataBaseName = null;//db.getDataName();
 		try {
 			ResultSet foreignKeyResultSet = connection.getMetaData().getImportedKeys(dataBaseName, null, tableName);
@@ -162,7 +158,6 @@ public class DbBeanCache {
 
 	private synchronized static List<Index> getIndex(Connection connection, String beanName) {
 		String tableName = T2E.toTableName(beanName);
-		//DB db = DBs.dBcache.get(dbKey);
 		String dataBaseName = null;// db.getDataName();
 		List<Index> indexes = new ArrayList<Index>();
 		try {
