@@ -82,17 +82,20 @@ public class JdbcDao {
 
 	}
 
-	@SuppressWarnings("unchecked")
+	 
 	public <T> long saveOrUpdate(final T javaBean) {
 
 		DbBean dbBean = jdbc.getDbBean(javaBean);
 		Object pkValue = dbBean.getPrimaryFieldValue();
 		Parameter p = null ;
-		if (pkValue != null) {
-			RObject<?> rObj = new RObject<>(dbBean.getClassName());
+		boolean pkValueIsInexistence = ( pkValue != null );
+		if (pkValueIsInexistence) {
+			RObject<T> rObj = new RObject<>(javaBean.getClass());
 			rObj.invokeSetMethod(dbBean.getPrimaryField(), pkValue);
-			List<T> list = gets((T) rObj.getObject());
-			if (list.size() == 1) {
+			T tJavaBean =   rObj.getObject();
+			List<T> list = gets(tJavaBean);
+			boolean haveOneJavaBean = ( list.size() == 1 );
+			if (haveOneJavaBean) {
 				p = ComSQL.update(dbBean);
 			} 
 		}  
@@ -104,7 +107,7 @@ public class JdbcDao {
 
 	}
 
-	@SuppressWarnings("unchecked")
+	 
 	public <T> List<T> gets(final Conditions conditions) {
 
 		String className = conditions.getLeftBean().getClassName();
@@ -121,7 +124,7 @@ public class JdbcDao {
 
 		List<T> tes = new LinkedList<>();
 		for (Map<String, Object> map : list) {
-			RObject<?> obj = new RObject<>(className);
+			RObject<T> obj = new RObject<>(className);
 			for (Entry<String, Object> en : map.entrySet()) {
 				String fieldName = en.getKey();
 				Object value = en.getValue();

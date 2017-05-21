@@ -33,7 +33,7 @@ import com.sooncode.soonjdbc.util.T2E;
 /**
  * 执行SQL语句核心类
  * 
- * @author pc
+ * @author hechenwe@gmail.com
  *
  */
 
@@ -76,10 +76,8 @@ public class Jdbc {
 		logger.debug("【SQL】" + parameter.getFormatSql());
 		logger.debug("【参数】" + parameter.getParams());
 		return jdbcTemplate.execute(new ConnectionCallback<Long>() {
-
 			@Override
 			public Long doInConnection(Connection con) throws SQLException, DataAccessException {
-				logger.debug("****"+con.toString());
 				return getUpdateResult(con, parameter);
 			}
 		});
@@ -100,10 +98,9 @@ public class Jdbc {
 	}
 
 	/**
-	 * 执行查询语句(可能有多条记录)。 可防止SQL注入，推荐使用。
 	 * 
-	 * @parameter 参数模型
-	 * @return List
+	 * @param parameter
+	 * @return
 	 */
 	public List<Map<String, Object>> gets(final Parameter parameter) {
 		if (SqlVerification.isSelectSql(parameter.getReadySql()) == false) {
@@ -115,7 +112,7 @@ public class Jdbc {
 
 			@Override
 			public List<Map<String, Object>> doInConnection(Connection con) throws SQLException, DataAccessException {
-				
+
 				logger.debug(con.toString());
 				PreparedStatement preparedStatement = con.prepareStatement(parameter.getReadySql());
 				preparedStatement = preparedStatementSet(preparedStatement, parameter);
@@ -140,7 +137,7 @@ public class Jdbc {
 	}
 
 	/**
-	 * 执行查询语句 (只有一条返回记录)。
+	 * 执行查询语句 
 	 * 
 	 * @param parameter
 	 * @return
@@ -173,8 +170,11 @@ public class Jdbc {
 
 	/**
 	 * 执行存储过程
-	 * @param callName  存储过程名称
-	 * @param ins 入参
+	 * 
+	 * @param callName
+	 *            存储过程名称
+	 * @param ins
+	 *            入参
 	 * @return 出参
 	 */
 	public Object executeProcedure(final String callName, final Object... ins) {
@@ -206,7 +206,6 @@ public class Jdbc {
 			}
 		});
 	}
- 
 
 	private String getProcedureSql(String callName, Object... paras) {
 
