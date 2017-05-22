@@ -8,9 +8,9 @@ import com.sooncode.soonjdbc.constant.STRING;
  
 
 /**
- * 数据库表 和 对应的实体类
+ * 数据库表 和 对应的实体类 转换
  * 
- * @author pc
+ * @author hechenwe@gmail.com
  *
  */
 public class T2E {
@@ -18,11 +18,7 @@ public class T2E {
 	private static Map<String, String> columnCache = new HashMap<String, String>();
 	private static Map<String, String> fieldCache = new HashMap<String, String>();
 
-	/** 属性名称转换成字段名称 */ 
-	/**
-	 * @param field
-	 * @return
-	 */
+	 
 	public static String toColumn(String field) {
 		String column = new String();
 		column = columnCache.get(field);

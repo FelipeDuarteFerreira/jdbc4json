@@ -51,11 +51,11 @@ public class OpenInterfaceTest implements InvocationHandler {
 			long end = System.nanoTime();
 			long endMem = Memory.used();
 			double dou = (end - start) / 1000000000.00;
-			logger.info("【Jdbc4Json】执行方法  " + method.getName() + "(...) 耗时： " + dou + "(s) / " + (end - start) / 1000000 + "(ms) / " + (end - start) + "(ns)");
-			logger.info("【Jdbc4Json】执行方法   " + method.getName() +  "(...) 消耗的内存： " +(endMem - startMem) / (8 * 1024) + "(kB) / "  + (endMem - startMem) / 8 + "(B) / " +  (endMem - startMem) + "(bytes)" );
+			logger.info("【SoonTest】执行方法  " + method.getName() + "(...) 耗时： " + dou + "(s) / " + (end - start) / 1000000 + "(ms) / " + (end - start) + "(ns)");
+			logger.info("【SoonTest】执行方法   " + method.getName() +  "(...) 消耗的内存： " +(endMem - startMem) / (8 * 1024) + "(kB) / "  + (endMem - startMem) / 8 + "(B) / " +  (endMem - startMem) + "(bytes)" );
 
 		} catch (Exception e) {
-			logger.info("【Jdbc4Json】：执行方法（"+method.getName()+"） 异常： " + e.getMessage());
+			logger.info("【SoonTest】：执行方法（"+method.getName()+"） 异常： " + e.getMessage());
 			return null;
 		} finally {
 			// System.out.println("【执行结束】： " + method.getName());

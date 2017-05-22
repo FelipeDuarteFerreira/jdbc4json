@@ -56,13 +56,13 @@ public class QueryService {
 
 	}
 
-	@SuppressWarnings("unchecked")
+	 
 	public <L, R> List<Bean<R>> findBean(List<Map<String, Object>> list, Bean<L> bean, DbBean dbBean) {
+		 
 		if (bean != null) {
 			List<Map<String, Object>> newlist = new LinkedList<>();
 			for (Map<String, Object> map : list) {
 				String name = T2E.toField(T2E.toColumn(bean.getBeanName()));
-
 				Object thisVal = map.get(name + STRING.DOLLAR + bean.getKey());
 				if (thisVal.toString().equals(bean.getVal())) {
 					newlist.add(map);
@@ -80,7 +80,7 @@ public class QueryService {
 			String idValue;
 			Bean<R> resultBean = new Bean<>();
 			resultBean.setBeanName(dbBean.getBeanName());
-			RObject<?> rObj = new RObject<>(dbBean.getClassName());
+			RObject<R> rObj = new RObject<>(dbBean.getClassName());
 			for (Entry<String, Object> en : map.entrySet()) {
 				String key = en.getKey();
 				Object val = en.getValue();
@@ -103,7 +103,7 @@ public class QueryService {
 			if (beans.size() == 0 || !str.contains(resultBean.getVal())) {
 
 				str = str + resultBean.getVal() + STRING.AT;
-				resultBean.setJavaBean((R) rObj.getObject());
+				resultBean.setJavaBean( rObj.getObject());
 				beans.add(resultBean);
 			}
 		}
