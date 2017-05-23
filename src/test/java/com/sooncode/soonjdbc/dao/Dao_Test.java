@@ -40,7 +40,7 @@ import com.sooncode.util.SJson;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/applicationContext.xml")
-public class JdbcDao_Test {
+public class Dao_Test {
 	@Autowired
 	private JdbcDao dao;
 	private static Logger logger = Logger.getLogger("JdbcDao_Test.class");

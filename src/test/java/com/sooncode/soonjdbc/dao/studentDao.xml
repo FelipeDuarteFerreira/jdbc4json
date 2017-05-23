@@ -1,16 +1,46 @@
 <sqls>
-	<sql id="getStudentByStudentId">
-		SELECT *
-		FROM STUDENT
-		WHERE STUDENT_ID = ${studentId}
-	</sql>
-	<sql id="getStudentAndIdentity">
-		SELECT
-		STUDENT.STUDENT_ID AS STUDENT$STUDENT_ID,
-		IDENTITY.IDENTITY_NUMBER AS IDENTITY$IDENTITY_NUMBER
-		FROM STUDENT , IDENTITY
-		WHERE
-		IDENTITY.IDENTITY_ID = STUDENT.IDENTITY_ID AND
-		STUDENT.STUDENT_ID = ${studentId}
+	<sql id="sqlId">
+SELECT
+	m.id,
+	m.title,
+	m.stem,
+	m.ques_option,
+	m.ques_analyze,
+	m.answer,
+	m.difficult_star,
+	m.audio_listen_path,
+	m.video_path,
+	m.type,
+	m.audio_analyze_path,
+	m.remark,
+	m.stage_code,
+	m.grade_code,
+	m.subject_name,
+	m.score,
+	m.knowledges 
+FROM
+	book_knowledge_tree bkt,
+	resources_knowledge_tree rkt,
+	rel_question_knowledge rqk,
+	#{xxx_question} m
+WHERE
+	bkt.product_code = rkt.ctb_code
+AND rkt.ctb_code = rqk.product_code
+AND rqk.question_code = m.id
+AND bkt.subject_code = ${subjectCode} 
+AND bkt.booktype_code = ${booktypeCode}  
+AND bkt.grade_code = ${gradeCode}
+AND bkt.selfLabel = '1'
+AND rkt.selfLabel = '1'
+AND m.isdel = 0
+AND m.type in (1,5) 
+  
+AND m.grade_code = 21
+GROUP BY
+	m.id
+ORDER BY
+	bkt.path
+ 
+		 
 	</sql>
 </sqls>

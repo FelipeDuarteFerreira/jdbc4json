@@ -166,13 +166,14 @@ public class TableRelationAnalyze {
 	 * @return
 	 */
 	private static boolean isRefer(DbBean leftDbBean, DbBean rightDbBean) {
-		boolean bool = true;
+		boolean bool = false;
 		List<ForeignKey> leftFkes = leftDbBean.getForeignKeies();
 		String rightTabeName = rightDbBean.getTableName();
 		for (ForeignKey f : leftFkes) {
 			String referDbBeanName = f.getReferDbBeanName().toUpperCase();
 			if (rightTabeName.equals(referDbBeanName)) {
-				bool = bool || true;
+				bool = true;
+				break;
 			}
 		}
 		return bool;

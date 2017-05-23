@@ -1,4 +1,4 @@
-package com.sooncode.util;
+package com.sooncode.soonjdbc.util;
 
  
 import java.io.File;

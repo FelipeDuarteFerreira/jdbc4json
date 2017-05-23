@@ -11,7 +11,8 @@ import java.util.regex.Pattern;
 import com.sooncode.soonjdbc.constant.STRING;
 import com.sooncode.soonjdbc.sql.ParaInject;
 import com.sooncode.soonjdbc.sql.Parameter;
-import com.sooncode.util.PathUtil;
+import com.sooncode.soonjdbc.util.PathUtil;
+ 
 
 
 
@@ -38,7 +39,7 @@ public class SqlXml {
 		for (String string : str) {
 			s = s + string + File.separatorChar;
 		}
-		this.xmlName = PathUtil.getClassPath()+ s;
+		this.xmlName = PathUtil.getClassPath()+ s.substring(0, s.length()-1);
 	}
 
 	/**

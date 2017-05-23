@@ -139,13 +139,14 @@ public class QueryService {
 		String leftTableName = leftDbBean.getTableName();
 		String columns = ComSQL.columns4One(leftDbBean);
 		String where = conditions.getWhereParameter().getReadySql() + getLimit(pageNum, pageSize);
+		String sizeWhere = conditions.getWhereParameter().getReadySql();
 		String sql = SQL_KEY.SELECT + columns + SQL_KEY.FROM + leftTableName + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + where;
 		Parameter p = conditions.getWhereParameter();
 		p.setReadySql(sql);
 		List<Map<String, Object>> list = jdbc.gets(p);
 		List<L> result = findBean(list, leftDbBean);
 
-		String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + leftTableName + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + where;
+		String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + leftTableName + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + sizeWhere;
 		Parameter sizeP = conditions.getWhereParameter();
 		sizeP.setReadySql(sizeSql);
 		Map<String, Object> map = jdbc.get(sizeP);
@@ -232,7 +233,8 @@ public class QueryService {
 		String sql = SQL_KEY.SELECT + columns + SQL_KEY.FROM + leftTableName + otherTableNames + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + condition + where;
 		p.setReadySql(sql);
 		List<Map<String, Object>> list = jdbc.gets(p);
-		String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + leftTableName + otherTableNames + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + condition + where;
+		String sizeWhere = conditions.getWhereParameter().getReadySql();
+		String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + leftTableName + otherTableNames + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + condition + sizeWhere;
 		Parameter sizeP = conditions.getWhereParameter();
 		sizeP.setReadySql(sizeSql);
 		Map<String, Object> map = jdbc.get(sizeP);
@@ -290,8 +292,8 @@ public class QueryService {
 		String sql = SQL_KEY.SELECT + columns + SQL_KEY.FROM + leftTableName + otherTableName + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + condition + where;
 		p.setReadySql(sql);
 		List<Map<String, Object>> list = jdbc.gets(p);
-
-		String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + leftTableName + otherTableName + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + condition + where;
+		String sizeWhere = conditions.getWhereParameter().getReadySql();
+		String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + leftTableName + otherTableName + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + condition + sizeWhere;
 		Parameter sizeP = conditions.getWhereParameter();
 		sizeP.setReadySql(sizeSql);
 		Map<String, Object> map = jdbc.get(sizeP);
@@ -381,8 +383,8 @@ public class QueryService {
 			many2many.setMany(o2os);
 			m2ms.add(many2many);
 		}
-
-		String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + tableNames + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + condition + where;
+		String sizeWhere = conditions.getWhereParameter().getReadySql();
+		String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + tableNames + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + condition + sizeWhere;
 		Parameter sizeP = conditions.getWhereParameter();
 		sizeP.setReadySql(sizeSql);
 		Map<String, Object> map = jdbc.get(sizeP);
@@ -452,8 +454,8 @@ public class QueryService {
 			many2many.setMany(o2os);
 			m2ms.add(many2many);
 		}
-
-		String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + tableNames + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + condition + where;
+		String sizeWhere = conditions.getWhereParameter().getReadySql();
+		String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + tableNames + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + condition + sizeWhere;
 		Parameter sizeP = conditions.getWhereParameter();
 		sizeP.setReadySql(sizeSql);
 		Map<String, Object> map = jdbc.get(sizeP);
@@ -532,8 +534,8 @@ public class QueryService {
 			o2m2m.setOne2manys(o2ms);
 			o2m2ms.add(o2m2m);
 		}
-
-		String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + tableNames + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + condition + where;
+		String sizeWhere = conditions.getWhereParameter().getReadySql();
+		String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + tableNames + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + condition + sizeWhere;
 		Parameter sizeP = conditions.getWhereParameter();
 		sizeP.setReadySql(sizeSql);
 		Map<String, Object> map = jdbc.get(sizeP);
