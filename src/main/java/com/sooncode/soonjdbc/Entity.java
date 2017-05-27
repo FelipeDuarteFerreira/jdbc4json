@@ -9,26 +9,25 @@ import com.sooncode.soonjdbc.constant.STRING;
 import com.sooncode.soonjdbc.reflect.RObject;
 import com.sooncode.soonjdbc.util.T2E;
 
- 
+public class Entity {
 
-public class Entity  {
+	private Entity() {
 
-	private   Entity( ) {
-		 
 	}
 
 	/**
 	 * 抓取实体对象
+	 * 
 	 * @param list
 	 * @return
 	 */
-	public static  <T> List<T> findEntity(List<Map<String, Object>> list,Class<T> clas) {
+	public static <T> List<T> findEntity(List<Map<String, Object>> list, Class<T> clas) {
 		if (list == null || list.size() == 0) {
 			return new LinkedList<>();
 		}
 		List<Object> objects = new LinkedList<>();
 		for (Map<String, Object> map : list) {
-			Object object = findEntity(map,clas);
+			Object object = findEntity(map, clas);
 			if (objects.size() >= 1 && object.toString().equals(objects.get(objects.size() - 1).toString())) {
 				continue;
 			}
@@ -41,12 +40,13 @@ public class Entity  {
 
 	/**
 	 * Map 转换成 实体对象
+	 * 
 	 * @param map
 	 * @return
 	 */
-	 
-	public static  <T> T findEntity(Map<String, Object> map,Class<T> clas) {
-		String tableName =  T2E.toColumn(clas.getSimpleName()) ;
+
+	public static <T> T findEntity(Map<String, Object> map, Class<T> clas) {
+		String tableName = T2E.toColumn(clas.getSimpleName());
 
 		RObject<T> rObj = new RObject<>(clas);
 		List<Field> fields = rObj.getFields();
@@ -101,5 +101,5 @@ public class Entity  {
 			return true;
 		}
 	}
-	 
+
 }

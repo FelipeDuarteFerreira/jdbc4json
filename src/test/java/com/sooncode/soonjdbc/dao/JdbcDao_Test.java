@@ -53,7 +53,7 @@ public class JdbcDao_Test {
 		u.setSex("1");
 		u.setCreateDate(new Date());
 		u.setUpdateDate(new Date());
-
+		dao.save(u);
     /* for (int i = 0 ;i<1000;i++) {
 	     dao.save(u);
 			

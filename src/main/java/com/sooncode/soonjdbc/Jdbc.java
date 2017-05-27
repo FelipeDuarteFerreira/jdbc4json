@@ -17,7 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -39,7 +40,7 @@ import com.sooncode.soonjdbc.util.T2E;
 
 public class Jdbc {
 
-	public final static Logger logger = Logger.getLogger("Jdbc.class");
+	public final static Log logger = LogFactory.getLog(Jdbc.class);  
 	private JdbcTemplate jdbcTemplate;
 
 	public Jdbc() {
@@ -73,8 +74,9 @@ public class Jdbc {
 		if (SqlVerification.isUpdateSql(sql) == false) {
 			return 0L;
 		}
-		logger.debug("【SQL】" + parameter.getFormatSql());
-		logger.debug("【参数】" + parameter.getParams());
+		 
+		logger.debug("【SoonJdbc SQL】" + parameter.getFormatSql());
+		logger.debug("【SoonJdbc Parameter】" + parameter.getParams());
 		return jdbcTemplate.execute(new ConnectionCallback<Long>() {
 			@Override
 			public Long doInConnection(Connection con) throws SQLException, DataAccessException {
@@ -106,8 +108,8 @@ public class Jdbc {
 		if (SqlVerification.isSelectSql(parameter.getReadySql()) == false) {
 			return new LinkedList<>();
 		}
-		logger.debug("【SQL】" + parameter.getFormatSql());
-		logger.debug("【参数】" + parameter.getParams());
+		logger.debug("【SoonJdbc SQL】" + parameter.getFormatSql());
+		logger.debug("【SoonJdbc Parameter】" + parameter.getParams());
 		return jdbcTemplate.execute(new ConnectionCallback<List<Map<String, Object>>>() {
 
 			@Override

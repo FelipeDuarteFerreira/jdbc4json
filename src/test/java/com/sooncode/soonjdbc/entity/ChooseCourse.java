@@ -4,7 +4,7 @@ import java.io.Serializable;
 /**
 *
 * @author hechen 
-* 
+*  
 */ 
 public class ChooseCourse implements Serializable{ 
 	 private static final long serialVersionUID = 1L;
