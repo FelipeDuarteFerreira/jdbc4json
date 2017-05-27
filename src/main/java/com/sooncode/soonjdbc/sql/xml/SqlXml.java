@@ -4,17 +4,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
- 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.sooncode.soonjdbc.constant.STRING;
 import com.sooncode.soonjdbc.sql.ParaInject;
 import com.sooncode.soonjdbc.sql.Parameter;
-import com.sooncode.soonjdbc.util.PathUtil;
- 
-
-
 
 /**
  * 读取Xml文件中的SQL
@@ -23,23 +18,18 @@ import com.sooncode.soonjdbc.util.PathUtil;
  *
  */
 public class SqlXml {
+
+	private File file;
+
 	/**
-	 * xml 文件名
+	 * 
+	 * @param xmlName
+	 *            如： com/sooncode/jdbc4json/dao/studentDao.xml
 	 */
-	private String xmlName;
-	
-	
-    /**
-     * 
-     * @param xmlName 如： com/sooncode/jdbc4json/dao/studentDao.xml
-     */
-	public SqlXml(String xmlName) {
-		String[] str = xmlName.split("/");
-		String s = new String();
-		for (String string : str) {
-			s = s + string + File.separatorChar;
-		}
-		this.xmlName = PathUtil.getClassPath()+ s.substring(0, s.length()-1);
+	public SqlXml(String xmlFileName) {
+
+		file = SqlXmlManager.fielMap.get(xmlFileName);
+
 	}
 
 	/**
@@ -53,53 +43,56 @@ public class SqlXml {
 		if (str != null) {
 			Pattern p = Pattern.compile("\t|\r|\n");
 			Matcher m = p.matcher(str);
-			temp = m.replaceAll( STRING.NULL_STR);
+			temp = m.replaceAll(STRING.NULL_STR);
 		}
 		return temp;
 	}
 
-	 
-	 
-	
-	
 	/**
 	 * 获取可执行SQL语句
-	 * @param id xml文件中 节点的id属性值
-	 * @param obs 参数载体(注入sql中的对象集 (可选) 或者一个Map对象)
-	 * @return 参数模型 
+	 * 
+	 * @param id
+	 *            xml文件中 节点的id属性值
+	 * @param obs
+	 *            参数载体(注入sql中的对象集 (可选) 或者一个Map对象)
+	 * @return 参数模型
 	 */
-	public Parameter getParameter(String id,Object...obs) {
-		String xml =  readFile(this.xmlName);
+	public Parameter getParameter(String id, Object... obs) {
+		String xml = readFile(this.file);
 		ParaXml paraXml = new ParaXml(xml);
 		String sql = paraXml.getValue(id);
-		if(obs.length>0){
+		if (obs.length > 0) {
 			Parameter p = ParaInject.getParameter(sql, obs);
 			p.setReadySql(compressString(p.getReadySql()));
-			return 	p;		
-		}else{
+			return p;
+		} else {
 			Parameter p = new Parameter();
 			p.setReadySql(sql);
 			return p;
 		}
 	}
-	
+
 	/**
 	 * 获取可执行SQL语句
-	 * @param readySql 预编译SQL
-	 * @param obs 参数载体(注入sql中的对象集 (可选) 或者一个Map对象)
-	 * @return 参数模型 
+	 * 
+	 * @param readySql
+	 *            预编译SQL
+	 * @param obs
+	 *            参数载体(注入sql中的对象集 (可选) 或者一个Map对象)
+	 * @return 参数模型
 	 */
-	public  Parameter getParameter(StringBuffer readySql,Object...obs) {
-		if(obs.length>0){
+	public Parameter getParameter(StringBuffer readySql, Object... obs) {
+		if (obs.length > 0) {
 			Parameter p = ParaInject.getParameter(readySql.toString(), obs);
 			p.setReadySql(compressString(p.getReadySql()));
-			return 	p;		
-		}else{
+			return p;
+		} else {
 			Parameter p = new Parameter();
 			p.setReadySql(readySql.toString());
 			return p;
 		}
 	}
+
 	/**
 	 * 读文件
 	 * 
@@ -108,12 +101,11 @@ public class SqlXml {
 	 * @return 文件的内容
 	 * @throws IOException
 	 */
-	private  String readFile(String filePath)  {
-		File file = new File(filePath);
+	private String readFile(File file) {
 		if (!file.exists() || file.isDirectory()) {
 			return null;
 		}
-		 
+
 		BufferedReader br;
 		StringBuffer sb = new StringBuffer();
 		try {
@@ -129,6 +121,5 @@ public class SqlXml {
 		}
 		return sb.toString();
 	}
-	
-	 
+
 }

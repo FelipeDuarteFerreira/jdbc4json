@@ -8,7 +8,6 @@
 		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
 
 	<context:component-scan base-package="com.sooncode">
-	<!-- <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service" /> -->
 	</context:component-scan>
 
 	<bean id="dmds"
@@ -32,15 +31,16 @@
 	<bean id="jdbcService" class="com.sooncode.soonjdbc.service.JdbcService">
 		<property name="jdbcDao" ref="jdbcDao" />
 	</bean>
-	<!-- <bean id="javaBeanBuilder" class="com.sooncode.soonjdbc.util.create_entity.JavaBeanBuilder">
-		<property name="jdbcTemplate" ref="jdbcTemplate" />
-		<property name="codePath" value="C:\Users\pc\git\peng_yun_service\src\main\java\com\eeduspace\cibn\persist\entity"/>
-		<property name="packageName" value="com.eeduspace.cibn.persist.entity"/>
-	</bean> -->
+	<bean id="sqlXmlManager" class="com.sooncode.soonjdbc.sql.xml.SqlXmlManager">
+		<property name="xmlFileLocation" value="classpath:/sql" />
+	</bean>
+	<!-- <bean id="javaBeanBuilder" class="com.sooncode.soonjdbc.util.create_entity.JavaBeanBuilder"> 
+		<property name="jdbcTemplate" ref="jdbcTemplate" /> 
+		<property name="codePath" value="E:\代码备份"/> 
+		<property name="packageName" value="com.sooncode.soonjdbc.entity"/> 
+		</bean> -->
 
 	<!-- (事务管理)transaction manager, use JtaTransactionManager for global tx -->
-	
-	 
 	<bean id="transactionManager"
 		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dmds" />
