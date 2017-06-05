@@ -10,16 +10,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * 反射创建的对象
  * 
- * @author pc
+ * @author hechenwe@gmail.com
  *
  */
 public class RObject<T> {
-	public static Logger logger = Logger.getLogger("RObject.class");
+
+	public final static Log logger = LogFactory.getLog(RObject.class);
 	private static final String NULL_STR = "";
 	private static final String CLASS = "class ";
 	private static final String LIST_INTERFACE = "interface java.util.List";
@@ -29,28 +32,25 @@ public class RObject<T> {
 	/** 被反射代理的对象 */
 	private T object;
 
-	public   RObject(T object) {
+	public RObject(T object) {
 		this.object = object;
 	}
 
 	@SuppressWarnings("unchecked")
 	public RObject(Class<?> clas) {
-
 		try {
 			this.object = (T) clas.newInstance();
-
 		} catch (Exception e) {
-
 			e.printStackTrace();
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public RObject(String className) {
-		Class<?> clas;
+		Class<T> clas;
 		try {
-			clas = Class.forName(className);
-			this.object = (T) clas.newInstance();
+			clas = (Class<T>) Class.forName(className);
+			this.object = clas.newInstance();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -68,7 +68,7 @@ public class RObject<T> {
 	}
 
 	/** 获取被反射代理的对象 */
-	public   T getObject() {
+	public T getObject() {
 		return object;
 	}
 
@@ -79,31 +79,25 @@ public class RObject<T> {
 	 */
 	public List<Field> getFields() {
 		List<Field> list = new ArrayList<>();
-
 		Class<?> thisClass = this.object.getClass();
-
-		int n = 0;
+		boolean isThisClass = true;
 		for (; thisClass != Object.class; thisClass = thisClass.getSuperclass()) {
-
 			Field[] fields = thisClass.getDeclaredFields();
-			if (n == 0) {
-				for (Field f : fields) {
-					if (!f.getName().equals(UID)) {
+			for (Field f : fields) {
+				boolean isNotUID = !f.getName().equals(UID);
+				if (isNotUID) {
+					if (isThisClass) {
 						list.add(f);
-					}
-				}
-
-			} else {
-				for (Field f : fields) {
-					int i = f.getModifiers();
-					boolean isPrivate = Modifier.isPrivate(i);
-					if (!f.getName().equals(UID) && isPrivate == false) {
-						list.add(f);
+					} else {
+						int i = f.getModifiers();
+						boolean isPrivate = Modifier.isPrivate(i);
+						if (isPrivate == false) {
+							list.add(f);
+						}
 					}
 				}
 			}
-
-			n++;
+			isThisClass = false;
 		}
 
 		return list;
@@ -166,7 +160,7 @@ public class RObject<T> {
 			Method method = pd.getWriteMethod();
 			method.invoke(object, args);
 		} catch (Exception e) {
-			//logger.error(e.getMessage());
+			// logger.error(e.getMessage());
 		}
 
 	}
@@ -185,7 +179,7 @@ public class RObject<T> {
 			Class<?>[] c = method.getParameterTypes();
 			return c[0];
 		} catch (IntrospectionException e) {
-			//logger.error(e.getMessage());
+			// logger.error(e.getMessage());
 			return null;
 		}
 
@@ -198,7 +192,7 @@ public class RObject<T> {
 	 * @return
 	 */
 
-	public   T invokeGetMethod(String fieldName) {
+	public T invokeGetMethod(String fieldName) {
 		PropertyDescriptor pd;
 		try {
 			pd = new PropertyDescriptor(fieldName, this.object.getClass());
@@ -222,8 +216,7 @@ public class RObject<T> {
 
 		List<Field> fields = this.getFields();
 		for (Field field : fields) {
-			String name = field.getName().replace("$cglib_prop_", "");
-			// logger.debug(field.getName());
+			String name = field.getName();
 			if (!field.getName().equals(UID) && str.contains(field.getType().getSimpleName())) {
 				map.put(name, this.invokeGetMethod(name));
 			}
@@ -231,42 +224,11 @@ public class RObject<T> {
 		return map;
 	}
 
-	/** 获取对象的第一个属性名称 （主键） */
-	public String getPk() {
+	 
 
-		Class<?> c = object.getClass();
-		Field[] fields = c.getDeclaredFields();
-		for (Field field : fields) {
-			if (!field.getName().equals(UID)) {
-				return field.getName();
-			}
-		}
-		return null;
-	}
+	 
 
-	/** 设置对象的第一个属性名称 （主键） */
-	public void setPk(Object value) {
-		String pk = getPk();
-		invokeSetMethod(pk, value);
-
-	}
-
-	/** 获取对象的第一个属性的值 */
-	public   T getPkValue() {
-
-		String str = JAVA_TYPES;// "Integer Long Short Byte Float Double
-								// Character Boolean Date String";
-		Class<?> c = object.getClass();
-		Field[] fields = c.getDeclaredFields();
-		for (Field field : fields) {
-			// logger.debug(field.getName());
-			if (!field.getName().equals(UID) && str.contains(field.getType().getSimpleName())) {
-
-				return this.invokeGetMethod(field.getName());
-			}
-		}
-		return null;
-	}
+	 
 
 	/**
 	 * 反射执行方法
@@ -278,7 +240,7 @@ public class RObject<T> {
 	 * @return 方法执行的返回值
 	 */
 
-	public   T invoke(String methodName, Object... args) {
+	public T invoke(String methodName, Object... args) {
 		try {
 			Method method = null;
 			for (Class<?> clazz = object.getClass(); clazz != Object.class; clazz = clazz.getSuperclass()) {
@@ -296,9 +258,9 @@ public class RObject<T> {
 		}
 	}
 
-	public static Method getDeclaredMethod(Object object, String methodName) {
+	public  Method getDeclaredMethod( String methodName) {
 		Method method = null;
-		for (Class<?> clazz = object.getClass(); clazz != Object.class; clazz = clazz.getSuperclass()) {
+		for (Class<?> clazz = this.object.getClass(); clazz != Object.class; clazz = clazz.getSuperclass()) {
 			try {
 				method = clazz.getDeclaredMethod(methodName);
 				return method;
@@ -307,7 +269,5 @@ public class RObject<T> {
 		}
 		return null;
 	}
-
-	 
 
 }
