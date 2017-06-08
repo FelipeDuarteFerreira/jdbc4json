@@ -16,10 +16,10 @@ public class JavaBaseType {
 	public static final String Short = "Short";
 	public static final String Byte = "Byte";
 	public static final String Float = "Float";
-	
 	public static final String Double = "Double";
 	public static final String Character = "Character";
 	public static final String Boolean = "Boolean";
+	
 	public static final String Date = "Date";
 	public static final String String = "String";
 	

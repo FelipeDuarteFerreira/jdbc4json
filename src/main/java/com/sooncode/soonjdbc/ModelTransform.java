@@ -9,7 +9,7 @@ import com.sooncode.soonjdbc.reflect.RObject;
 
 /**
  * 数据模型转换
- * @author he chen
+ * @author hechenwe@gmail.com
  *
  */
 public class ModelTransform {
