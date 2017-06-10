@@ -174,6 +174,45 @@ public class JdbcDao {
 		return n;
 
 	}
+	public Object sum(final String key, final Conditions conditions) {
+		String column = T2E.toColumn(key);
+		RObject<?> rObj = new RObject<>(conditions.getLeftBean().getClassName());
+		DbBean dbBean = jdbc.getDbBean(rObj.getObject());
+		String tableName = T2E.toTableName(dbBean.getBeanName());
+		String sql = "SELECT SUM(" + column + ") AS SIZE" + " FROM " + tableName + " WHERE 1=1 " + conditions.getWhereParameter().getReadySql();
+		Parameter parameter = new Parameter();
+		parameter.setReadySql(sql);
+		parameter.setParams(conditions.getWhereParameter().getParams());
+		Map<String, Object> map = jdbc.get(parameter);
+		Object sum = map.get("size");
+		return sum;
+		
+	}
+	public <T> Object sum(String key, T javaBean) {
+		Conditions c = new Conditions(javaBean);
+		Object n = this.sum(key, c);
+		return n;
+	}
+	public Object avg(final String key, final Conditions conditions) {
+		String column = T2E.toColumn(key);
+		RObject<?> rObj = new RObject<>(conditions.getLeftBean().getClassName());
+		DbBean dbBean = jdbc.getDbBean(rObj.getObject());
+		String tableName = T2E.toTableName(dbBean.getBeanName());
+		String sql = "SELECT AVG(" + column + ") AS SIZE" + " FROM " + tableName + " WHERE 1=1 " + conditions.getWhereParameter().getReadySql();
+		Parameter parameter = new Parameter();
+		parameter.setReadySql(sql);
+		parameter.setParams(conditions.getWhereParameter().getParams());
+		Map<String, Object> map = jdbc.get(parameter);
+		Object sum = map.get("size");
+		return sum;
+		
+	}
+	public <T> Object avg(String key, T javaBean) {
+		Conditions c = new Conditions(javaBean);
+		Object n = this.avg(key, c);
+		return n;
+	}
+	
 
 	public <T> T max(final String key, final Conditions conditions) {
 

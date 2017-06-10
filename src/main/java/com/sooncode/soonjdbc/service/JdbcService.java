@@ -76,6 +76,7 @@ public class JdbcService {
 	public <T> List<T> gets(T javaBean) {
 		return jdbcDao.gets(javaBean);
 	}
+
 	public <T> List<T> gets(Conditions conditions) {
 		return jdbcDao.gets(conditions);
 	}
@@ -106,5 +107,21 @@ public class JdbcService {
 
 	public <T, E> T min(String key, E javaBean) {
 		return jdbcDao.min(key, javaBean);
+	}
+
+	public Object sum(String key, Conditions conditions) {
+		return jdbcDao.sum(key, conditions);
+	}
+
+	public <E> Object sum(String key, E javaBean) {
+		return jdbcDao.sum(key, javaBean);
+	}
+
+	public Object avg(String key, Conditions conditions) {
+		return jdbcDao.avg(key, conditions);
+	}
+
+	public <E> Object avg(String key, E javaBean) {
+		return jdbcDao.avg(key, javaBean);
 	}
 }
