@@ -13,15 +13,15 @@ public class LikeSign extends Sign {
 	/**
 	 * 模糊匹配    "%XXX%"
 	 */
-	public static final Sign LIKE = new LikeSign("LIKE");
+	public static final LikeSign LIKE = new LikeSign("LIKE");
 	/**
 	 * 右模糊匹配    "%XXX"
 	 */
-	public static final Sign R_LIKE = new LikeSign("R_LIKE");
+	public static final LikeSign R_LIKE = new LikeSign("R_LIKE");
 	/**
 	 * 左模糊匹配    "XXX%"
 	 */
-	public static final Sign L_LIKE = new LikeSign("L_LIKE");
+	public static final LikeSign L_LIKE = new LikeSign("L_LIKE");
 	
 	private LikeSign(String signStr){
 		this.signStr = signStr;

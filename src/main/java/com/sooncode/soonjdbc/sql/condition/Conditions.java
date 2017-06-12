@@ -75,7 +75,7 @@ public class Conditions {
 	}
 
 	public Conditions setCondition(String key, LikeSign LikeSign, Object value) {
-		return setCondition(key, LikeSign, value);
+		return setConditionCom(key, LikeSign, value);
 	}
 
 	/**
