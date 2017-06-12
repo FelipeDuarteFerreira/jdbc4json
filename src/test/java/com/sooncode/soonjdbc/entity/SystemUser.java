@@ -1,8 +1,8 @@
-
 package com.sooncode.soonjdbc.entity;
+
 import java.io.Serializable;
 /**
-*
+*用户
 * @author hechen 
 * 
 */ 
@@ -14,6 +14,8 @@ public class SystemUser implements Serializable{
 	 private String name ;
 	 /**  */
 	 private Integer age ;
+	 /**  */
+	 private java.math.BigDecimal numer ;
 	 /** 余额 */
 	 private java.util.Date updateDate ;
 	 /**  */
@@ -21,11 +23,12 @@ public class SystemUser implements Serializable{
 	 /**  */
 	 private String address ;
 	 /**  */
+	 private Double doog ;
+	 /**  */
 	 private java.util.Date createDate ;
+	 /**  */
+	 private String type ;
 
-	 private String type;
-	 
-	 
 	 /** 姓名 */
 	 public String getName() { 
 	 	 return name;
@@ -42,6 +45,15 @@ public class SystemUser implements Serializable{
 	 /**  */
 	 public void setAge(Integer age) {
 	 	 this.age = age;
+	 }
+
+	 /**  */
+	 public java.math.BigDecimal getNumer() { 
+	 	 return numer;
+	 }
+	 /**  */
+	 public void setNumer(java.math.BigDecimal numer) {
+	 	 this.numer = numer;
 	 }
 
 	 /** 余额 */
@@ -81,6 +93,15 @@ public class SystemUser implements Serializable{
 	 }
 
 	 /**  */
+	 public Double getDoog() { 
+	 	 return doog;
+	 }
+	 /**  */
+	 public void setDoog(Double doog) {
+	 	 this.doog = doog;
+	 }
+
+	 /**  */
 	 public java.util.Date getCreateDate() { 
 	 	 return createDate;
 	 }
@@ -88,11 +109,14 @@ public class SystemUser implements Serializable{
 	 public void setCreateDate(java.util.Date createDate) {
 	 	 this.createDate = createDate;
 	 }
-	public String getType() {
-		return type;
-	}
-	public void setType(String type) {
-		this.type = type;
-	}
+
+	 /**  */
+	 public String getType() { 
+	 	 return type;
+	 }
+	 /**  */
+	 public void setType(String type) {
+	 	 this.type = type;
+	 }
 
 }

@@ -1,7 +1,6 @@
 package com.sooncode.soonjdbc.sql.condition.sign;
 
- 
- 
+import com.sooncode.soonjdbc.sql.condition.Condition;
 
 /**
  * 符号
@@ -9,10 +8,10 @@ package com.sooncode.soonjdbc.sql.condition.sign;
  * @author pc
  *
  */
-public  class Sign {
+public abstract class Sign {
     
 	 
-	private String signStr;
+	protected String signStr;
 	
 	public String toString(){
 		return signStr;
@@ -24,5 +23,7 @@ public  class Sign {
 	protected Sign(){
 		
 	}
+	
+	public abstract Condition getCondition();
 
 }

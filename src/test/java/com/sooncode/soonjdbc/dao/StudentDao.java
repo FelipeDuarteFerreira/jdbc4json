@@ -13,8 +13,6 @@ import com.sooncode.soonjdbc.Entity;
 import com.sooncode.soonjdbc.Jdbc;
 import com.sooncode.soonjdbc.entity.CtbBookType;
 import com.sooncode.soonjdbc.entity.Question;
-import com.sooncode.soonjdbc.entity.SooncodeIdentity;
-import com.sooncode.soonjdbc.entity.SooncodeStudent;
 import com.sooncode.soonjdbc.sql.Parameter;
 import com.sooncode.soonjdbc.sql.xml.SqlXml;
 
@@ -25,7 +23,7 @@ public class StudentDao {
 	@Autowired
 	private JdbcDao jdbcDao;
 
-	private SqlXml sqlXml = new SqlXml("com/sooncode/soonjdbc/dao/studentDao.xml");
+	private SqlXml sqlXml = new SqlXml("studentDao.xml");
 
 	public void addQuestion(String xxx_question, String subjectCode, String gradeCode, String booktypeName) {
 
@@ -47,7 +45,6 @@ public class StudentDao {
 		List<Map<String, Object>> list = jdbc.gets(para);
 		List<Question> qtes = Entity.findEntity(list, Question.class);
 
-		// List<Map<String,Question>> l = new ArrayList<>();
 		Map<String, List<Question>> m = new HashMap<>();
 		int ss = 0;
 		for (Question question : qtes) {

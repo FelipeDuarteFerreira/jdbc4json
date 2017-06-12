@@ -25,7 +25,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.sooncode.soonjdbc.bean.DbBean;
 import com.sooncode.soonjdbc.bean.DbBeanCache;
-
 import com.sooncode.soonjdbc.constant.DATE_FORMAT;
 import com.sooncode.soonjdbc.sql.Parameter;
 import com.sooncode.soonjdbc.sql.verification.SqlVerification;

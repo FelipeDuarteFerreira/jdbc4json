@@ -28,7 +28,10 @@ public static final String  SIZE = "SIZE";
 public static final String  LIKE = "LIKE";
 public static final String  DATE_FORMAT = "DATE_FORMAT";
 public static final String  IN = STRING.SPACING+"IN"+STRING.SPACING;
+
+public static final String  NOT_IN = STRING.SPACING+"NOT"+STRING.SPACING+"IN"+STRING.SPACING;
 public static final String  BETWEEN = STRING.SPACING+"BETWEEN"+STRING.SPACING;
+public static final String  NOT_BETWEEN = STRING.SPACING+"NOT"+STRING.SPACING+"BETWEEN"+STRING.SPACING;
 public static final String  ORDER_BY  = STRING.SPACING+"ORDER BY"+STRING.SPACING;
 
 public static final String IS  = STRING.SPACING+"IS";     
@@ -66,6 +69,6 @@ public static final String NULL = STRING.SPACING+"NULL";
 public static final String QUESTION = STRING.SPACING+"?"+STRING.SPACING;
 
 
-
+ 
 
 }

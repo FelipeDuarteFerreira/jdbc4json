@@ -1,6 +1,7 @@
 package com.sooncode.soonjdbc.sql.condition;
 
 import com.sooncode.soonjdbc.constant.STRING;
+import com.sooncode.soonjdbc.constant.Sort;
 import com.sooncode.soonjdbc.util.T2E;
 
 /**
@@ -16,9 +17,9 @@ public class OrderBy {
 	 * @param key 属性名称 
 	 * @param sort  DESC：降序 ；ASC：升序。
 	 */
-	public OrderBy(String key,Sort sort){
+	public OrderBy(String key,Sort Sort){
 		
-		this.orderBy= T2E.toColumn(key)+STRING.SPACING + sort.name();
+		this.orderBy= T2E.toColumn(key)+STRING.SPACING + Sort.name();
 	}	
 	
 	public String toString (){

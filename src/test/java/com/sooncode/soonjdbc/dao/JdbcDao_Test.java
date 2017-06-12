@@ -11,8 +11,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sooncode.soonjdbc.ModelTransform;
- 
+import com.sooncode.soonjdbc.constant.DATE_FORMAT;
+import com.sooncode.soonjdbc.constant.Sort;
 import com.sooncode.soonjdbc.dao.JdbcDao;
 import com.sooncode.soonjdbc.dao.tabletype.TableRelation;
 import com.sooncode.soonjdbc.entity.ChooseCourse;
@@ -25,17 +25,16 @@ import com.sooncode.soonjdbc.entity.SooncodeTeacher;
 import com.sooncode.soonjdbc.entity.SooncodeTeaching;
 import com.sooncode.soonjdbc.entity.SystemFriend;
 import com.sooncode.soonjdbc.entity.SystemUser;
-import com.sooncode.soonjdbc.model.StudentAndIdentity;
 import com.sooncode.soonjdbc.page.Many2Many;
 import com.sooncode.soonjdbc.page.One2Many;
 import com.sooncode.soonjdbc.page.One2Many2Many;
 import com.sooncode.soonjdbc.page.One2One;
 import com.sooncode.soonjdbc.page.Page;
 import com.sooncode.soonjdbc.sql.condition.Conditions;
-import com.sooncode.soonjdbc.sql.condition.DateFormat4Sql;
-import com.sooncode.soonjdbc.sql.condition.Sort;
+import com.sooncode.soonjdbc.sql.condition.sign.BetweenSign;
 import com.sooncode.soonjdbc.sql.condition.sign.EqualSign;
-import com.sooncode.soonjdbc.sql.condition.sign.LikeSign;
+import com.sooncode.soonjdbc.sql.condition.sign.InSign;
+import com.sooncode.soonjdbc.sql.condition.sign.NullSign;
 import com.sooncode.util.SJson;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -129,15 +128,19 @@ public class JdbcDao_Test {
 	@Test
 	public void get() {
 		SystemUser u = new SystemUser();
+		//u.setAge(23);
 		Conditions c = new Conditions(u);
-		c.setCondition("name", LikeSign.LIKE , "hello jdbc");
-		c.setCondition("sex", EqualSign.NOT_EQ, "0");
-		c.setCondition( "createDate" ,EqualSign.LT,new DateFormat4Sql().ymd(new Date()));
-		c.setBetweenCondition("age", 10, 100);
-		c.setInCondition("type", new String[]{"AA","BB"});
-		c.setIsNullCondition("name");
-		c.setIsNotNullCondition("sex");
+		//c.setCondition("name", LikeSign.LIKE , "hello jdbc");
+		//c.setCondition("sex", EqualSign.NOT_EQ , "0");
+	    //c.setCondition( "createDate" ,EqualSign.LT,new Date(), DATE_FORMAT.yyyy_MM_dd);
+	//	c.setCondition( "createDate" ,EqualSign.LT,"2017-06-13", DATE_FORMAT.yyyy_MM_dd);
+		c.setCondition( "createDate" ,BetweenSign.NOT_BETWEEN_AND,"2017-06-13","2017-06-15", DATE_FORMAT.yyyy_MM_dd);
+		//c.setCondition("age",BetweenSign.NOT_BETWEEN_AND, 10, 100);
+		//c.setCondition("type", InSign.IN, new String[]{"AA","BB"});
+		//c.setCondition("name",NullSign.IS_NOT_NULL);
+		//c.setCondition("sex",NullSign.IS_NULL);
 		c.setOderBy("name", Sort.DESC);
+		//c.setOderBy("sex", Sort.ASC);
 		Page p = dao.getPage(1L, 2L, c);
 		List<SystemUser> list = p.getOnes();
 		logger.info(list);
@@ -147,7 +150,7 @@ public class JdbcDao_Test {
 	@Test
 	public void get2() {
 		SystemUser u = new SystemUser();
-		u.setSex("1");
+		u.setSex("0");
 		List<SystemUser> list = dao.gets(u);
 		logger.info(list);
 
@@ -163,6 +166,25 @@ public class JdbcDao_Test {
 		long n = dao.count("*", c);
 		logger.info("------------:" + n);
 
+	}
+	
+	@Test
+	public void sum() {
+		SystemUser u = new SystemUser();
+		//u.setSex("0");
+		Conditions c = new Conditions(u);
+		Object n = dao.sum("doog", u);
+		logger.info("------------:" + n);
+		
+	}
+	@Test
+	public void avg() {
+		SystemUser u = new SystemUser();
+		//u.setSex("0");
+		Conditions c = new Conditions(u);
+		Object n = dao.avg("doog", u);
+		logger.info("------------:" + n);
+		
 	}
 	
 	
@@ -218,8 +240,6 @@ public class JdbcDao_Test {
 			SooncodeStudent st = one2One.getOne(SooncodeStudent.class);
 			SooncodeIdentity ide = one2One.getOne(SooncodeIdentity.class);
 			SooncodeClazz sc2 = one2One.getOne(SooncodeClazz.class);
-			
-		 
 			logger.info(new SJson(st));
 			logger.info(new SJson(ide));
 			logger.info(new SJson(sc2));
@@ -319,7 +339,7 @@ public class JdbcDao_Test {
 		ChooseCourse cc = new ChooseCourse();
 		SooncodeCourse co = new SooncodeCourse();
 		Conditions c = new Conditions(cc, s, co);
-		c.setBetweenCondition("chooseCourse.score", 50, 100);
+		c.setCondition("chooseCourse.score",BetweenSign.NOT_BETWEEN_AND, 50, 100);
 		Page page = dao.getPage(1L, 10L, c);
 		List<One2One> list = page.getOne2One();
 		logger.info("---------------------------------------------------------------");
@@ -367,7 +387,7 @@ public class JdbcDao_Test {
 		SooncodeCourse co = new SooncodeCourse();
 		co.setCourseId("001");
 		Conditions c = new Conditions(co, cc, s);
-		c.setBetweenCondition("chooseCourse.score", 50, 100);
+		c.setCondition("chooseCourse.score",BetweenSign.BETWEEN_AND, 50, 100);
 		Page page = dao.getPage(1L, 10L, c);
 		List<Many2Many<SooncodeCourse, ChooseCourse, SooncodeStudent>> m2ms = page.getMany2Manys();
 
@@ -531,13 +551,7 @@ public class JdbcDao_Test {
 		logger.info("---------------------------------------------------------------");
 
 	}
-	@Test
-	public void getPage12() {
-		 String str = null;
-		 str.trim();
-		 
-		 
-	}
+	 
 	
 	 
 }

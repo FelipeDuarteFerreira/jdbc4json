@@ -7,36 +7,29 @@ import java.util.Arrays;
  * @author pc
  *
  */
-public class Condition {
+ public abstract class  Condition {
     /**
      * 字段(属性) 
      */
-	private String key ;
+	protected String key ;
 	
 	/**
 	 * 条件对应的值
 	 */
-	private Object val;
+	protected Object val;
 	/**
 	 *  条件对应的值(数组)
 	 */
-	private Object [] vales;
+	protected Object [] values;
 	
 	/**
 	 * 条件使用的符号
 	 */
-	private String conditionSign;
-
+	protected String conditionSign;
+ 
 	
-	/**
-	 *类型:"1"表示预定义条件查询;"0" 表示自定义条件查询。
-	 */
-	private String type ="1";  //"0" 表示自定义 
+	protected Object other;
 	
-	/**
-	 * 条件字符串(SQL片段)--- 自定义设置条件时使用。
-	 */
-	private String condition ;
 	
 	
 	public String getKey() {
@@ -72,42 +65,39 @@ public class Condition {
 		this.val = val;
 		this.conditionSign = conditionSign;
 	}
-	public Condition(String key, Object[] vales, String conditionSign) {
+	public Condition(String key, Object[] values, String conditionSign) {
 		super();
 		this.key = key;
-		this.vales = vales;
+		this.values = values;
 		this.conditionSign = conditionSign;
 	}
 
-	public String getType() {
-		return type;
+	 
+	 
+
+	public Object[] getValues() {
+		return values;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setValues(Object[] values) {
+		this.values = values;
 	}
 
-	public String getCondition() {
-		return condition;
+	public Object getOther() {
+		return other;
 	}
 
-	public void setCondition(String condition) {
-		this.condition = condition;
+	public void setOther(Object other) {
+		this.other = other;
 	}
 
-	public Object[] getVales() {
-		return vales;
-	}
-
-	public void setVales(Object[] vales) {
-		this.vales = vales;
-	}
+	 
+	public abstract SqlAndParameter getSqlSlice () ;
 
 	@Override
 	public String toString() {
-		return "Condition [key=" + key + ", val=" + val + ", vales=" + Arrays.toString(vales) + ", conditionSign=" + conditionSign + ", type=" + type + ", condition=" + condition + "]";
+		return "Condition [key=" + key + ", val=" + val + ", values=" + Arrays.toString(values) + ", conditionSign=" + conditionSign + ", other=" + other + "]";
 	}
- 
 	
 	
 }

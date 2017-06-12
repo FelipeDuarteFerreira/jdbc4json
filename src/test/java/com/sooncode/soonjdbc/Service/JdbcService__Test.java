@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.sooncode.soonjdbc.constant.Sort;
 import com.sooncode.soonjdbc.entity.SystemUser;
 import com.sooncode.soonjdbc.service.JdbcService;
 import com.sooncode.soonjdbc.sql.condition.Conditions;
-import com.sooncode.soonjdbc.sql.condition.Sort;
 import com.sooncode.soonjdbc.sql.condition.sign.LikeSign;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -27,7 +27,7 @@ public class JdbcService__Test {
 		u.setSex("1");
 		//u.setName("hello jdbc");
 		Conditions c = new Conditions(u);
-		c.setCondition("name", LikeSign.LIKE,"hello jdbc");
+		 
 		c.setOderBy("name", Sort.DESC);
 
 		List<SystemUser> list = jdbcService.gets(c);

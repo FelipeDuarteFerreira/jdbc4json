@@ -6,8 +6,6 @@ import java.util.Map;
 import com.sooncode.soonjdbc.constant.SQL_KEY;
 import com.sooncode.soonjdbc.constant.STRING;
 import com.sooncode.soonjdbc.sql.Parameter;
-import com.sooncode.soonjdbc.sql.condition.sign.DateFormatSign;
-import com.sooncode.soonjdbc.sql.condition.sign.LikeSign;
 import com.sooncode.soonjdbc.sql.condition.sign.Sign;
 import com.sooncode.soonjdbc.util.T2E;
 
@@ -19,7 +17,7 @@ public class Cond {
 
 	}
 	
-	public Cond(String key,Sign equalSign,DateFormatSign dfs,String date){
+	/*public Cond(String key,Sign equalSign,DateFormatSign dfs,String date){
 		String className = dfs.getClass().getName();
 
 		String sql = new String();
@@ -44,7 +42,7 @@ public class Cond {
 		this.parameter = new Parameter();
 		this.parameter.setReadySql(sql);
 		this.parameter.setParams(param);
-	}
+	}*/
 	
 	
 	
@@ -54,7 +52,7 @@ public class Cond {
      * @param sign 符号模型 ：</br> 包含：CommonSign 类 （常见符号）；LikeSign 类 （模糊查询符号）；DateFormatSign 类 （日期符号查询）。
      * @param value 条件对应的值
      */
-	public Cond(String key, Sign sign, Object value) {
+	/*public Cond(String key, Sign sign, Object value) {
 
 		String className = sign.getClass().getName();
 
@@ -81,7 +79,7 @@ public class Cond {
 		this.parameter.setReadySql(sql);
 		this.parameter.setParams(param);
 
-	}
+	}*/
 	 
 	/**
      * 创建查询条件(IN)

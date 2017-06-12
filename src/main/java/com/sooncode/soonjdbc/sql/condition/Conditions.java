@@ -1,16 +1,23 @@
 package com.sooncode.soonjdbc.sql.condition;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-
 import com.sooncode.soonjdbc.bean.DbBean;
+import com.sooncode.soonjdbc.constant.DATE_FORMAT;
 import com.sooncode.soonjdbc.constant.SQL_KEY;
 import com.sooncode.soonjdbc.constant.STRING;
+import com.sooncode.soonjdbc.constant.Sort;
 import com.sooncode.soonjdbc.sql.Parameter;
+import com.sooncode.soonjdbc.sql.condition.sign.BetweenSign;
+import com.sooncode.soonjdbc.sql.condition.sign.EqualSign;
+import com.sooncode.soonjdbc.sql.condition.sign.InSign;
 import com.sooncode.soonjdbc.sql.condition.sign.LikeSign;
+import com.sooncode.soonjdbc.sql.condition.sign.NullSign;
 import com.sooncode.soonjdbc.sql.condition.sign.Sign;
 import com.sooncode.soonjdbc.util.T2E;
 
@@ -25,7 +32,7 @@ public class Conditions {
 	private DbBean leftBean;
 	private DbBean[] otherBeans;
 	private Map<String, Condition> ces;
-	 
+
 	/**
 	 * 排序的SQL片段
 	 */
@@ -39,44 +46,36 @@ public class Conditions {
 		}
 		this.init(leftBean, dbBeans);
 	}
- 
-	public Conditions setCondition(String key, Sign sign, DateFormat4Sql dateFormat4Mysql) {
-
-		if (this.containsKey(key)) {
-			Condition c = new Condition();
-			c.setKey(key);
-			c.setConditionSign(sign + dateFormat4Mysql.getSql());
-			c.setVal(dateFormat4Mysql.getParameter());
-			ces.put(new String(c.getKey()), c);
-		}
-		return this;
-	}
-
-	 
 
 	/**
 	 * 设置条件
 	 * 
-	 * @param key 字段 
-	 *            
-	 * @param sign 条件使用的符号
-	 *            
-	 * @param value 值
-	 *             
+	 * @param key
+	 *            字段
+	 * 
+	 * @param EqualSign
+	 *            条件使用的符号
+	 * 
+	 * @param value
+	 *            值
+	 * 
 	 * @return
 	 */
-	public Conditions setCondition(String key, Sign sign, Object value) {
 
-		if (this.containsKey(key)) {
-			Condition c = new Condition();
-			c.setKey(key);
-			if (value != null) {
-				c.setVal(value);
-			}
-			c.setConditionSign(sign + new String());
-			this.ces.put(new String(key), c);
-		}
-		return this;
+	public Conditions setCondition(String key, EqualSign EqualSign, Object value) {
+		return setConditionCom(key, EqualSign, value);
+	}
+
+	public Conditions setCondition(String key, EqualSign EqualSign, Date value, DATE_FORMAT DATE_FORMAT) {
+		return this.setCondition4DateFormat(key, EqualSign, value, DATE_FORMAT);
+	}
+
+	public Conditions setCondition(String key, EqualSign EqualSign, String dateFormatvalue, DATE_FORMAT DATE_FORMAT) {
+		return this.setCondition4DateFormat(key, EqualSign, dateFormatvalue, DATE_FORMAT);
+	}
+
+	public Conditions setCondition(String key, LikeSign LikeSign, Object value) {
+		return setCondition(key, LikeSign, value);
 	}
 
 	/**
@@ -93,53 +92,40 @@ public class Conditions {
 	 * 
 	 * @return
 	 */
-	public Conditions setBetweenCondition(String key, Object start, Object end) {
+	public Conditions setCondition(String key, BetweenSign BetweenSign, Object start, Object end) {
 		if (this.containsKey(key)) {
-			Condition c = new Condition();
+			Condition c = new BetweenCondition();
 			c.setKey(key);
-			c.setType("0");
-			String sql = STRING.SPACING + T2E.toColumn(key) + SQL_KEY.BETWEEN + start + SQL_KEY.AND + end + STRING.SPACING;
-			c.setCondition(sql);
+			c.setConditionSign(BetweenSign.toString());
+			Object[] values = new Object[] { start, end };
+			c.setValues(values);
 			ces.put(new String(key), c);
 		}
 		return this;
 	}
 
-	/**
-	 * 设置IS NULL 条件
-	 * 
-	 * @param key
-	 * @return
-	 */
-	public Conditions setIsNullCondition(String key) {//createDate
+	public Conditions setCondition(String key, BetweenSign BetweenSign, Date startDate, Date endDate, DATE_FORMAT DATE_FORMAT) {
+		return setCondition4BetweenDate(key, BetweenSign, startDate, endDate, DATE_FORMAT);
+	}
 
-		 
-	if (this.containsKey(key)) {
-			Condition c = new Condition();
-			c.setKey(key);
-			c.setType("0");
-			String sql = STRING.SPACING + T2E.toColumn(key) + SQL_KEY.IS + SQL_KEY.NULL + STRING.SPACING; 
-			c.setCondition(sql);
-			ces.put(new String(key), c);
-		}
-		return this;
+	public Conditions setCondition(String key, BetweenSign BetweenSign, String startDate, String endDate, DATE_FORMAT DATE_FORMAT) {
+
+		return setCondition4BetweenDate(key, BetweenSign, startDate, endDate, DATE_FORMAT);
 	}
 
 	/**
-	 * 设置IS NULL 条件
+	 * 设置 NULL 条件
 	 * 
 	 * @param key
 	 * @return
 	 */
-	public Conditions setIsNotNullCondition(String key) {
+	public Conditions setCondition(String key, NullSign NullSign) {
 
-	if (this.containsKey(key)) {
-			Condition c = new Condition();
+		if (this.containsKey(key)) {
+			Condition c = new NullCondition();
 			c.setKey(key);
-			c.setType("0");
-			String sql = STRING.SPACING + T2E.toColumn(key) + SQL_KEY.IS + SQL_KEY.NOT + SQL_KEY.NULL + STRING.SPACING; 
-			c.setCondition(sql);
-			ces.put(c.getKey(), c);
+			c.setConditionSign(NullSign.toString());
+			ces.put(new String(key), c);
 		}
 		return this;
 	}
@@ -150,14 +136,13 @@ public class Conditions {
 	 * @param key
 	 * @return
 	 */
-	public Conditions setInCondition(String key, Object[] values) {
+	public Conditions setCondition(String key, InSign InSign, Object[] values) {
 
 		if (this.containsKey(key)) {
-			Condition c = new Condition();
-		    c.setKey(key);
-			c.setType("1");
-			c.setVales(values);
-			c.setConditionSign("IN");
+			Condition c = new InCondition();
+			c.setKey(key);
+			c.setValues(values);
+			c.setConditionSign(InSign.toString());
 			ces.put(new String(key), c);
 		}
 		return this;
@@ -166,34 +151,34 @@ public class Conditions {
 	/**
 	 * 设置排序
 	 * 
-	 * @param key  字段 
-	 *           
+	 * @param key
+	 *            字段
 	 * 
-	 * @param sort 排序规则：升序；降序。
-	 *            
+	 * 
+	 * @param sort
+	 *            排序规则：升序；降序。
+	 * 
 	 * 
 	 * @return
 	 */
-	public Conditions setOderBy(String key, Sort sort) {
+	public Conditions setOderBy(String key, Sort Sort) {
 
 		String[] keys = key.split(STRING.ESCAPE_POINT);
 		String con = new String();
 		if (keys.length == 2) {
 			con = T2E.toColumn(keys[0]) + STRING.POINT + T2E.toColumn(keys[1]);
 		} else {
-
 			con = T2E.toColumn(keys[0]);
 		}
 		key = con;
-		if (key == null || key.equals("")) {
-			return this;
-		} else {
+		if (key != null && !key.equals("")) {
+			String sql = new String();
 			if (this.oderByes.equals("")) {
-				this.oderByes = this.oderByes + STRING.SPACING + key.toUpperCase() + STRING.SPACING + sort.name();
-
+				sql = STRING.SPACING;
 			} else {
-				this.oderByes = this.oderByes + SQL_KEY.COMMA + key.toUpperCase() + STRING.SPACING + sort.name();
+				sql = SQL_KEY.COMMA;
 			}
+			this.oderByes = this.oderByes + sql + key.toUpperCase() + STRING.SPACING + Sort.name();
 		}
 
 		return this;
@@ -213,59 +198,22 @@ public class Conditions {
 		int index = 1;
 		for (Entry<String, Condition> en : this.ces.entrySet()) {
 			Condition c = en.getValue();
-			String key = c.getKey();
-			String[] keys = key.split(STRING.ESCAPE_POINT);
-			String con = new String();
-			if (keys.length == 2) {
-				con = T2E.toColumn(keys[0]) + STRING.POINT + T2E.toColumn(keys[1]);
-			} else {
-
-				con = T2E.toColumn(keys[0]);
+			boolean isNullCondition = c.getConditionSign().contains(" IS NULL ") || c.getConditionSign().contains(" IS NOT NULL ");
+			if (c.getVal() == null && c.getValues() == null && isNullCondition == false) {
+				continue;
 			}
-			if (c.getType().equals("1")) {
-				if (c.getVal() != null || c.getVales() != null) {
-					String sign = c.getConditionSign();
-					String newSign = sign;// Sign.Signmap.get(sign);
-					newSign = newSign == null ? SQL_KEY.EQ : newSign; // 如果字段不为空，但是没有条件符号，默认使用等值查询"="。
-					if (newSign.contains(SQL_KEY.LIKE)) {
-						sql = sql + SQL_KEY.AND + con + STRING.SPACING + SQL_KEY.LIKE + STRING.SPACING + STRING.QUESTION;// "
-						if (newSign.equals(SQL_KEY.LIKE)) {
-							para.put(index, STRING.PERCENT + c.getVal() + STRING.PERCENT);
-							index++;
-						} else if (newSign.equals(LikeSign.L_LIKE.toString())) {
-							para.put(index, c.getVal() + STRING.PERCENT);
-							index++;
-						} else {
-							para.put(index, STRING.PERCENT + c.getVal());
-							index++;
-						}
-
-					} else if (sign != null && sign.equals(SQL_KEY.IN.trim())) {
-
-						String vales = SQL_KEY.L_BRACKET;// "(";
-						for (int i = 0; i < c.getVales().length; i++) {
-							if (i != 0) {
-								vales = vales + STRING.SPACING + STRING.COMMA + STRING.QUESTION + STRING.SPACING;
-							} else {
-								vales = vales + STRING.QUESTION + STRING.SPACING;
-							}
-							para.put(index, c.getVales()[i]);
-							index++;
-						}
-						vales = vales + SQL_KEY.R_BRACKET + STRING.SPACING;// ")
-						sql = sql + SQL_KEY.AND + con + STRING.SPACING + SQL_KEY.IN + vales;
-					} else {
-						if (newSign.contains("?")) {
-							sql = sql + SQL_KEY.AND + con + STRING.SPACING + newSign + STRING.SPACING;// "?";
-						} else {
-							sql = sql + SQL_KEY.AND + con + STRING.SPACING + newSign + STRING.SPACING + STRING.QUESTION;// "?";
-						}
-						para.put(index, c.getVal());
-						index++;
-					}
+			SqlAndParameter sap = c.getSqlSlice();
+			sql = sql + sap.getSqlSlice();
+			List<Object> list = sap.getValues();
+			if (list != null && list.size() != 0) {
+				for (Object val : list) {
+					para.put(index, val);
+					index++;
 				}
-			} else {// 自定义
-				sql = sql + SQL_KEY.AND + c.getCondition();
+			}
+			if (sap.getValue() != null) {
+				para.put(index, sap.getValue());
+				index++;
 			}
 
 		}
@@ -316,23 +264,62 @@ public class Conditions {
 		for (Entry<String, Object> en : newMap.entrySet()) {
 			String key = en.getKey();
 			Object val = en.getValue();
-			Condition c = new Condition(key, val, null);
+			Condition c = new EqualCondition();
+			c.setKey(key);
+			c.setVal(val);
+			c.setConditionSign(SQL_KEY.EQ);
 			list.put(new String(key), c);
 		}
 
 		this.ces = list;
 	}
 
-	
-	private boolean containsKey(String key){
+	private boolean containsKey(String key) {
 		for (Entry<String, Condition> en : this.ces.entrySet()) {
 			String k = en.getKey();
-			if(k.equals(key)){
+			if (k.toUpperCase().equals(key.toUpperCase())) {
 				return true;
 			}
 		}
 		return false;
 	}
-	 
-	
+
+	private Conditions setCondition4DateFormat(String key, Sign EqualSign, Object value, DATE_FORMAT DATE_FORMAT) {
+		if (this.containsKey(key)) {
+			Condition c = new DateFormatCondition();
+			c.setOther(DATE_FORMAT);
+			c.setKey(key);
+			c.setConditionSign(EqualSign.toString());
+			c.setVal(value);
+			ces.put(new String(c.getKey()), c);
+		}
+		return this;
+	}
+
+	private Conditions setConditionCom(String key, Sign Sign, Object value) {
+
+		if (this.containsKey(key)) {
+			Condition c = Sign.getCondition();
+			c.setKey(key);
+			if (value != null) {
+				c.setVal(value);
+			}
+			c.setConditionSign(Sign.toString());
+			this.ces.put(new String(key), c);
+		}
+		return this;
+	}
+
+	private Conditions setCondition4BetweenDate(String key, BetweenSign BetweenSign, Object startDate, Object endDate, DATE_FORMAT DATE_FORMAT) {
+		if (this.containsKey(key)) {
+			Condition c = new BetweenCondition();
+			c.setKey(key);
+			c.setConditionSign(BetweenSign.toString());
+			Object[] values = new Object[] { startDate, endDate };
+			c.setValues(values);
+			c.setOther(DATE_FORMAT);
+			ces.put(new String(key), c);
+		}
+		return this;
+	}
 }
