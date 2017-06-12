@@ -34,6 +34,7 @@ import com.sooncode.soonjdbc.sql.condition.Conditions;
 import com.sooncode.soonjdbc.sql.condition.sign.BetweenSign;
 import com.sooncode.soonjdbc.sql.condition.sign.EqualSign;
 import com.sooncode.soonjdbc.sql.condition.sign.InSign;
+import com.sooncode.soonjdbc.sql.condition.sign.LikeSign;
 import com.sooncode.soonjdbc.sql.condition.sign.NullSign;
 import com.sooncode.util.SJson;
 
@@ -83,12 +84,28 @@ public class JdbcDao_Test {
 	
 	
 	@Test
+	public void deletes() {
+		SystemUser u = new SystemUser();
+		Conditions c = new Conditions(u);
+		c.setCondition("id", EqualSign.GT, 700);
+		dao.deletes(c);
+		 
+	}
+	@Test
+	public void deletes2() {
+		SystemUser u = new SystemUser();
+	    u.setId(456);
+		dao.deletes(u);
+		
+	}
+	@Test
 	public void delete() {
 		SystemUser u = new SystemUser();
 		u.setId(9);
+		u.setAddress("hsdk");
+		u.setAge(34);
 		dao.delete(u);
-		u.setName("hh");
-		dao.update(u);
+		
 	}
 
 	@Test
@@ -130,17 +147,17 @@ public class JdbcDao_Test {
 		SystemUser u = new SystemUser();
 		//u.setAge(23);
 		Conditions c = new Conditions(u);
-		//c.setCondition("name", LikeSign.LIKE , "hello jdbc");
-		//c.setCondition("sex", EqualSign.NOT_EQ , "0");
+		c.setCondition("name", LikeSign.LIKE , "hello jdbc");
+		c.setCondition("sex", EqualSign.NOT_EQ , "0");
 	    //c.setCondition( "createDate" ,EqualSign.LT,new Date(), DATE_FORMAT.yyyy_MM_dd);
 	//	c.setCondition( "createDate" ,EqualSign.LT,"2017-06-13", DATE_FORMAT.yyyy_MM_dd);
 		c.setCondition( "createDate" ,BetweenSign.NOT_BETWEEN_AND,"2017-06-13","2017-06-15", DATE_FORMAT.yyyy_MM_dd);
-		//c.setCondition("age",BetweenSign.NOT_BETWEEN_AND, 10, 100);
-		//c.setCondition("type", InSign.IN, new String[]{"AA","BB"});
-		//c.setCondition("name",NullSign.IS_NOT_NULL);
-		//c.setCondition("sex",NullSign.IS_NULL);
+	    c.setCondition("age",BetweenSign.NOT_BETWEEN_AND, 10, 100);
+		c.setCondition("type", InSign.IN, new String[]{"AA","BB"});
+		c.setCondition("name",NullSign.IS_NOT_NULL);
+		c.setCondition("sex",NullSign.IS_NULL);
 		c.setOderBy("name", Sort.DESC);
-		//c.setOderBy("sex", Sort.ASC);
+		c.setOderBy("sex", Sort.ASC);
 		Page p = dao.getPage(1L, 2L, c);
 		List<SystemUser> list = p.getOnes();
 		logger.info(list);

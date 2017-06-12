@@ -72,44 +72,7 @@ public class ComSQL {
 		p.setReadySql(sqlString);
 		return p;
 	}
-
  
-	
-	
-	/**
-	 * 删除
-	 * 
-	 * @param object
-	 * @return
-	 */
-	public static Parameter delete(DbBean dbBean) { 
-		Parameter p = new Parameter();
-		String tableName = T2E.toColumn(dbBean.getBeanName());
-		Map<String, Object> map = dbBean.getFields();
-		String sql = SQL_KEY.DELETE  + tableName + SQL_KEY.WHERE;
-		String s = new String ();
-		int n = 0;
-		Map<Integer,Object> par = new HashMap<>();
-		int index=1;
-		for (Entry<String, Object> entry : map.entrySet()) {
-			if (entry.getValue() != null) {
-				if (n != 0) {
-					s = s + SQL_KEY.AND;
-				}
-				s = s + T2E.toColumn(entry.getKey()) +   SQL_KEY.EQ  + STRING.QUESTION; 
-				par.put(index,entry.getValue());
-				index++;
-				n++;
-			}
-		}
-		sql = sql + s;
-		 
-		p.setReadySql(sql);
-		p.setParams(par);
-		
-		return p;
-		
-	}
 
 	 
 	/**

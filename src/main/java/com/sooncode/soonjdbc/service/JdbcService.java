@@ -2,11 +2,15 @@ package com.sooncode.soonjdbc.service;
 
 import java.util.List;
 
+import com.sooncode.soonjdbc.bean.DbBean;
+import com.sooncode.soonjdbc.constant.SQL_KEY;
 import com.sooncode.soonjdbc.dao.JdbcDao;
 import com.sooncode.soonjdbc.page.One2Many;
 import com.sooncode.soonjdbc.page.One2One;
 import com.sooncode.soonjdbc.page.Page;
+import com.sooncode.soonjdbc.sql.Parameter;
 import com.sooncode.soonjdbc.sql.condition.Conditions;
+import com.sooncode.soonjdbc.util.T2E;
 
 /**
  * Jdbc Dao 服务
@@ -67,6 +71,30 @@ public class JdbcService {
 
 	public <T> long delete(T javaBean) {
 		return jdbcDao.delete(javaBean);
+	}
+
+	/**
+	 * 批量删除
+	 * 
+	 * @param javaBean
+	 * @return
+	 */
+	public <T> long deletes(final T javaBean) {
+
+		return jdbcDao.deletes(javaBean);
+
+	}
+
+	/**
+	 * 批量删除
+	 * 
+	 * @param javaBean
+	 * @return
+	 */
+	public <T> long deletes(final Conditions conditions) {
+
+		return jdbcDao.deletes(conditions);
+
 	}
 
 	public long count(String key, Conditions conditions) {

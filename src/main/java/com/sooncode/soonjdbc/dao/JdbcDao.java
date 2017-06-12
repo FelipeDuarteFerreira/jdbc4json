@@ -1,5 +1,6 @@
 package com.sooncode.soonjdbc.dao;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -77,9 +78,42 @@ public class JdbcDao {
 		if (pkValue == null) {
 				throw new PrimaryKeyValueInexistence("primary key value inexistence ! (主键值不存在!)");
 		}
-		Parameter parameter = ComSQL.delete(dbBean);
+		String sql = SQL_KEY.DELETE + dbBean.getTableName() + SQL_KEY.WHERE + T2E.toColumn( dbBean.getPrimaryField() ) + SQL_KEY.EQ + SQL_KEY.QUESTION;
+		Map<Integer,Object> map = new HashMap<Integer,Object>() ;
+		map.put(1, pkValue);
+		Parameter parameter = new Parameter();
+		parameter.setReadySql(sql);
+		parameter.setParams(map);
 		return jdbc.update(parameter);
 
+	}
+	
+	/**
+	 * 批量删除
+	 * @param javaBean
+	 * @return
+	 */
+	public <T> long deletes(final T javaBean) {
+		Conditions conditions = new Conditions(javaBean);
+		return this.deletes(conditions);
+		
+	}
+	/**
+	 * 批量删除
+	 * @param javaBean
+	 * @return
+	 */
+	public <T> long deletes(final Conditions conditions) {
+		
+		DbBean dbBean = jdbc.getDbBean(conditions.getLeftBean().getJavaBean());
+		Parameter where = conditions.getWhereParameter();
+		Parameter parameter = new Parameter();
+		String tableName = T2E.toTableName(dbBean.getBeanName());
+		String sql = SQL_KEY.DELETE + tableName +  SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + where.getReadySql();
+		parameter.setReadySql(sql);
+		parameter.setParams(where.getParams());
+		return jdbc.update(parameter);
+		
 	}
 
 	 
