@@ -12,6 +12,12 @@ public class LikeCondition extends Condition {
 		String sqlSlice = new String();
 		String key = this.getKey();
 		Object val = this.getVal();
+		SqlAndParameter sap = new SqlAndParameter();
+		if(val == null){
+			sap.setSqlSlice(sqlSlice);
+			sap.setValue(null);
+			return sap;
+		}
 		String conditionSign = this.conditionSign;
 		sqlSlice = sqlSlice + SQL_KEY.AND + T2E.toColumn(key) + STRING.SPACING + SQL_KEY.LIKE + STRING.SPACING + STRING.QUESTION;// "
 		Object value ;
@@ -22,7 +28,6 @@ public class LikeCondition extends Condition {
 		} else {
 			value =  STRING.PERCENT + val ;
 		}
-		SqlAndParameter sap = new SqlAndParameter();
 		sap.setSqlSlice(sqlSlice);
 		sap.setValue(value);
 		return sap;
