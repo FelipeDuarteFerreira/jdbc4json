@@ -48,7 +48,7 @@ public class ComSQL {
 				filedString = filedString + SQL_KEY.NULL;
 			} else {
 
-				filedString = filedString + STRING.QUESTION  ;// STRING.S_QUOTES+ new SimpleDateFormat(DATE_FORMAT.ALL_DATE).format(entry.getValue()) + STRING.S_QUOTES;
+				filedString = filedString + STRING.QUESTION  ; 
 				if (entry.getValue().getClass().getName().equals(CLASS_NAME.DATE)) {
 					par.put(index,  new SimpleDateFormat(DATE_FORMAT.ALL_DATE).format(entry.getValue()));
 				} else {
@@ -73,6 +73,47 @@ public class ComSQL {
 		return p;
 	}
  
+	public static Parameter batchInsert(DbBean bean) {
+		
+		String tableName = T2E.toColumn(bean.getBeanName());
+		Map<String, Object> map = bean.getFields();
+		String columnString = SQL_KEY.L_BRACKET;
+		String filedString = SQL_KEY.L_BRACKET;
+		int n = 0;
+		Map<Integer,Object> par = new HashMap<>();
+		int index=1;
+		for (Map.Entry<String, Object> entry : map.entrySet()) {
+			
+			columnString = columnString + T2E.toColumn(entry.getKey());
+			if (entry.getValue() == null) {
+				filedString = filedString + STRING.QUESTION;
+				par.put(index, null);
+			} else {
+				filedString = filedString + STRING.QUESTION  ; 
+				if (entry.getValue().getClass().getName().equals(CLASS_NAME.DATE)) {
+					par.put(index,  new SimpleDateFormat(DATE_FORMAT.ALL_DATE).format(entry.getValue()));
+				} else {
+					par.put(index, entry.getValue());
+				}
+			}
+			index++;
+			if (n != map.size() - 1) {
+				columnString += SQL_KEY.COMMA;
+				filedString += SQL_KEY.COMMA;
+			} else {
+				columnString += SQL_KEY.R_BRACKET ;
+				filedString += SQL_KEY.R_BRACKET;
+			}
+			n++;
+			
+		}
+		String sqlString = SQL_KEY.INSERT + tableName + columnString + SQL_KEY.VALUES + filedString;
+		Parameter p = new Parameter();
+		p.setParams(par);
+		p.setReadySql(sqlString);
+		return p;
+	}
+	
 
 	 
 	/**
@@ -104,6 +145,30 @@ public class ComSQL {
 		}
 		param.put(param.size()+1, dbBean.getPrimaryFieldValue());
 		String sql = SQL_KEY.UPDATE + tableName + SQL_KEY.SET  + s + SQL_KEY.WHERE + pkString;
+		p.setReadySql(sql);
+		p.setParams(param);
+		return p;
+	}
+	
+	
+	public static Parameter updates(DbBean dbBean) {
+		Parameter p = new Parameter();
+		String tableName = T2E.toColumn(dbBean.getBeanName());
+		Map<String, Object> map = dbBean.getFields();
+		String s = new String();
+		Map<Integer,Object> param = new HashMap<>();
+		int index=1;
+		for (Entry<String, Object> entry : map.entrySet()) {
+			if (entry.getValue() != null) {
+				if(index > 1){
+					s = s +SQL_KEY.COMMA ;
+				}
+				s = s + T2E.toColumn(entry.getKey())  + SQL_KEY.EQ + STRING.QUESTION ;
+				param.put(index,entry.getValue());
+				index++;
+			}
+		}
+		String sql = SQL_KEY.UPDATE + tableName + SQL_KEY.SET  + s ;
 		p.setReadySql(sql);
 		p.setParams(param);
 		return p;

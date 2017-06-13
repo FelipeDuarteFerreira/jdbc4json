@@ -20,6 +20,7 @@ import java.util.Map.Entry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -39,7 +40,7 @@ import com.sooncode.soonjdbc.util.T2E;
 
 public class Jdbc {
 
-	public final static Log logger = LogFactory.getLog(Jdbc.class);  
+	public final static Log logger = LogFactory.getLog(Jdbc.class);
 	private JdbcTemplate jdbcTemplate;
 
 	public Jdbc() {
@@ -73,7 +74,7 @@ public class Jdbc {
 		if (SqlVerification.isUpdateSql(sql) == false) {
 			return 0L;
 		}
-		 
+
 		logger.debug("【SoonJdbc SQL】" + parameter.getFormatSql());
 		logger.debug("【SoonJdbc Parameter】" + parameter.getParams());
 		return jdbcTemplate.execute(new ConnectionCallback<Long>() {
@@ -116,7 +117,7 @@ public class Jdbc {
 
 				logger.debug(con.toString());
 				PreparedStatement preparedStatement = con.prepareStatement(parameter.getReadySql());
-				preparedStatement = preparedStatementSet(preparedStatement, parameter);
+				preparedStatement = preparedStatementSet(preparedStatement, parameter.getParams());
 
 				ResultSet resultSet = preparedStatement.executeQuery();
 				List<Map<String, Object>> list = new LinkedList<>();
@@ -138,7 +139,7 @@ public class Jdbc {
 	}
 
 	/**
-	 * 执行查询语句 
+	 * 执行查询语句
 	 * 
 	 * @param parameter
 	 * @return
@@ -229,7 +230,7 @@ public class Jdbc {
 		Long n;
 		try {
 			PreparedStatement ps = con.prepareStatement(p.getReadySql(), Statement.RETURN_GENERATED_KEYS);
-			ps = preparedStatementSet(ps, p);
+			ps = preparedStatementSet(ps, p.getParams());
 			n = (long) ps.executeUpdate();
 			ResultSet resultSet = ps.getGeneratedKeys(); // 自增主键
 			if (resultSet.next()) {
@@ -244,19 +245,39 @@ public class Jdbc {
 		}
 	}
 
-	private PreparedStatement preparedStatementSet(PreparedStatement preparedStatement, Parameter parameter) {
+	public int[] batchInsert(final String sql, final List<Map<Integer, Object>> parameters) {
+		
+		logger.debug("【SoonJdbc SQL】" + sql);
+		logger.debug("【SoonJdbc Parameters】" + parameters);
+		return jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+			@Override
+			public int getBatchSize() {
+				return parameters.size();
+			}
 
-		for (Entry<Integer, Object> en : parameter.getParams().entrySet()) {
+			@Override
+			public void setValues(PreparedStatement ps, int i) throws SQLException {
+				Map<Integer, Object> parameter = parameters.get(i);
+				preparedStatementSet(ps, parameter);
+			}
+		});
+	}
+
+	private PreparedStatement preparedStatementSet(PreparedStatement preparedStatement, Map<Integer, Object> parameter) {
+
+		for (Entry<Integer, Object> en : parameter.entrySet()) {
 			Integer index = en.getKey();
 			Object obj = en.getValue();
-			String className = obj.getClass().getName();
 			try {
-				if (className.equals(Date.class.getName())) {
-					String d = new SimpleDateFormat(DATE_FORMAT.ALL_DATE).format(obj);
-					preparedStatement.setString(index, d);
-				} else {
-					preparedStatement.setObject(index, obj);
+				if (obj != null) {
+					String className = obj.getClass().getName();
+					if (className.equals(Date.class.getName())) {
+						String d = new SimpleDateFormat(DATE_FORMAT.ALL_DATE).format(obj);
+						preparedStatement.setString(index, d);
+						continue;
+					}
 				}
+				preparedStatement.setObject(index, obj);
 			} catch (SQLException e) {
 				e.printStackTrace();
 				return null;

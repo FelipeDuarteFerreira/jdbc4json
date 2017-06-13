@@ -2,15 +2,11 @@ package com.sooncode.soonjdbc.service;
 
 import java.util.List;
 
-import com.sooncode.soonjdbc.bean.DbBean;
-import com.sooncode.soonjdbc.constant.SQL_KEY;
 import com.sooncode.soonjdbc.dao.JdbcDao;
 import com.sooncode.soonjdbc.page.One2Many;
 import com.sooncode.soonjdbc.page.One2One;
 import com.sooncode.soonjdbc.page.Page;
-import com.sooncode.soonjdbc.sql.Parameter;
 import com.sooncode.soonjdbc.sql.condition.Conditions;
-import com.sooncode.soonjdbc.util.T2E;
 
 /**
  * Jdbc Dao 服务
@@ -60,6 +56,9 @@ public class JdbcService {
 	public <T> long save(T javaBean) {
 		return jdbcDao.save(javaBean);
 	}
+	public <T> int[] saves(List<T> javaBeans) {
+		return jdbcDao.saves(javaBeans);
+	}
 
 	public <T> long saveOrUpdate(T javaBean) {
 		return jdbcDao.saveOrUpdate(javaBean);
@@ -67,6 +66,11 @@ public class JdbcService {
 
 	public <T> long update(T javaBean) {
 		return jdbcDao.update(javaBean);
+	}
+	
+	
+	public <T> long update(T model ,Conditions conditions ) {
+		return jdbcDao.updates(model, conditions) ;
 	}
 
 	public <T> long delete(T javaBean) {

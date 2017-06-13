@@ -42,6 +42,16 @@ public class Parameter {
 	}
 	
 	
+	public void addParameter(Map<Integer,Object> values){
+		
+		for (int i = 1; i <= values.size() ;i++) {
+		 Object value = values.get(i);
+		 this.params.put(params.size()+1, value);
+		}
+		
+	}
+	
+	
 	
 	public String getReadySql() {
 		return readySql;

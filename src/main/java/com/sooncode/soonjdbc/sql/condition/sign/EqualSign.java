@@ -4,6 +4,8 @@ import com.sooncode.soonjdbc.sql.condition.Condition;
 import com.sooncode.soonjdbc.sql.condition.EqualCondition;
 
 public class EqualSign extends Sign {
+	
+	public static final EqualSign EQ = new EqualSign("=");
 	/**
 	 * 大于（>）
 	 */

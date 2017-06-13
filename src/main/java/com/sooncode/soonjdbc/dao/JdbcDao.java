@@ -1,5 +1,6 @@
 package com.sooncode.soonjdbc.dao;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,6 +59,21 @@ public class JdbcDao {
 		return jdbc.update(parameter);
 
 	}
+	
+	
+	public <T> int []  saves(final List<T> javaBeans) {
+		
+		String sql = new String ();
+		List<Map<Integer,Object>> parameters =  new ArrayList<>();
+		for (T javaBean : javaBeans) {
+			DbBean db = jdbc.getDbBean(javaBean);
+			Parameter parameter = ComSQL.batchInsert(db);
+			sql = parameter.getReadySql();
+			parameters.add(parameter.getParams());
+		}
+		return jdbc.batchInsert(sql, parameters);
+		
+	}
 
 	public <T> long update(final T javaBean) {
 
@@ -69,6 +85,16 @@ public class JdbcDao {
 		Parameter parameter = ComSQL.update(dbBean);
 		return jdbc.update(parameter);
 
+	}
+	public <T> long updates( final T model ,  final Conditions conditions) {
+		DbBean modelDbBean = jdbc.getDbBean(model);
+		Parameter parameter = ComSQL.updates(modelDbBean);
+		Parameter wherePara = conditions.getWhereParameter();
+		String sql = parameter.getReadySql()+ SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + wherePara.getReadySql();
+		parameter.addParameter(wherePara.getParams());
+		parameter.setReadySql(sql);
+		return jdbc.update(parameter);
+		
 	}
 
 	public <T> long delete(final T javaBean) {
