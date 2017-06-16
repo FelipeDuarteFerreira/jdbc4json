@@ -37,6 +37,7 @@ public class Conditions {
 	 * 排序的SQL片段
 	 */
 	private String oderByes = new String();
+	private String groupBy = new String();
 
 	public Conditions(Object leftJavaBean, Object... otherJavaBeans) {
 		DbBean leftBean = new DbBean(leftJavaBean);
@@ -185,6 +186,14 @@ public class Conditions {
 
 	}
 
+	public Conditions setGroupBy(String field) {
+		if (this.groupBy.equals("")) {
+			this.groupBy = this.groupBy + SQL_KEY.GROUP_BY + T2E.toColumn(field) + STRING.SPACING;
+		}
+		return this;
+
+	}
+
 	/**
 	 * 获取预编译SQL模型
 	 * 
@@ -219,6 +228,10 @@ public class Conditions {
 		}
 		if (!this.oderByes.equals("")) {
 			sql = sql + SQL_KEY.ORDER_BY + this.oderByes;
+		}
+		
+		if (!this.groupBy.equals("")) {
+			sql = sql + this.groupBy;
 		}
 		p.setReadySql(sql);
 		p.setParams(para);

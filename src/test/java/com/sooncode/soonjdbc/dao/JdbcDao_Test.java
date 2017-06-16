@@ -1,5 +1,6 @@
 package com.sooncode.soonjdbc.dao;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -30,6 +31,7 @@ import com.sooncode.soonjdbc.page.One2Many;
 import com.sooncode.soonjdbc.page.One2Many2Many;
 import com.sooncode.soonjdbc.page.One2One;
 import com.sooncode.soonjdbc.page.Page;
+import com.sooncode.soonjdbc.result.CountModel;
 import com.sooncode.soonjdbc.sql.condition.Conditions;
 import com.sooncode.soonjdbc.sql.condition.sign.BetweenSign;
 import com.sooncode.soonjdbc.sql.condition.sign.EqualSign;
@@ -61,15 +63,54 @@ public class JdbcDao_Test {
 		 
 	
 	}
+	
+	
+	@Test
+	public void saves() {
+		SystemUser u = new SystemUser();
+		//u.setId(1);
+		u.setAge(123);
+		u.setName("hello jdbc");
+		u.setSex("1");
+		u.setCreateDate(new Date());
+		u.setUpdateDate(new Date());
+		SystemUser u2 = new SystemUser();
+		//u2.setId(2);
+		u2.setName("fjlskjlk");
+		u2.setSex("0");
+		u2.setCreateDate(new Date());
+		u2.setUpdateDate(new Date());
+		
+		List<SystemUser> list = new ArrayList<>();
+		list.add(u);
+		list.add(u2);
+		int [] ids = dao.saves(list);
+		logger.info(ids);
+		
+		
+	}
 
 	@Test
 	public void update() {
 		SystemUser u = new SystemUser();
 		u.setId(11);
-		u.setAge(34);
-		u.setName("ioouuy");
+		u.setAge(100);
+		u.setName("hechen");
 		u.setSex("1");
 		dao.update(u);
+	}
+	
+	
+	@Test
+	public void updates() {
+		SystemUser u = new SystemUser();
+		 
+		u.setAge(100);
+		u.setName("hechen");
+		Conditions c = new Conditions(new SystemUser() );
+		c.setCondition("id", InSign.IN, new Integer[]{642,643});
+		long n = dao.updates(u,c);
+		logger.info(n);
 	}
 
 	@Test
@@ -183,6 +224,16 @@ public class JdbcDao_Test {
 		long n = dao.count("*", c);
 		logger.info("------------:" + n);
 
+	}
+	@Test
+	public void count2() {
+		SystemUser u = new SystemUser();
+		//u.setSex("1");
+		Conditions c = new Conditions(u);
+		c.setGroupBy("sex");
+		List<CountModel<SystemUser>> list  = dao.count("*",new String[]{"sex"}, c);
+		logger.info("------------:" + list);
+		
 	}
 	
 	@Test

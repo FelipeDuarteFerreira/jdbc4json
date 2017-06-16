@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.sooncode.soonjdbc.Entity;
 import com.sooncode.soonjdbc.Jdbc;
+import com.sooncode.soonjdbc.ModelTransform;
 import com.sooncode.soonjdbc.bean.DbBean;
 import com.sooncode.soonjdbc.constant.SQL_KEY;
 import com.sooncode.soonjdbc.dao.tabletype.TableRelation;
@@ -18,6 +20,7 @@ import com.sooncode.soonjdbc.page.One2Many;
 import com.sooncode.soonjdbc.page.One2One;
 import com.sooncode.soonjdbc.page.Page;
 import com.sooncode.soonjdbc.reflect.RObject;
+import com.sooncode.soonjdbc.result.CountModel;
 import com.sooncode.soonjdbc.sql.ComSQL;
 import com.sooncode.soonjdbc.sql.Parameter;
 import com.sooncode.soonjdbc.sql.condition.Conditions;
@@ -234,6 +237,42 @@ public class JdbcDao {
 		return n;
 
 	}
+	
+ 
+	public <T> List<CountModel<T>> count(final String key,String[] fields, final Conditions conditions) {
+		
+		RObject<?> rObj = new RObject<>(conditions.getLeftBean().getClassName());
+		DbBean dbBean = jdbc.getDbBean(rObj.getObject());
+		String tableName = T2E.toTableName(dbBean.getBeanName());
+		
+		String column = new String ();
+		for (String field : fields) {
+			column = column + " , " + T2E.toColumn(field);
+		}
+		
+		
+		String sql = "SELECT COUNT(" + key + ") AS SIZE"  +column + " FROM " + tableName + " WHERE 1=1 " + conditions.getWhereParameter().getReadySql();
+		Parameter parameter = new Parameter();
+		parameter.setReadySql(sql);
+		parameter.setParams(conditions.getWhereParameter().getParams());
+		List<Map<String, Object> > list = jdbc.gets(parameter);
+		List<CountModel<T>> countModels = new LinkedList<>();
+		for (Map<String, Object> map : list ) {
+			Long n = (Long) map.get("size");
+			CountModel<T> cm = new CountModel<>();
+			cm.setCount(n);
+			@SuppressWarnings("unchecked")
+			T t = (T) Entity.findEntity(map, rObj.getObject().getClass());
+			cm.setJavaBean(t);
+			countModels.add(cm);
+		}
+		return countModels;
+		
+	}
+	
+	
+	
+	
 	public Object sum(final String key, final Conditions conditions) {
 		String column = T2E.toColumn(key);
 		RObject<?> rObj = new RObject<>(conditions.getLeftBean().getClassName());

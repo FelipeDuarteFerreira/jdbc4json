@@ -33,6 +33,7 @@ public static final String  NOT_IN = STRING.SPACING+"NOT"+STRING.SPACING+"IN"+ST
 public static final String  BETWEEN = STRING.SPACING+"BETWEEN"+STRING.SPACING;
 public static final String  NOT_BETWEEN = STRING.SPACING+"NOT"+STRING.SPACING+"BETWEEN"+STRING.SPACING;
 public static final String  ORDER_BY  = STRING.SPACING+"ORDER BY"+STRING.SPACING;
+public static final String  GROUP_BY  = STRING.SPACING+"GROUP BY"+STRING.SPACING;
 
 public static final String IS  = STRING.SPACING+"IS";     
 public static final String NOT  = STRING.SPACING+"NOT";      

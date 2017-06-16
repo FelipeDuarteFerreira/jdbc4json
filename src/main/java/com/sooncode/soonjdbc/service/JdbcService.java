@@ -6,6 +6,7 @@ import com.sooncode.soonjdbc.dao.JdbcDao;
 import com.sooncode.soonjdbc.page.One2Many;
 import com.sooncode.soonjdbc.page.One2One;
 import com.sooncode.soonjdbc.page.Page;
+import com.sooncode.soonjdbc.result.CountModel;
 import com.sooncode.soonjdbc.sql.condition.Conditions;
 
 /**
@@ -123,6 +124,10 @@ public class JdbcService {
 
 	public <T> long count(String key, T javaBean) {
 		return jdbcDao.count(key, javaBean);
+	}
+	
+	public <T> List<CountModel<T>> count(final String key,String[] fields, final Conditions conditions) {
+		return jdbcDao.count(key, fields, conditions);
 	}
 
 	public <T, E> T max(String key, E javaBean) {
