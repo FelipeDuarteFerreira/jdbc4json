@@ -75,7 +75,7 @@ public class Jdbc {
 			return 0L;
 		}
 
-		logger.debug("【SoonJdbc SQL】" + parameter.getFormatSql());
+		logger.debug("【SoonJdbc SQL】" + parameter.getReadySql());
 		logger.debug("【SoonJdbc Parameter】" + parameter.getParams());
 		return jdbcTemplate.execute(new ConnectionCallback<Long>() {
 			@Override
@@ -108,7 +108,7 @@ public class Jdbc {
 		if (SqlVerification.isSelectSql(parameter.getReadySql()) == false) {
 			return new LinkedList<>();
 		}
-		logger.debug("【SoonJdbc SQL】" + parameter.getFormatSql());
+		logger.debug("【SoonJdbc SQL】" + parameter.getReadySql());
 		logger.debug("【SoonJdbc Parameter】" + parameter.getParams());
 		return jdbcTemplate.execute(new ConnectionCallback<List<Map<String, Object>>>() {
 

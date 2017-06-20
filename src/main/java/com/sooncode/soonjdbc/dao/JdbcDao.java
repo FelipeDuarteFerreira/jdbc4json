@@ -9,9 +9,10 @@ import java.util.Map.Entry;
 
 import com.sooncode.soonjdbc.Entity;
 import com.sooncode.soonjdbc.Jdbc;
-import com.sooncode.soonjdbc.ModelTransform;
 import com.sooncode.soonjdbc.bean.DbBean;
 import com.sooncode.soonjdbc.constant.SQL_KEY;
+import com.sooncode.soonjdbc.dao.polymerization.Polymerization;
+import com.sooncode.soonjdbc.dao.polymerization.PolymerizationModel;
 import com.sooncode.soonjdbc.dao.tabletype.TableRelation;
 import com.sooncode.soonjdbc.dao.tabletype.TableType;
 import com.sooncode.soonjdbc.exception.PrimaryKeyValueInexistence;
@@ -20,14 +21,13 @@ import com.sooncode.soonjdbc.page.One2Many;
 import com.sooncode.soonjdbc.page.One2One;
 import com.sooncode.soonjdbc.page.Page;
 import com.sooncode.soonjdbc.reflect.RObject;
-import com.sooncode.soonjdbc.result.CountModel;
 import com.sooncode.soonjdbc.sql.ComSQL;
 import com.sooncode.soonjdbc.sql.Parameter;
 import com.sooncode.soonjdbc.sql.condition.Conditions;
 import com.sooncode.soonjdbc.util.T2E;
 
 /**
- * Jdbc Dao  
+ * Jdbc Dao
  * 
  * @author hechenwe@gmail.com
  * 
@@ -62,12 +62,11 @@ public class JdbcDao {
 		return jdbc.update(parameter);
 
 	}
-	
-	
-	public <T> int []  saves(final List<T> javaBeans) {
-		
-		String sql = new String ();
-		List<Map<Integer,Object>> parameters =  new ArrayList<>();
+
+	public <T> int[] saves(final List<T> javaBeans) {
+
+		String sql = new String();
+		List<Map<Integer, Object>> parameters = new ArrayList<>();
 		for (T javaBean : javaBeans) {
 			DbBean db = jdbc.getDbBean(javaBean);
 			Parameter parameter = ComSQL.batchInsert(db);
@@ -75,7 +74,7 @@ public class JdbcDao {
 			parameters.add(parameter.getParams());
 		}
 		return jdbc.batchInsert(sql, parameters);
-		
+
 	}
 
 	public <T> long update(final T javaBean) {
@@ -83,21 +82,22 @@ public class JdbcDao {
 		DbBean dbBean = jdbc.getDbBean(javaBean);
 		Object pkValue = dbBean.getPrimaryFieldValue();
 		if (pkValue == null) {
-				throw new PrimaryKeyValueInexistence("primary key value inexistence ! (主键值不存在!)");
+			throw new PrimaryKeyValueInexistence("primary key value inexistence ! (主键值不存在!)");
 		}
 		Parameter parameter = ComSQL.update(dbBean);
 		return jdbc.update(parameter);
 
 	}
-	public <T> long updates( final T model ,  final Conditions conditions) {
+
+	public <T> long updates(final T model, final Conditions conditions) {
 		DbBean modelDbBean = jdbc.getDbBean(model);
 		Parameter parameter = ComSQL.updates(modelDbBean);
 		Parameter wherePara = conditions.getWhereParameter();
-		String sql = parameter.getReadySql()+ SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + wherePara.getReadySql();
+		String sql = parameter.getReadySql() + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + wherePara.getReadySql();
 		parameter.addParameter(wherePara.getParams());
 		parameter.setReadySql(sql);
 		return jdbc.update(parameter);
-		
+
 	}
 
 	public <T> long delete(final T javaBean) {
@@ -105,10 +105,10 @@ public class JdbcDao {
 		DbBean dbBean = jdbc.getDbBean(javaBean);
 		Object pkValue = dbBean.getPrimaryFieldValue();
 		if (pkValue == null) {
-				throw new PrimaryKeyValueInexistence("primary key value inexistence ! (主键值不存在!)");
+			throw new PrimaryKeyValueInexistence("primary key value inexistence ! (主键值不存在!)");
 		}
-		String sql = SQL_KEY.DELETE + dbBean.getTableName() + SQL_KEY.WHERE + T2E.toColumn( dbBean.getPrimaryField() ) + SQL_KEY.EQ + SQL_KEY.QUESTION;
-		Map<Integer,Object> map = new HashMap<Integer,Object>() ;
+		String sql = SQL_KEY.DELETE + dbBean.getTableName() + SQL_KEY.WHERE + T2E.toColumn(dbBean.getPrimaryField()) + SQL_KEY.EQ + SQL_KEY.QUESTION;
+		Map<Integer, Object> map = new HashMap<Integer, Object>();
 		map.put(1, pkValue);
 		Parameter parameter = new Parameter();
 		parameter.setReadySql(sql);
@@ -116,61 +116,62 @@ public class JdbcDao {
 		return jdbc.update(parameter);
 
 	}
-	
+
 	/**
 	 * 批量删除
+	 * 
 	 * @param javaBean
 	 * @return
 	 */
 	public <T> long deletes(final T javaBean) {
 		Conditions conditions = new Conditions(javaBean);
 		return this.deletes(conditions);
-		
+
 	}
+
 	/**
 	 * 批量删除
+	 * 
 	 * @param javaBean
 	 * @return
 	 */
 	public <T> long deletes(final Conditions conditions) {
-		
+
 		DbBean dbBean = jdbc.getDbBean(conditions.getLeftBean().getJavaBean());
 		Parameter where = conditions.getWhereParameter();
 		Parameter parameter = new Parameter();
 		String tableName = T2E.toTableName(dbBean.getBeanName());
-		String sql = SQL_KEY.DELETE + tableName +  SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + where.getReadySql();
+		String sql = SQL_KEY.DELETE + tableName + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + where.getReadySql();
 		parameter.setReadySql(sql);
 		parameter.setParams(where.getParams());
 		return jdbc.update(parameter);
-		
+
 	}
 
-	 
 	public <T> long saveOrUpdate(final T javaBean) {
 
 		DbBean dbBean = jdbc.getDbBean(javaBean);
 		Object pkValue = dbBean.getPrimaryFieldValue();
-		Parameter p = null ;
-		boolean pkValueIsInexistence = ( pkValue != null );
+		Parameter p = null;
+		boolean pkValueIsInexistence = (pkValue != null);
 		if (pkValueIsInexistence) {
 			RObject<T> rObj = new RObject<>(javaBean.getClass());
 			rObj.invokeSetMethod(dbBean.getPrimaryField(), pkValue);
-			T tJavaBean =   rObj.getObject();
+			T tJavaBean = rObj.getObject();
 			List<T> list = gets(tJavaBean);
-			boolean haveOneJavaBean = ( list.size() == 1 );
+			boolean haveOneJavaBean = (list.size() == 1);
 			if (haveOneJavaBean) {
 				p = ComSQL.update(dbBean);
-			} 
-		}  
-		
-		if(p==null){
+			}
+		}
+
+		if (p == null) {
 			p = ComSQL.insert(dbBean);
 		}
 		return jdbc.update(p);
 
 	}
 
-	 
 	public <T> List<T> gets(final Conditions conditions) {
 
 		String className = conditions.getLeftBean().getClassName();
@@ -223,143 +224,72 @@ public class JdbcDao {
 		return t;
 	}
 
-	public long count(final String key, final Conditions conditions) {
-
-		RObject<?> rObj = new RObject<>(conditions.getLeftBean().getClassName());
-		DbBean dbBean = jdbc.getDbBean(rObj.getObject());
-		String tableName = T2E.toTableName(dbBean.getBeanName());
-		String sql = "SELECT COUNT(" + key + ") AS SIZE" + " FROM " + tableName + " WHERE 1=1 " + conditions.getWhereParameter().getReadySql();
-		Parameter parameter = new Parameter();
-		parameter.setReadySql(sql);
-		parameter.setParams(conditions.getWhereParameter().getParams());
-		Map<String, Object> map = jdbc.get(parameter);
-		Long n = (Long) map.get("size");
-		return n;
-
-	}
-	
  
-	public <T> List<CountModel<T>> count(final String key,String[] fields, final Conditions conditions) {
-		
+  
+
+	public <E> List<PolymerizationModel<E>> polymerization(Polymerization Polymerization, Conditions conditions, String key, String... fields) {
+
+		String column = new String();
+		if (fields.length > 0) {
+			for (String field : fields) {
+				column = column + " , " + T2E.toColumn(field);
+			}
+		}
 		RObject<?> rObj = new RObject<>(conditions.getLeftBean().getClassName());
 		DbBean dbBean = jdbc.getDbBean(rObj.getObject());
 		String tableName = T2E.toTableName(dbBean.getBeanName());
+		String KEY = new String();
 		
-		String column = new String ();
-		for (String field : fields) {
-			column = column + " , " + T2E.toColumn(field);
+		if(!key.equals("*")){
+			  KEY = T2E.toColumn(key);
+		}else{
+			KEY = key;
 		}
 		
-		
-		String sql = "SELECT COUNT(" + key + ") AS SIZE"  +column + " FROM " + tableName + " WHERE 1=1 " + conditions.getWhereParameter().getReadySql();
+		String sql = "SELECT " + Polymerization.getKey() + "(" + KEY + ") AS SIZE" + column + " FROM " + tableName + " WHERE 1=1 " + conditions.getWhereParameter().getReadySql();
 		Parameter parameter = new Parameter();
 		parameter.setReadySql(sql);
 		parameter.setParams(conditions.getWhereParameter().getParams());
-		List<Map<String, Object> > list = jdbc.gets(parameter);
-		List<CountModel<T>> countModels = new LinkedList<>();
-		for (Map<String, Object> map : list ) {
-			Long n = (Long) map.get("size");
-			CountModel<T> cm = new CountModel<>();
-			cm.setCount(n);
+		List<Map<String, Object>> list = jdbc.gets(parameter);
+		List<PolymerizationModel<E>> polymerizationModels = new LinkedList<>();
+		for (Map<String, Object> map : list) {
+			PolymerizationModel<E> pm = new PolymerizationModel<>();
+			pm.setSize(map.get("size"));
 			@SuppressWarnings("unchecked")
-			T t = (T) Entity.findEntity(map, rObj.getObject().getClass());
-			cm.setJavaBean(t);
-			countModels.add(cm);
+			E entity = (E) Entity.findEntity(map, rObj.getObject().getClass());
+			pm.setEntity(entity);
+			polymerizationModels.add(pm);
 		}
-		return countModels;
+
+		return polymerizationModels;
+
+	}
+	
+	
+	
+	public <T> T polymerization(Polymerization Polymerization, Conditions conditions, String key) {
+		
+		 
+		RObject<?> rObj = new RObject<>(conditions.getLeftBean().getClassName());
+		DbBean dbBean = jdbc.getDbBean(rObj.getObject());
+		String tableName = T2E.toTableName(dbBean.getBeanName());
+		String sql = "SELECT " + Polymerization.getKey() + "(" + T2E.toColumn(key) + ") AS SIZE"  + " FROM " + tableName + " WHERE 1=1 " + conditions.getWhereParameter().getReadySql();
+		Parameter parameter = new Parameter();
+		parameter.setReadySql(sql);
+		parameter.setParams(conditions.getWhereParameter().getParams());
+	    Map<String, Object> map = jdbc.get(parameter);
+	    @SuppressWarnings("unchecked")
+		T size = (T) map.get("size") ;
+		return size;
 		
 	}
 	
-	
-	
-	
-	public Object sum(final String key, final Conditions conditions) {
-		String column = T2E.toColumn(key);
-		RObject<?> rObj = new RObject<>(conditions.getLeftBean().getClassName());
-		DbBean dbBean = jdbc.getDbBean(rObj.getObject());
-		String tableName = T2E.toTableName(dbBean.getBeanName());
-		String sql = "SELECT SUM(" + column + ") AS SIZE" + " FROM " + tableName + " WHERE 1=1 " + conditions.getWhereParameter().getReadySql();
-		Parameter parameter = new Parameter();
-		parameter.setReadySql(sql);
-		parameter.setParams(conditions.getWhereParameter().getParams());
-		Map<String, Object> map = jdbc.get(parameter);
-		Object sum = map.get("size");
-		return sum;
-		
-	}
-	public <T> Object sum(String key, T javaBean) {
-		Conditions c = new Conditions(javaBean);
-		Object n = this.sum(key, c);
-		return n;
-	}
-	public Object avg(final String key, final Conditions conditions) {
-		String column = T2E.toColumn(key);
-		RObject<?> rObj = new RObject<>(conditions.getLeftBean().getClassName());
-		DbBean dbBean = jdbc.getDbBean(rObj.getObject());
-		String tableName = T2E.toTableName(dbBean.getBeanName());
-		String sql = "SELECT AVG(" + column + ") AS SIZE" + " FROM " + tableName + " WHERE 1=1 " + conditions.getWhereParameter().getReadySql();
-		Parameter parameter = new Parameter();
-		parameter.setReadySql(sql);
-		parameter.setParams(conditions.getWhereParameter().getParams());
-		Map<String, Object> map = jdbc.get(parameter);
-		Object sum = map.get("size");
-		return sum;
-		
-	}
-	public <T> Object avg(String key, T javaBean) {
-		Conditions c = new Conditions(javaBean);
-		Object n = this.avg(key, c);
-		return n;
-	}
-	
-
-	public <T> T max(final String key, final Conditions conditions) {
-
-		RObject<?> rObj = new RObject<>(conditions.getLeftBean().getClassName());
-		DbBean dbBean = jdbc.getDbBean(rObj.getObject());
-		String tableName = T2E.toTableName(dbBean.getBeanName());
-		String sql = "SELECT MAX(" + T2E.toColumn(key) + ") AS MAX" + " FROM " + tableName + " WHERE 1=1 " + conditions.getWhereParameter().getReadySql();
-		Parameter parameter = new Parameter();
-		parameter.setReadySql(sql);
-		parameter.setParams(conditions.getWhereParameter().getParams());
-		Map<String, Object> map = jdbc.get(parameter);
-		@SuppressWarnings("unchecked")
-		T max = (T) map.get("max");
-		return max;
-
+	public <T, E> T polymerization (Polymerization Polymerization, E entity, String key) {
+		Conditions c = new Conditions(entity);
+		return this.polymerization(Polymerization, c , key);
 	}
 
-	public <T> T min(final String key, final Conditions conditions) {
-
-		RObject<?> rObj = new RObject<>(conditions.getLeftBean().getClassName());
-		DbBean dbBean = jdbc.getDbBean(rObj.getObject());
-		String tableName = T2E.toTableName(dbBean.getBeanName());
-		String sql = "SELECT MIN(" + T2E.toColumn(key) + ") AS MIN" + " FROM " + tableName + " WHERE 1=1 " + conditions.getWhereParameter().getReadySql();
-		Parameter parameter = new Parameter();
-		parameter.setReadySql(sql);
-		parameter.setParams(conditions.getWhereParameter().getParams());
-		Map<String, Object> map = jdbc.get(parameter);
-		@SuppressWarnings("unchecked")
-		T max = (T) map.get("min");
-		return max;
-
-	}
-
-	public <T, E> T max(String key, E javaBean) {
-		Conditions c = new Conditions(javaBean);
-		return this.max(key, c);
-	}
-
-	public <T, E> T min(String key, E javaBean) {
-		Conditions c = new Conditions(javaBean);
-		return this.min(key, c);
-	}
-
-	public <T> long count(String key, T javaBean) {
-		Conditions c = new Conditions(javaBean);
-		long n = this.count(key, c);
-		return n;
-	}
+	 
 
 	public Page getPage(long pageNum, long pageSize, Object leftBean, Object... otherBean) {
 		Conditions conditions = new Conditions(leftBean, otherBean);

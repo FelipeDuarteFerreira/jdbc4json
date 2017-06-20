@@ -1,5 +1,6 @@
 package com.sooncode.soonjdbc.sql.condition;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
@@ -328,7 +329,11 @@ public class Conditions {
 			Condition c = new BetweenCondition();
 			c.setKey(key);
 			c.setConditionSign(BetweenSign.toString());
-			Object[] values = new Object[] { startDate, endDate };
+			@SuppressWarnings("static-access")
+			String start = new SimpleDateFormat(DATE_FORMAT.ALL_DATE).format(startDate);
+			@SuppressWarnings("static-access")
+			String end = new SimpleDateFormat(DATE_FORMAT.ALL_DATE).format(endDate);
+			Object[] values = new Object[] { start, end };
 			c.setValues(values);
 			c.setOther(DATE_FORMAT);
 			ces.put(new String(key), c);

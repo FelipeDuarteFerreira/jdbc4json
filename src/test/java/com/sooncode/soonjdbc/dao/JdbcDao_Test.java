@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sooncode.soonjdbc.constant.DATE_FORMAT;
 import com.sooncode.soonjdbc.constant.Sort;
 import com.sooncode.soonjdbc.dao.JdbcDao;
+import com.sooncode.soonjdbc.dao.polymerization.Polymerization;
+import com.sooncode.soonjdbc.dao.polymerization.PolymerizationModel;
 import com.sooncode.soonjdbc.dao.tabletype.TableRelation;
 import com.sooncode.soonjdbc.entity.ChooseCourse;
 import com.sooncode.soonjdbc.entity.SooncodeClazz;
@@ -31,7 +33,7 @@ import com.sooncode.soonjdbc.page.One2Many;
 import com.sooncode.soonjdbc.page.One2Many2Many;
 import com.sooncode.soonjdbc.page.One2One;
 import com.sooncode.soonjdbc.page.Page;
-import com.sooncode.soonjdbc.result.CountModel;
+
 import com.sooncode.soonjdbc.sql.condition.Conditions;
 import com.sooncode.soonjdbc.sql.condition.sign.BetweenSign;
 import com.sooncode.soonjdbc.sql.condition.sign.EqualSign;
@@ -165,8 +167,29 @@ public class JdbcDao_Test {
 	public void max() {
 		SystemUser u = new SystemUser();
 		Conditions c = new Conditions(u);
-		int max = dao.max("age",c);
+		int max = dao.polymerization(Polymerization.MAX, c, "age");
 		logger.info(max); 
+	}
+	
+	
+	
+	@Test
+	public void polymerization() {
+		SystemUser u = new SystemUser();
+		Conditions c = new Conditions(u);
+		int max = dao.polymerization(Polymerization.MAX, c, "age");
+		logger.info(max); 
+	}
+	@Test
+	public void polymerization2() {
+		SystemUser u = new SystemUser();
+		Conditions c = new Conditions(u);
+		c.setGroupBy("sex");
+		List<PolymerizationModel<SystemUser>>  pms =  dao.polymerization(Polymerization.MIN, c, "age","name");
+		for (PolymerizationModel<SystemUser> pm : pms) {
+			logger.info(pm.getSize()); 
+			logger.info(pm.getEntity()); 
+		}
 	}
 	
 	@Test
@@ -174,7 +197,7 @@ public class JdbcDao_Test {
 		SystemUser u = new SystemUser();
 		u.setSex("1");
 		//Conditions c = new Conditions(u);
-		int max = dao.max("age",u);
+		int max = dao.polymerization(Polymerization.MAX, u, "age");
 		logger.info(max); 
 	}
 
@@ -192,7 +215,7 @@ public class JdbcDao_Test {
 		c.setCondition("sex", EqualSign.NOT_EQ , "0");
 	    //c.setCondition( "createDate" ,EqualSign.LT,new Date(), DATE_FORMAT.yyyy_MM_dd);
 	//	c.setCondition( "createDate" ,EqualSign.LT,"2017-06-13", DATE_FORMAT.yyyy_MM_dd);
-		c.setCondition( "createDate" ,BetweenSign.NOT_BETWEEN_AND,"2017-06-13","2017-06-15", DATE_FORMAT.yyyy_MM_dd);
+		c.setCondition( "createDate" ,BetweenSign.NOT_BETWEEN_AND,new Date(),new Date(), DATE_FORMAT.yyyy_MM_dd);
 	    c.setCondition("age",BetweenSign.NOT_BETWEEN_AND, 10, 100);
 		c.setCondition("type", InSign.IN, new String[]{"AA","BB"});
 		c.setCondition("name",NullSign.IS_NOT_NULL);
@@ -221,7 +244,7 @@ public class JdbcDao_Test {
 		SystemUser u = new SystemUser();
 		u.setSex("1");
 		Conditions c = new Conditions(u);
-		long n = dao.count("*", c);
+		long n = dao.polymerization(Polymerization.COUNT, c, "*");
 		logger.info("------------:" + n);
 
 	}
@@ -231,7 +254,7 @@ public class JdbcDao_Test {
 		//u.setSex("1");
 		Conditions c = new Conditions(u);
 		c.setGroupBy("sex");
-		List<CountModel<SystemUser>> list  = dao.count("*",new String[]{"sex"}, c);
+		List<PolymerizationModel<SystemUser>> list  = dao.polymerization(Polymerization.COUNT, c, "*", new String[]{"sex"});
 		logger.info("------------:" + list);
 		
 	}
@@ -241,8 +264,18 @@ public class JdbcDao_Test {
 		SystemUser u = new SystemUser();
 		//u.setSex("0");
 		Conditions c = new Conditions(u);
-		Object n = dao.sum("doog", u);
+		Object n = dao.polymerization(Polymerization.SUM, c, "doog");
 		logger.info("------------:" + n);
+		
+	}
+	@Test
+	public void sum2() {
+		SystemUser u = new SystemUser();
+		//u.setSex("0");
+		Conditions c = new Conditions(u);
+		c.setGroupBy("sex");
+		List<PolymerizationModel<SystemUser>> list = dao.polymerization( Polymerization.SUM, c , "doog", new String[]{"age"});
+		logger.info("------------:" +list);
 		
 	}
 	@Test
@@ -250,7 +283,7 @@ public class JdbcDao_Test {
 		SystemUser u = new SystemUser();
 		//u.setSex("0");
 		Conditions c = new Conditions(u);
-		Object n = dao.avg("doog", u);
+		Object n = dao.polymerization(Polymerization.AVG, u,"doog");
 		logger.info("------------:" + n);
 		
 	}

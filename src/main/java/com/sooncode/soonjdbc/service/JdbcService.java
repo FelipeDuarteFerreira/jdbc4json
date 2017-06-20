@@ -3,10 +3,11 @@ package com.sooncode.soonjdbc.service;
 import java.util.List;
 
 import com.sooncode.soonjdbc.dao.JdbcDao;
+import com.sooncode.soonjdbc.dao.polymerization.Polymerization;
+import com.sooncode.soonjdbc.dao.polymerization.PolymerizationModel;
 import com.sooncode.soonjdbc.page.One2Many;
 import com.sooncode.soonjdbc.page.One2One;
 import com.sooncode.soonjdbc.page.Page;
-import com.sooncode.soonjdbc.result.CountModel;
 import com.sooncode.soonjdbc.sql.condition.Conditions;
 
 /**
@@ -57,6 +58,7 @@ public class JdbcService {
 	public <T> long save(T javaBean) {
 		return jdbcDao.save(javaBean);
 	}
+
 	public <T> int[] saves(List<T> javaBeans) {
 		return jdbcDao.saves(javaBeans);
 	}
@@ -68,10 +70,9 @@ public class JdbcService {
 	public <T> long update(T javaBean) {
 		return jdbcDao.update(javaBean);
 	}
-	
-	
-	public <T> long update(T model ,Conditions conditions ) {
-		return jdbcDao.updates(model, conditions) ;
+
+	public <T> long update(T model, Conditions conditions) {
+		return jdbcDao.updates(model, conditions);
 	}
 
 	public <T> long delete(T javaBean) {
@@ -102,10 +103,6 @@ public class JdbcService {
 
 	}
 
-	public long count(String key, Conditions conditions) {
-		return jdbcDao.count(key, conditions);
-	}
-
 	public <T> List<T> gets(T javaBean) {
 		return jdbcDao.gets(javaBean);
 	}
@@ -122,43 +119,17 @@ public class JdbcService {
 		return jdbcDao.get(javaBean);
 	}
 
-	public <T> long count(String key, T javaBean) {
-		return jdbcDao.count(key, javaBean);
+	public <E> List<PolymerizationModel<E>> polymerization(Polymerization Polymerization, Conditions conditions, String key, String... fields) {
+		return jdbcDao.polymerization(Polymerization, conditions, key, fields);
 	}
 	
-	public <T> List<CountModel<T>> count(final String key,String[] fields, final Conditions conditions) {
-		return jdbcDao.count(key, fields, conditions);
+	public <T> T polymerization(Polymerization Polymerization, Conditions conditions, String key) {
+		 
+		return jdbcDao.polymerization(Polymerization, conditions, key);
+		
 	}
-
-	public <T, E> T max(String key, E javaBean) {
-		return jdbcDao.max(key, javaBean);
-	}
-
-	public <T> T max(String key, Conditions conditions) {
-		return jdbcDao.max(key, conditions);
-	}
-
-	public <T> T min(String key, Conditions conditions) {
-		return jdbcDao.min(key, conditions);
-	}
-
-	public <T, E> T min(String key, E javaBean) {
-		return jdbcDao.min(key, javaBean);
-	}
-
-	public Object sum(String key, Conditions conditions) {
-		return jdbcDao.sum(key, conditions);
-	}
-
-	public <E> Object sum(String key, E javaBean) {
-		return jdbcDao.sum(key, javaBean);
-	}
-
-	public Object avg(String key, Conditions conditions) {
-		return jdbcDao.avg(key, conditions);
-	}
-
-	public <E> Object avg(String key, E javaBean) {
-		return jdbcDao.avg(key, javaBean);
+	
+	public <T, E> T polymerization (Polymerization Polymerization, E entity, String key) {
+		return jdbcDao.polymerization(Polymerization, entity, key);
 	}
 }
