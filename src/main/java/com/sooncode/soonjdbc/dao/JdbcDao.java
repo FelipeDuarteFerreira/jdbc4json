@@ -224,72 +224,7 @@ public class JdbcDao {
 		return t;
 	}
 
- 
-  
-
-	public <E> List<PolymerizationModel<E>> polymerization(Polymerization Polymerization, Conditions conditions, String key, String... fields) {
-
-		String column = new String();
-		if (fields.length > 0) {
-			for (String field : fields) {
-				column = column + " , " + T2E.toColumn(field);
-			}
-		}
-		RObject<?> rObj = new RObject<>(conditions.getLeftBean().getClassName());
-		DbBean dbBean = jdbc.getDbBean(rObj.getObject());
-		String tableName = T2E.toTableName(dbBean.getBeanName());
-		String KEY = new String();
-		
-		if(!key.equals("*")){
-			  KEY = T2E.toColumn(key);
-		}else{
-			KEY = key;
-		}
-		
-		String sql = "SELECT " + Polymerization.getKey() + "(" + KEY + ") AS SIZE" + column + " FROM " + tableName + " WHERE 1=1 " + conditions.getWhereParameter().getReadySql();
-		Parameter parameter = new Parameter();
-		parameter.setReadySql(sql);
-		parameter.setParams(conditions.getWhereParameter().getParams());
-		List<Map<String, Object>> list = jdbc.gets(parameter);
-		List<PolymerizationModel<E>> polymerizationModels = new LinkedList<>();
-		for (Map<String, Object> map : list) {
-			PolymerizationModel<E> pm = new PolymerizationModel<>();
-			pm.setSize(map.get("size"));
-			@SuppressWarnings("unchecked")
-			E entity = (E) Entity.findEntity(map, rObj.getObject().getClass());
-			pm.setEntity(entity);
-			polymerizationModels.add(pm);
-		}
-
-		return polymerizationModels;
-
-	}
 	
-	
-	
-	public <T> T polymerization(Polymerization Polymerization, Conditions conditions, String key) {
-		
-		 
-		RObject<?> rObj = new RObject<>(conditions.getLeftBean().getClassName());
-		DbBean dbBean = jdbc.getDbBean(rObj.getObject());
-		String tableName = T2E.toTableName(dbBean.getBeanName());
-		String sql = "SELECT " + Polymerization.getKey() + "(" + T2E.toColumn(key) + ") AS SIZE"  + " FROM " + tableName + " WHERE 1=1 " + conditions.getWhereParameter().getReadySql();
-		Parameter parameter = new Parameter();
-		parameter.setReadySql(sql);
-		parameter.setParams(conditions.getWhereParameter().getParams());
-	    Map<String, Object> map = jdbc.get(parameter);
-	    @SuppressWarnings("unchecked")
-		T size = (T) map.get("size") ;
-		return size;
-		
-	}
-	
-	public <T, E> T polymerization (Polymerization Polymerization, E entity, String key) {
-		Conditions c = new Conditions(entity);
-		return this.polymerization(Polymerization, c , key);
-	}
-
-	 
 
 	public Page getPage(long pageNum, long pageSize, Object leftBean, Object... otherBean) {
 		Conditions conditions = new Conditions(leftBean, otherBean);
@@ -356,6 +291,71 @@ public class JdbcDao {
 	public Page getPage(long pageNum, long pageSize, TableRelation TableRelation, Conditions conditions) {
 		TableType tableType = TableRelation.getTableType();
 		return tableType.getPage(pageNum, pageSize, conditions, jdbc);
+	}
+	
+	public <E> List<PolymerizationModel<E>> polymerization(Polymerization Polymerization, Conditions conditions, String key, String... fields) {
+
+		String column = new String();
+		if (fields.length > 0) {
+			for (String field : fields) {
+				column = column + " , " + T2E.toColumn(field);
+			}
+		}
+		RObject<?> rObj = new RObject<>(conditions.getLeftBean().getClassName());
+		DbBean dbBean = jdbc.getDbBean(rObj.getObject());
+		String tableName = T2E.toTableName(dbBean.getBeanName());
+		String KEY = new String();
+
+		if (!key.equals("*")) {
+			KEY = T2E.toColumn(key);
+		} else {
+			KEY = key;
+		}
+
+		String sql = SQL_KEY.SELECT + Polymerization.getKey() + SQL_KEY.L_BRACKET + KEY + SQL_KEY.R_BRACKET + SQL_KEY.AS + SQL_KEY.SIZE + column + SQL_KEY.FROM + tableName + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + conditions.getWhereParameter().getReadySql();
+		Parameter parameter = new Parameter();
+		parameter.setReadySql(sql);
+		parameter.setParams(conditions.getWhereParameter().getParams());
+		List<Map<String, Object>> list = jdbc.gets(parameter);
+		List<PolymerizationModel<E>> polymerizationModels = new LinkedList<>();
+		for (Map<String, Object> map : list) {
+			PolymerizationModel<E> pm = new PolymerizationModel<>();
+			pm.setSize(map.get("size"));
+			@SuppressWarnings("unchecked")
+			E entity = (E) Entity.findEntity(map, rObj.getObject().getClass());
+			pm.setEntity(entity);
+			polymerizationModels.add(pm);
+		}
+
+		return polymerizationModels;
+
+	}
+
+	public <T> T polymerization(Polymerization Polymerization, Conditions conditions, String key) {
+
+		RObject<?> rObj = new RObject<>(conditions.getLeftBean().getClassName());
+		DbBean dbBean = jdbc.getDbBean(rObj.getObject());
+		String tableName = T2E.toTableName(dbBean.getBeanName());
+		String KEY = new String();
+		if (!key.equals("*")) {
+			KEY = T2E.toColumn(key);
+		} else {
+			KEY = key;
+		}
+		String sql = SQL_KEY.SELECT + Polymerization.getKey() + SQL_KEY.L_BRACKET + KEY + SQL_KEY.R_BRACKET + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + tableName + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + conditions.getWhereParameter().getReadySql();
+		Parameter parameter = new Parameter();
+		parameter.setReadySql(sql);
+		parameter.setParams(conditions.getWhereParameter().getParams());
+		Map<String, Object> map = jdbc.get(parameter);
+		@SuppressWarnings("unchecked")
+		T size = (T) map.get("size");
+		return size;
+
+	}
+
+	public <T, E> T polymerization(Polymerization Polymerization, E entity, String key) {
+		Conditions c = new Conditions(entity);
+		return this.polymerization(Polymerization, c, key);
 	}
 
 }

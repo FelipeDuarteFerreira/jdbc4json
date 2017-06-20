@@ -78,13 +78,9 @@ public class JavaBeanBuilder {
 				Table t = new Table();
 				DatabaseMetaData dm = con.getMetaData();
 				String[] types = { "Table" };
-				// 数据库名称/ userName/ 表名称 / 类型
-				 
 				ResultSet tableSet = dm.getTables(null,  null, tableName, types);//
 				while (tableSet.next()) { // 遍历数据库的表
-					 
 					String tableRemarks = tableSet.getString("REMARKS");// 表注释
-
 					t.setTableName(tableName);
 					t.setTableRemarks(tableRemarks);
 				}
@@ -102,24 +98,17 @@ public class JavaBeanBuilder {
 				
 				DatabaseMetaData dm = con.getMetaData();
 				String url = dm.getURL();
-				
 				int n = url.indexOf('?');
 				int m = url.lastIndexOf('/');
 				String dataName  =  url.substring(m+1, n);
-				 
 				String[] types = { "Table" };
-				 
-				 
-				 
 				// 数据库名称/ userName/ 表名称 / 类型
 				List<Table> list = new ArrayList<>();
 				ResultSet tableSet = dm.getTables(dataName,  null, null, types);//
 				while (tableSet.next()) { // 遍历数据库的表
-					
 					Table t = new Table();
 					String tableRemarks = tableSet.getString("REMARKS");// 表注释
 					String tableName = tableSet.getString("TABLE_NAME").toUpperCase();// 表注释
-					
 					t.setTableName(tableName);
 					t.setTableRemarks(tableRemarks);
 					list.add(t);

@@ -80,26 +80,20 @@ public class Entity {
 	 * @return object为空返回 false ; object中的所有属性对应的值为空返回false.
 	 */
 	public static boolean isNull(Object object) {
+		boolean b = false;
 		if (object == null) {
-			return false;
+			return b;
 		}
-		// obj的属性值不全为null
 		RObject<?> rObj = new RObject<>(object);
 		Map<String, Object> files = rObj.getFiledAndValue();
-		boolean b = false;
 		for (Map.Entry<String, Object> en : files.entrySet()) {
-			if (en.getValue() == null) {
-				b = b || false;
-			} else {
-				b = b || true;
-			}
+			if (en.getValue() != null) {
+				b = true;
+				continue;
+			}  
 		}
 
-		if (b == false) {
-			return false;
-		} else {
-			return true;
-		}
+		return b;
 	}
 
 }

@@ -19,17 +19,16 @@ public class SqlVerification {
      * @return true ; false
      */
 	public static boolean isSelectSql(String sql) {
+		boolean isSelectSql = false;
 		if (sql != null) {
 			sql = sql.trim().toUpperCase();
 			StringBuffer sb = new StringBuffer(sql);
 			int n = sb.indexOf(SELECT);
 			if (n == 0) {
-				return true;
-			} else {
-				return false;
-			}
+				isSelectSql =  true;
+			}  
 		}
-		return false;
+		return isSelectSql;
 	}
     /**
      * 是否是更新语句
@@ -37,27 +36,17 @@ public class SqlVerification {
      * @return true ; false
      */
 	public static boolean isUpdateSql(String sql) {
+		boolean isUpdateSql = false;
 		if (sql != null) {
 			sql = sql.trim().toUpperCase();
 			StringBuffer sb = new StringBuffer(sql);
-			int n = sb.indexOf(UPDATE);
-			if (n == 0) {
-				return true;
-			} else {
-				n = sb.indexOf(INSERT);
-				if (n == 0) {
-					return true;
-				} else {
-					n = sb.indexOf(DELETE);
-					if (n == 0) {
-						return true;
-					} else {
-						return false;
-					}
-				}
+			int update = sb.indexOf(UPDATE);
+			int insert = sb.indexOf(INSERT);
+			int delete = sb.indexOf(DELETE);
+			if(update + insert + delete == 1 ){
+				isUpdateSql = true;
 			}
 		}
-	 
-		return false;
+		return isUpdateSql;
 	}
 }
