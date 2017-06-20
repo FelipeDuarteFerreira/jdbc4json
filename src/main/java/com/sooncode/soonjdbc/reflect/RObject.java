@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -268,6 +269,54 @@ public class RObject<T> {
 			}
 		}
 		return null;
+	}
+	
+	/**
+	 * 实体转换
+	 * @param oldObj
+	 * @param newObjClass
+	 * @return
+	 */
+	public static <N,O>  N to(O oldObj, Class<N> newObjClass) {
+        if(oldObj==null || newObjClass==null){
+        	return null;
+        }
+		RObject<O> rOldObj = new RObject<>(oldObj);
+		RObject<N> rNewObj = new RObject<>(newObjClass);
+
+		Map<String, Object> map = rOldObj.getFiledAndValue();
+
+		for (Entry<String, Object> en : map.entrySet()) {
+			String key = en.getKey();
+			Object val = en.getValue();
+			if (rNewObj.hasField(key)) {
+				rNewObj.invokeSetMethod(key, val);
+			}
+		}
+
+		return rNewObj.getObject();
+
+	}
+
+	/**
+	 * 批量对象转换
+	 * 
+	 * @param oldObjes
+	 *            被转换的对象集
+	 * @param newObjClass
+	 *            新对象的Class
+	 * @return 新对象集
+	 */
+	public static <N,O> List<N> tos(List<O> oldObjes, Class<N> newObjClass) {
+		List<N> list = new ArrayList<N>();
+		  if(oldObjes==null || oldObjes.size()==0 || newObjClass==null){
+	        	return new ArrayList<>();
+	        }
+		for (O obj : oldObjes) {
+			 N newObje = to(obj, newObjClass);
+			list.add(newObje);
+		}
+		return list;
 	}
 
 }

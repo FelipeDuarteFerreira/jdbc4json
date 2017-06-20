@@ -1,4 +1,4 @@
-package com.sooncode.soonjdbc.util.create_entity;
+package com.sooncode.soonjdbctool;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -14,16 +14,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 
-import com.sooncode.soonjdbc.util.T2E;
  
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 public class JavaBeanBuilder {
-	private static Logger logger = Logger.getLogger("JavaBeanBuilder.class");
+	private static Log logger = LogFactory.getLog(JavaBeanBuilder.class);
 	private JdbcTemplate jdbcTemplate;
     private String codePath;
     private String packageName;
@@ -35,6 +36,7 @@ public class JavaBeanBuilder {
 	
 	
 	public void setCodePath(String codePath) {
+		 
 		String[] str = codePath.split("/");
 		String s = new String();
 		for (String string : str) {

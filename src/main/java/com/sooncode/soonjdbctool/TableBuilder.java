@@ -1,6 +1,4 @@
-package com.sooncode.soonjdbc.util.create_entity;
-
- 
+package com.sooncode.soonjdbctool;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -11,13 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-
-import com.sooncode.soonjdbc.util.T2E;
-
-
  
-  
-
 
 public class TableBuilder {
 	/**
@@ -181,14 +173,14 @@ public class TableBuilder {
 		 
 		String code ="";
 		String importString = "\r\n";
-		  importString += "import java.io.Serializable;\r\n";
+		//  importString += "import java.io.Serializable;\r\n";
 		String an = "/**\r\n";
 		         an+="*"+t.getTableRemarks()+"\r\n";
-		         an+="* @author hechen \r\n";
+		         an+="* @author hechenwe@gmail.com \r\n";
 		         an+="* \r\n";
 		         an+="*/ \r\n";
-		String classString = "public class "+T2E.toClassName( t.getTableName()) +" implements Serializable{ \r\n" ;
-		       classString +="\t private static final long serialVersionUID = 1L;\r\n";
+		String classString = "public class "+T2E.toClassName( t.getTableName()) +" { \r\n" ;
+		       //classString +="\t private static final long serialVersionUID = 1L;\r\n";
 		       
 		String pkString = "\t /** "+pkColumn.getColumnRemarks()+" */ \r\n";
 		      pkString += "\t private "+pkColumn.getJavaDataType()+" "+pkColumn.getPropertyName()+"; \r\n";
@@ -226,7 +218,7 @@ public class TableBuilder {
 
 	 public static void main(String[] args) {
 		TableBuilder tb = new TableBuilder("127.0.0.1", "3306", "root", "hechenwe@gmail.com", "jdbc");
-		String code = tb.getEntityClassCode("Student");
+		String code = tb.getEntityClassCode("system_user");
 		System.out.println(code);
 	}
 

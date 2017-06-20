@@ -1,4 +1,4 @@
-package com.sooncode.soonjdbc.util.create_entity;
+package com.sooncode.soonjdbctool;
 
 import java.util.HashMap;
 import java.util.Map;
