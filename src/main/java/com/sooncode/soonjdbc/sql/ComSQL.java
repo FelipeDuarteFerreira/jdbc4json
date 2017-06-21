@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 
 import com.sooncode.soonjdbc.bean.DbBean;
 import com.sooncode.soonjdbc.constant.CLASS_NAME;
-import com.sooncode.soonjdbc.constant.DATE_FORMAT;
+import com.sooncode.soonjdbc.constant.DateFormat;
 import com.sooncode.soonjdbc.constant.SQL_KEY;
 import com.sooncode.soonjdbc.constant.STRING;
 import com.sooncode.soonjdbc.util.T2E;
@@ -50,7 +50,7 @@ public class ComSQL {
 
 				filedString = filedString + STRING.QUESTION  ; 
 				if (entry.getValue().getClass().getName().equals(CLASS_NAME.DATE)) {
-					par.put(index,  new SimpleDateFormat(DATE_FORMAT.ALL_DATE).format(entry.getValue()));
+					par.put(index,  new SimpleDateFormat(DateFormat.ALL_DATE).format(entry.getValue()));
 				} else {
 					par.put(index, entry.getValue());
 				}
@@ -91,7 +91,7 @@ public class ComSQL {
 			} else {
 				filedString = filedString + STRING.QUESTION  ; 
 				if (entry.getValue().getClass().getName().equals(CLASS_NAME.DATE)) {
-					par.put(index,  new SimpleDateFormat(DATE_FORMAT.ALL_DATE).format(entry.getValue()));
+					par.put(index,  new SimpleDateFormat(DateFormat.ALL_DATE).format(entry.getValue()));
 				} else {
 					par.put(index, entry.getValue());
 				}

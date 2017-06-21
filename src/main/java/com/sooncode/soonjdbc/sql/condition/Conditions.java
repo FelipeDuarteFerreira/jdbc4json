@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import com.sooncode.soonjdbc.bean.DbBean;
 import com.sooncode.soonjdbc.constant.DATE_FORMAT;
+import com.sooncode.soonjdbc.constant.DateFormat;
 import com.sooncode.soonjdbc.constant.SQL_KEY;
 import com.sooncode.soonjdbc.constant.STRING;
 import com.sooncode.soonjdbc.constant.Sort;
@@ -230,7 +231,7 @@ public class Conditions {
 		if (!this.oderByes.equals("")) {
 			sql = sql + SQL_KEY.ORDER_BY + this.oderByes;
 		}
-		
+
 		if (!this.groupBy.equals("")) {
 			sql = sql + this.groupBy;
 		}
@@ -329,11 +330,15 @@ public class Conditions {
 			Condition c = new BetweenCondition();
 			c.setKey(key);
 			c.setConditionSign(BetweenSign.toString());
-			@SuppressWarnings("static-access")
-			String start = new SimpleDateFormat(DATE_FORMAT.ALL_DATE).format(startDate);
-			@SuppressWarnings("static-access")
-			String end = new SimpleDateFormat(DATE_FORMAT.ALL_DATE).format(endDate);
-			Object[] values = new Object[] { start, end };
+			Object[] values;
+			if (startDate instanceof String && endDate instanceof String) {
+				values = new Object[] { startDate, endDate };
+			} else {
+				String start = new SimpleDateFormat(DateFormat.ALL_DATE).format(startDate);
+				String end = new SimpleDateFormat(DateFormat.ALL_DATE).format(endDate);
+				values = new Object[] { start, end };
+
+			}
 			c.setValues(values);
 			c.setOther(DATE_FORMAT);
 			ces.put(new String(key), c);

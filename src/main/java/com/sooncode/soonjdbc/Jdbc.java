@@ -26,7 +26,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.sooncode.soonjdbc.bean.DbBean;
 import com.sooncode.soonjdbc.bean.DbBeanCache;
-import com.sooncode.soonjdbc.constant.DATE_FORMAT;
+import com.sooncode.soonjdbc.constant.DateFormat;
 import com.sooncode.soonjdbc.sql.Parameter;
 import com.sooncode.soonjdbc.sql.verification.SqlVerification;
 import com.sooncode.soonjdbc.util.T2E;
@@ -272,7 +272,7 @@ public class Jdbc {
 				if (obj != null) {
 					String className = obj.getClass().getName();
 					if (className.equals(Date.class.getName())) {
-						String d = new SimpleDateFormat(DATE_FORMAT.ALL_DATE).format(obj);
+						String d = new SimpleDateFormat(DateFormat.ALL_DATE).format(obj);
 						preparedStatement.setString(index, d);
 						continue;
 					}

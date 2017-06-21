@@ -3,7 +3,7 @@ package com.sooncode.soonjdbc.constant;
 
 public class DATE_FORMAT {
 	private String formatString;
-	public static  final String ALL_DATE  = "yyyy-MM-dd HH:mm:ss";
+
 	public static final DATE_FORMAT yyyy_MM_dd = new DATE_FORMAT("'%Y-%m-%d'");
 	public static final DATE_FORMAT yyyy_MM = new DATE_FORMAT("'%Y-%m'");
 	public static final DATE_FORMAT MM_dd = new DATE_FORMAT("'%m-%d'");
@@ -42,7 +42,7 @@ public class DATE_FORMAT {
 	 * %u 星期(0……52),注意：“星期一” 是一个星期的第一天</br>
 	 * @param formatString 日期格式字符串，如："%Y-%m-%d" ,其格式化为 "2016-01-01"
 	 */
-	public DATE_FORMAT(String formatString) {
+	private DATE_FORMAT(String formatString) {
 		this.formatString = formatString;
 	}
 
