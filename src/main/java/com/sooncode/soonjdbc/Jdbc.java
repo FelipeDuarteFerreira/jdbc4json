@@ -70,13 +70,13 @@ public class Jdbc {
 			return 0L;
 		}
 		String sql = parameter.getReadySql();
+		logger.debug("【SoonJdbc SQL】" + parameter.getReadySql());
+		logger.debug("【SoonJdbc Parameter】" + parameter.getParams());
 
 		if (SqlVerification.isUpdateSql(sql) == false) {
 			return 0L;
 		}
 
-		logger.debug("【SoonJdbc SQL】" + parameter.getReadySql());
-		logger.debug("【SoonJdbc Parameter】" + parameter.getParams());
 		return jdbcTemplate.execute(new ConnectionCallback<Long>() {
 			@Override
 			public Long doInConnection(Connection con) throws SQLException, DataAccessException {

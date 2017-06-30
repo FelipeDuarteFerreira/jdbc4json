@@ -4,7 +4,7 @@ package com.sooncode.soonjdbc.exception;
  * @author pc
  *
  */
-public class SqlException extends Exception {
+public class SqlException extends RuntimeException {
 	private static final long serialVersionUID = 614301440846576181L;
  
 	public SqlException(String message){

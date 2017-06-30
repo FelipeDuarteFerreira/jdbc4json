@@ -43,7 +43,7 @@ public class SqlVerification {
 			int update = sb.indexOf(UPDATE);
 			int insert = sb.indexOf(INSERT);
 			int delete = sb.indexOf(DELETE);
-			if(update + insert + delete == 1 ){
+			if(update + insert + delete == -2 ){
 				isUpdateSql = true;
 			}
 		}
