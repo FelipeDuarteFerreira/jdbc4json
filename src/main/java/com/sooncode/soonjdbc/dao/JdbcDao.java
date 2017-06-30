@@ -23,6 +23,11 @@ import com.sooncode.soonjdbc.page.Page;
 import com.sooncode.soonjdbc.reflect.RObject;
 import com.sooncode.soonjdbc.sql.ComSQL;
 import com.sooncode.soonjdbc.sql.Parameter;
+import com.sooncode.soonjdbc.sql.comsql.DeletetSqlBuilder;
+import com.sooncode.soonjdbc.sql.comsql.InsertSqlBuilder;
+import com.sooncode.soonjdbc.sql.comsql.SelectSqlBuilder;
+import com.sooncode.soonjdbc.sql.comsql.SqlBuilder;
+import com.sooncode.soonjdbc.sql.comsql.UpdateSql4PrimaryKeyBuilder;
 import com.sooncode.soonjdbc.sql.condition.Conditions;
 import com.sooncode.soonjdbc.util.T2E;
 
@@ -57,8 +62,9 @@ public class JdbcDao {
 
 	public <T> long save(final T javaBean) {
 
-		DbBean db = jdbc.getDbBean(javaBean);
-		Parameter parameter = ComSQL.insert(db);
+		DbBean dbBean = jdbc.getDbBean(javaBean);
+		InsertSqlBuilder isb = new InsertSqlBuilder();
+		Parameter parameter = isb.getParameter(dbBean);
 		return jdbc.update(parameter);
 
 	}
@@ -84,7 +90,8 @@ public class JdbcDao {
 		if (pkValue == null) {
 			throw new PrimaryKeyValueInexistence("primary key value inexistence ! (主键值不存在!)");
 		}
-		Parameter parameter = ComSQL.update(dbBean);
+		SqlBuilder sqlBuilder = new UpdateSql4PrimaryKeyBuilder();
+		Parameter parameter = sqlBuilder.getParameter(dbBean);
 		return jdbc.update(parameter);
 
 	}
@@ -107,12 +114,8 @@ public class JdbcDao {
 		if (pkValue == null) {
 			throw new PrimaryKeyValueInexistence("primary key value inexistence ! (主键值不存在!)");
 		}
-		String sql = SQL_KEY.DELETE + dbBean.getTableName() + SQL_KEY.WHERE + T2E.toColumn(dbBean.getPrimaryField()) + SQL_KEY.EQ + SQL_KEY.QUESTION;
-		Map<Integer, Object> map = new HashMap<Integer, Object>();
-		map.put(1, pkValue);
-		Parameter parameter = new Parameter();
-		parameter.setReadySql(sql);
-		parameter.setParams(map);
+		SqlBuilder sqlBuilder = new DeletetSqlBuilder();
+		Parameter parameter = sqlBuilder.getParameter(dbBean);
 		return jdbc.update(parameter);
 
 	}
@@ -201,8 +204,11 @@ public class JdbcDao {
 	}
 
 	public <T> List<T> gets(T javaBean) {
-		Conditions c = new Conditions(javaBean);
-		return gets(c);
+		DbBean dbBean = jdbc.getDbBean(javaBean);
+		SqlBuilder sqlBuilder = new SelectSqlBuilder();
+		List<Map<String, Object>> list = jdbc.gets(sqlBuilder.getParameter(dbBean));
+		List<T> entitys = Entity.findEntity(list, javaBean.getClass());
+		return entitys;
 	}
 
 	public <T> T get(T javaBean) {
@@ -223,8 +229,6 @@ public class JdbcDao {
 		}
 		return t;
 	}
-
-	
 
 	public Page getPage(long pageNum, long pageSize, Object leftBean, Object... otherBean) {
 		Conditions conditions = new Conditions(leftBean, otherBean);
@@ -292,7 +296,7 @@ public class JdbcDao {
 		TableType tableType = TableRelation.getTableType();
 		return tableType.getPage(pageNum, pageSize, conditions, jdbc);
 	}
-	
+
 	public <E> List<PolymerizationModel<E>> polymerization(Polymerization Polymerization, Conditions conditions, String key, String... fields) {
 
 		String column = new String();

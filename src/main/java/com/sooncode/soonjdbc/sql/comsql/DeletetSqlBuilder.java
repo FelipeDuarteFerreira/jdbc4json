@@ -3,22 +3,21 @@ package com.sooncode.soonjdbc.sql.comsql;
 import com.sooncode.soonjdbc.bean.DbBean;
 import com.sooncode.soonjdbc.sql.Parameter;
 import com.sooncode.soonjdbc.sql.comsql.replace.PrimaryKeyReplace;
-import com.sooncode.soonjdbc.sql.comsql.replace.SetParametersReplace;
 import com.sooncode.soonjdbc.sql.comsql.replace.SqlReplaceChain;
 import com.sooncode.soonjdbc.sql.comsql.replace.TableNameReplace;
 
-public class UpdateSql4PrimaryKeyBuilder implements SqlBuilder {
-	public static final String UPDATE_SQL = "UPDATE [TABLE] SET [SET_PARAMETERS] WHERE [CONDITION]";
+public class DeletetSqlBuilder implements SqlBuilder {
+	public static final String DELETE_SQL = "DELETE FROM [TABLE] WHERE [CONDITION]";
 	@Override
 	public Parameter getParameter(DbBean dbBean) {
 		Columns columns = new Columns(dbBean);
 		SqlReplaceChain src = new SqlReplaceChain();
-		src.addSqlReplace(new TableNameReplace()).addSqlReplace(new SetParametersReplace()).addSqlReplace(new PrimaryKeyReplace());
-
-		Parameter p = new Parameter();
-		p.setReadySql(UPDATE_SQL);
-		p = src.getReplacedSql(p, columns);
-		return p;
+		src.addSqlReplace(new TableNameReplace())
+		   .addSqlReplace(new PrimaryKeyReplace());
+		Parameter parameter = new Parameter(); 
+		parameter.setReadySql(DELETE_SQL);
+		parameter = src.getReplacedSql(parameter, columns);
+		return parameter;
 	}
 
 }

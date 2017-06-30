@@ -95,9 +95,9 @@ public class JdbcDao_Test {
 	@Test
 	public void update() {
 		SystemUser u = new SystemUser();
-		u.setId(11);
+		u.setId(642);
 		u.setAge(100);
-		u.setName("hechen");
+		u.setName("HE CHEN ");
 		u.setSex("1");
 		dao.update(u);
 	}
@@ -144,7 +144,7 @@ public class JdbcDao_Test {
 	@Test
 	public void delete() {
 		SystemUser u = new SystemUser();
-		u.setId(9);
+		u.setId(2);
 		u.setAddress("hsdk");
 		u.setAge(34);
 		dao.delete(u);
@@ -231,7 +231,7 @@ public class JdbcDao_Test {
 	@Test
 	public void get2() {
 		SystemUser u = new SystemUser();
-		u.setSex("0");
+		u.setSex("1");
 		List<SystemUser> list = dao.gets(u);
 		logger.info(list);
 

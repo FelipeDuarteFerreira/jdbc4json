@@ -21,7 +21,7 @@ public class Entity {
 	 * @param list
 	 * @return
 	 */
-	public static <T> List<T> findEntity(List<Map<String, Object>> list, Class<T> clas) {
+	public static <T> List<T> findEntity(List<Map<String, Object>> list, Class<?> clas) {
 		if (list == null || list.size() == 0) {
 			return new LinkedList<>();
 		}
@@ -45,7 +45,7 @@ public class Entity {
 	 * @return
 	 */
 
-	public static <T> T findEntity(Map<String, Object> map, Class<T> clas) {
+	public static <T> T findEntity(Map<String, Object> map, Class<?> clas) {
 		String tableName = T2E.toColumn(clas.getSimpleName());
 
 		RObject<T> rObj = new RObject<>(clas);
