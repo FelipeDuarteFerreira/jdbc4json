@@ -5,6 +5,6 @@ import com.sooncode.soonjdbc.sql.Parameter;
 
 public interface SqlBuilder {
 
-	public Parameter getPreparedSql (DbBean dbBean);
+	public Parameter getParameter (DbBean dbBean);
 	
 }

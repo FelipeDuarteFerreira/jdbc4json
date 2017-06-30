@@ -9,11 +9,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.sooncode.soonjdbc.Jdbc;
 import com.sooncode.soonjdbc.bean.DbBean;
+import com.sooncode.soonjdbc.bean.DbBeanCache;
 import com.sooncode.soonjdbc.entity.SystemUser;
 import com.sooncode.soonjdbc.sql.Parameter;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/applicationContext.xml")
-public class InsertSqlBuilder__Tset {
+public class UpdateSqlBuilder__Tset {
 	private static Logger logger = Logger.getLogger("InsertSqlBuilder__Tset");
 	
 	@Autowired
@@ -22,11 +23,12 @@ public class InsertSqlBuilder__Tset {
 	@Test
 	public void getPreparedSql(){
 		SystemUser user = new SystemUser();
+		user.setId(1);
 		user.setName("TOM");
 		user.setAge(23);
-		DbBean db = new DbBean(user);
-		InsertSqlBuilder isb = new InsertSqlBuilder();
-		Parameter ps = isb.getParameter(db);
+		DbBean db = jdbc.getDbBean(user);
+		UpdateSql4PrimaryKeyBuilder usb = new UpdateSql4PrimaryKeyBuilder();
+		Parameter ps = usb.getParameter(db);
 		long n = jdbc.update(ps);
 		logger.info("----------------------"+n);
 		 

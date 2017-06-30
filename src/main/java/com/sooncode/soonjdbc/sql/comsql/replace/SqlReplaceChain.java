@@ -3,11 +3,12 @@ package com.sooncode.soonjdbc.sql.comsql.replace;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sooncode.soonjdbc.sql.Parameter;
 import com.sooncode.soonjdbc.sql.comsql.Columns;
 
 public class SqlReplaceChain implements SqlReplaceChainI{
 
-	private static List<SqlReplace> sqlReplaces = new ArrayList<>();
+	private List<SqlReplace> sqlReplaces = new ArrayList<>();
 	 
 	 
 	private int index = 0;
@@ -21,20 +22,19 @@ public class SqlReplaceChain implements SqlReplaceChainI{
 	
 	
 	@Override
-	public  String getReplacedSql(String sql, Columns columns) {
+	public  Parameter getReplacedSql(Parameter protogenesisParameter, Columns columns) {
 		 
 		
-		if(index >= sqlReplaces.size()){
-			return sql;
+		if(index == sqlReplaces.size()){
+			return protogenesisParameter;
 		}
 		
 		SqlReplace sr = sqlReplaces.get(index);
 		index ++;
-		return sr.getReplacedSql(sql, columns, this);
+		return sr.getParameter(protogenesisParameter, columns, this);
 	}
 	
 	
-	 
  
 	 
 }

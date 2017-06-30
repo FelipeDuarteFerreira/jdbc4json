@@ -29,8 +29,8 @@ public class ParaInject {
 	 * 
 	 * @param templateSql SQL语句模板
 	 *            
-	 * @param args
-	 *            注入sql中的对象集 (可选) 或者一个Map
+	 * @param args 注入sql中的对象集 (可选) 或者一个Map
+	 *            
 	 * @return 参数模型 
 	 * 
 	 */

@@ -1,4 +1,4 @@
-package com.sooncode.soonjdbc.sql;
+package com.sooncode.soonjdbc.sql.comsql;
 
 import java.util.LinkedList;
 import java.util.List;
