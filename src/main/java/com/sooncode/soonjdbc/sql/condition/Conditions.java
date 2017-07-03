@@ -235,6 +235,14 @@ public class Conditions {
 		if (!this.groupBy.equals("")) {
 			sql = sql + this.groupBy;
 		}
+		 
+		int startIndex = sql.indexOf(SQL_KEY.AND);
+		if(startIndex != -1) {
+			sql = sql.substring(SQL_KEY.AND.length(), sql.length());
+		}else {
+			sql = SQL_KEY.ONE_EQ_ONE + sql;
+		}
+		sql = SQL_KEY.WHERE + sql;
 		p.setReadySql(sql);
 		p.setParams(para);
 		return p;

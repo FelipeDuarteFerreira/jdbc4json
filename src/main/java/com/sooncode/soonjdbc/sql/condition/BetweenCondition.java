@@ -14,7 +14,7 @@ public class BetweenCondition extends Condition {
 	public SqlAndParameter getSqlSlice() {
 		 String sqlSlice = new String();
 		
-		if(this.other!=null){
+		if(this.other != null){
 			  DATE_FORMAT df = (DATE_FORMAT) this.other;
 			  sqlSlice = SQL_KEY.AND +  DateFormatCondition.getDateFormatString(T2E.toColumn(this.key), df)   + this.conditionSign +  DateFormatCondition.getDateFormatString(SQL_KEY.QUESTION, df)   + SQL_KEY.AND +  DateFormatCondition.getDateFormatString(SQL_KEY.QUESTION, df)  + STRING.SPACING;
 		}else{

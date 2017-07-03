@@ -1,16 +1,14 @@
 package com.sooncode.soonjdbc.dao;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import com.sooncode.soonjdbc.Entity;
 import com.sooncode.soonjdbc.Jdbc;
 import com.sooncode.soonjdbc.bean.DbBean;
-import com.sooncode.soonjdbc.constant.SQL_KEY;
+import com.sooncode.soonjdbc.constant.STRING;
 import com.sooncode.soonjdbc.dao.polymerization.Polymerization;
 import com.sooncode.soonjdbc.dao.polymerization.PolymerizationModel;
 import com.sooncode.soonjdbc.dao.tabletype.TableRelation;
@@ -21,13 +19,15 @@ import com.sooncode.soonjdbc.page.One2Many;
 import com.sooncode.soonjdbc.page.One2One;
 import com.sooncode.soonjdbc.page.Page;
 import com.sooncode.soonjdbc.reflect.RObject;
-import com.sooncode.soonjdbc.sql.ComSQL;
 import com.sooncode.soonjdbc.sql.Parameter;
 import com.sooncode.soonjdbc.sql.comsql.DeletetSqlBuilder;
+import com.sooncode.soonjdbc.sql.comsql.DeletetsSqlBuilder;
 import com.sooncode.soonjdbc.sql.comsql.InsertSqlBuilder;
+import com.sooncode.soonjdbc.sql.comsql.PolymerizationSqlBuilder;
 import com.sooncode.soonjdbc.sql.comsql.SelectSqlBuilder;
 import com.sooncode.soonjdbc.sql.comsql.SqlBuilder;
 import com.sooncode.soonjdbc.sql.comsql.UpdateSql4PrimaryKeyBuilder;
+import com.sooncode.soonjdbc.sql.comsql.UpdatesBuilder;
 import com.sooncode.soonjdbc.sql.condition.Conditions;
 import com.sooncode.soonjdbc.util.T2E;
 
@@ -74,8 +74,9 @@ public class JdbcDao {
 		String sql = new String();
 		List<Map<Integer, Object>> parameters = new ArrayList<>();
 		for (T javaBean : javaBeans) {
-			DbBean db = jdbc.getDbBean(javaBean);
-			Parameter parameter = ComSQL.batchInsert(db);
+			DbBean dbBean = jdbc.getDbBean(javaBean);
+			InsertSqlBuilder isb = new InsertSqlBuilder();
+			Parameter parameter = isb.getParameter(dbBean);
 			sql = parameter.getReadySql();
 			parameters.add(parameter.getParams());
 		}
@@ -98,9 +99,11 @@ public class JdbcDao {
 
 	public <T> long updates(final T model, final Conditions conditions) {
 		DbBean modelDbBean = jdbc.getDbBean(model);
-		Parameter parameter = ComSQL.updates(modelDbBean);
+
+		SqlBuilder sqlBuilder = new UpdatesBuilder();
+		Parameter parameter = sqlBuilder.getParameter(modelDbBean);// ComSQL.updates(modelDbBean);
 		Parameter wherePara = conditions.getWhereParameter();
-		String sql = parameter.getReadySql() + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + wherePara.getReadySql();
+		String sql = parameter.getReadySql() + wherePara.getReadySql();
 		parameter.addParameter(wherePara.getParams());
 		parameter.setReadySql(sql);
 		return jdbc.update(parameter);
@@ -142,9 +145,8 @@ public class JdbcDao {
 
 		DbBean dbBean = jdbc.getDbBean(conditions.getLeftBean().getJavaBean());
 		Parameter where = conditions.getWhereParameter();
-		Parameter parameter = new Parameter();
-		String tableName = T2E.toTableName(dbBean.getBeanName());
-		String sql = SQL_KEY.DELETE + tableName + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + where.getReadySql();
+		Parameter parameter = new DeletetsSqlBuilder().getParameter(dbBean);
+		String sql = parameter.getReadySql()+ where.getReadySql();
 		parameter.setReadySql(sql);
 		parameter.setParams(where.getParams());
 		return jdbc.update(parameter);
@@ -164,12 +166,14 @@ public class JdbcDao {
 			List<T> list = gets(tJavaBean);
 			boolean haveOneJavaBean = (list.size() == 1);
 			if (haveOneJavaBean) {
-				p = ComSQL.update(dbBean);
+				SqlBuilder sqlBuilder = new UpdateSql4PrimaryKeyBuilder();
+				p = sqlBuilder.getParameter(dbBean);
 			}
 		}
 
 		if (p == null) {
-			p = ComSQL.insert(dbBean);
+			SqlBuilder sqlBuilder = new InsertSqlBuilder();
+			p = sqlBuilder.getParameter(dbBean);
 		}
 		return jdbc.update(p);
 
@@ -180,54 +184,30 @@ public class JdbcDao {
 		String className = conditions.getLeftBean().getClassName();
 		RObject<?> rObj = new RObject<>(className);
 		DbBean dbBean = jdbc.getDbBean(rObj.getObject());
-		String columns = ComSQL.columns4One(dbBean);
 		Parameter where = conditions.getWhereParameter();
-		Parameter parameter = new Parameter();
-		String tableName = T2E.toTableName(dbBean.getBeanName());
-		String sql = SQL_KEY.SELECT + columns + SQL_KEY.FROM + tableName + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + where.getReadySql();
+		Parameter parameter = new SelectSqlBuilder().getParameter(dbBean);
+		String sql = parameter.getReadySql() + where.getReadySql();
 		parameter.setReadySql(sql);
 		parameter.setParams(where.getParams());
 		List<Map<String, Object>> list = jdbc.gets(parameter);
-
-		List<T> tes = new LinkedList<>();
-		for (Map<String, Object> map : list) {
-			RObject<T> obj = new RObject<>(className);
-			for (Entry<String, Object> en : map.entrySet()) {
-				String fieldName = en.getKey();
-				Object value = en.getValue();
-				obj.invokeSetMethod(fieldName, value);
-			}
-			tes.add((T) obj.getObject());
-		}
+		List<T> tes = Entity.findEntity(list, rObj.getObject().getClass());
 		return tes;
 
 	}
 
 	public <T> List<T> gets(T javaBean) {
-		DbBean dbBean = jdbc.getDbBean(javaBean);
-		SqlBuilder sqlBuilder = new SelectSqlBuilder();
-		List<Map<String, Object>> list = jdbc.gets(sqlBuilder.getParameter(dbBean));
-		List<T> entitys = Entity.findEntity(list, javaBean.getClass());
-		return entitys;
+		Conditions conditions = new Conditions(javaBean);
+		return this.get(conditions);
 	}
 
 	public <T> T get(T javaBean) {
-		Conditions c = new Conditions(javaBean);
-		List<T> list = gets(c);
-		T t = null;
-		if (list.size() == 1) {
-			t = list.get(0);
-		}
-		return t;
+		List<T> list = this.gets(javaBean);
+		return (list.size() == 1) ? list.get(0) : null;
 	}
 
 	public <T> T get(Conditions conditions) {
 		List<T> list = gets(conditions);
-		T t = null;
-		if (list.size() == 1) {
-			t = list.get(0);
-		}
-		return t;
+		return (list.size() == 1) ? list.get(0) : null;
 	}
 
 	public Page getPage(long pageNum, long pageSize, Object leftBean, Object... otherBean) {
@@ -316,9 +296,8 @@ public class JdbcDao {
 			KEY = key;
 		}
 
-		String sql = SQL_KEY.SELECT + Polymerization.getKey() + SQL_KEY.L_BRACKET + KEY + SQL_KEY.R_BRACKET + SQL_KEY.AS + SQL_KEY.SIZE + column + SQL_KEY.FROM + tableName + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + conditions.getWhereParameter().getReadySql();
-		Parameter parameter = new Parameter();
-		parameter.setReadySql(sql);
+		Parameter parameter = new PolymerizationSqlBuilder().getParameter(tableName, Polymerization, KEY, column);
+		parameter.setReadySql(parameter.getReadySql() + conditions.getWhereParameter().getReadySql());
 		parameter.setParams(conditions.getWhereParameter().getParams());
 		List<Map<String, Object>> list = jdbc.gets(parameter);
 		List<PolymerizationModel<E>> polymerizationModels = new LinkedList<>();
@@ -346,9 +325,8 @@ public class JdbcDao {
 		} else {
 			KEY = key;
 		}
-		String sql = SQL_KEY.SELECT + Polymerization.getKey() + SQL_KEY.L_BRACKET + KEY + SQL_KEY.R_BRACKET + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + tableName + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + conditions.getWhereParameter().getReadySql();
-		Parameter parameter = new Parameter();
-		parameter.setReadySql(sql);
+		Parameter parameter = new PolymerizationSqlBuilder().getParameter(tableName, Polymerization, KEY, STRING.NULL_STR);
+		parameter.setReadySql(parameter.getReadySql() + conditions.getWhereParameter().getReadySql());
 		parameter.setParams(conditions.getWhereParameter().getParams());
 		Map<String, Object> map = jdbc.get(parameter);
 		@SuppressWarnings("unchecked")

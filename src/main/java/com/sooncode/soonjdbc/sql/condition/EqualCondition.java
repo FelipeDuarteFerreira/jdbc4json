@@ -1,14 +1,17 @@
 package com.sooncode.soonjdbc.sql.condition;
 
-import com.sooncode.soonjdbc.constant.SQL_KEY;
-import com.sooncode.soonjdbc.constant.STRING;
 import com.sooncode.soonjdbc.util.T2E;
 
 public class EqualCondition extends Condition {
 
+	
+	private static final String SQL_SLICE = " AND [COLUMN] [CONDITION_SIGN] ? ";
+	
 	@Override
 	public SqlAndParameter getSqlSlice() {
-		String sqlSlice = SQL_KEY.AND + T2E.toColumn(this.key) + STRING.SPACING  + this.conditionSign + SQL_KEY.QUESTION;
+		String sqlSlice = SQL_SLICE
+				.replace("[COLUMN]", T2E.toColumn(this.getKey()))
+				.replace("[CONDITION_SIGN]", this.conditionSign);
 		SqlAndParameter sap = new SqlAndParameter();
 		sap.setSqlSlice(sqlSlice);
 		sap.setValue(this.val);

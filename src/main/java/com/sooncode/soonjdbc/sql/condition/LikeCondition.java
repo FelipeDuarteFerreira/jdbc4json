@@ -7,26 +7,28 @@ import com.sooncode.soonjdbc.util.T2E;
 
 public class LikeCondition extends Condition {
 
+	private static final String SQL_SLICE = " AND [COLUMN] LIKE ?";
+
 	@Override
 	public SqlAndParameter getSqlSlice() {
 		String sqlSlice = new String();
 		String key = this.getKey();
 		Object val = this.getVal();
 		SqlAndParameter sap = new SqlAndParameter();
-		if(val == null){
+		if (val == null) {
 			sap.setSqlSlice(sqlSlice);
 			sap.setValue(null);
 			return sap;
 		}
 		String conditionSign = this.conditionSign;
-		sqlSlice = sqlSlice + SQL_KEY.AND + T2E.toColumn(key) + STRING.SPACING + SQL_KEY.LIKE + STRING.SPACING + STRING.QUESTION;// "
-		Object value ;
+		sqlSlice = SQL_SLICE.replace("[COLUMN]", T2E.toColumn(key));
+		Object value;
 		if (conditionSign.equals(SQL_KEY.LIKE)) {
-			value =  STRING.PERCENT + val + STRING.PERCENT ;
+			value = STRING.PERCENT + val + STRING.PERCENT;
 		} else if (conditionSign.equals(LikeSign.L_LIKE.toString())) {
-			value =   val + STRING.PERCENT ;
+			value = val + STRING.PERCENT;
 		} else {
-			value =  STRING.PERCENT + val ;
+			value = STRING.PERCENT + val;
 		}
 		sap.setSqlSlice(sqlSlice);
 		sap.setValue(value);

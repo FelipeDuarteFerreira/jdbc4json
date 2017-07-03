@@ -118,5 +118,9 @@ public class SystemUser implements Serializable{
 	 public void setType(String type) {
 	 	 this.type = type;
 	 }
+	@Override
+	public String toString() {
+		return "SystemUser [id=" + id + ", name=" + name + ", age=" + age + ", numer=" + numer + ", updateDate=" + updateDate + ", sex=" + sex + ", address=" + address + ", doog=" + doog + ", createDate=" + createDate + ", type=" + type + "]";
+	}
 
 }

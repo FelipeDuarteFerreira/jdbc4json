@@ -26,7 +26,7 @@ public class Parameter_Test {
 		map.put(3,28);
 		p.setParams(map);
 	
-		logger.info(p.getSql());
+		 
 	}
 	
 	@Test

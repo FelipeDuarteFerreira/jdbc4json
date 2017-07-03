@@ -26,7 +26,7 @@ public class Cond_Test{
 		Or o1 = new Or(a1, c1).or(c4);
 		Parameter p = o1.getParameter();
 		logger.info(p.getReadySql());
-		logger.info(p.getSql());
+		 
 		logger.info(p.getParams());
 		
 		

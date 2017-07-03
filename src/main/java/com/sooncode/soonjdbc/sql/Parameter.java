@@ -3,7 +3,6 @@ package com.sooncode.soonjdbc.sql;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sooncode.soonjdbc.constant.SQL_KEY;
 import com.sooncode.soonjdbc.constant.STRING;
 import com.sooncode.soonjdbc.exception.SqlException;
 
@@ -43,12 +42,10 @@ public class Parameter {
 	
 	
 	public void addParameter(Map<Integer,Object> values){
-		
 		for (int i = 1; i <= values.size() ;i++) {
 		 Object value = values.get(i);
 		 this.params.put(params.size()+1, value);
 		}
-		
 	}
 	
 	
@@ -69,57 +66,12 @@ public class Parameter {
 		this.params = params;
 	}
 
-	/**
-	 * 获取 格式之后的SQL语句
-	 * @return
-	 */
-	public String getFormatSql() {
-		String sql = new String ( this.getReadySql());
-		return getFormatSql(sql);
-	}
-	
-	
-	/**
-	 * 获取 格式之后的SQL语句
-	 * @return
-	 */
-	public static String getFormatSql(String readySql) {
-		String sql = new String ( readySql);
-		sql = sql .replace(SQL_KEY.SELECT, STRING.R_T+SQL_KEY.SELECT+STRING.R_T);
-		sql = sql .replace(SQL_KEY.INSERT, STRING.R_T+SQL_KEY.INSERT);
-		sql = sql .replace(SQL_KEY.SET, STRING.R_T+"SET ");
-		sql = sql .replace(SQL_KEY.UPDATE, STRING.R_T+SQL_KEY.UPDATE);
-		sql = sql .replace(SQL_KEY.DELETE, STRING.R_T+SQL_KEY.DELETE+STRING.R_T);
-		sql = sql .replace(SQL_KEY.COMMA, SQL_KEY.COMMA+STRING.R_T);
-		sql = sql .replace(SQL_KEY.FROM,STRING.R_T+ "FROM ");
-		sql = sql .replace(SQL_KEY.WHERE, STRING.R_T+"WHERE ");
-		sql = sql .replace(SQL_KEY.AND, STRING.R_T+"AND ");
-		sql = sql .replace(SQL_KEY.L_BRACKET,STRING.R_T+ SQL_KEY.L_BRACKET);
-		sql = sql .replace(SQL_KEY.VALUES,STRING.R_T+ "VALUES");
-		sql = sql .replace(STRING.SPACING+STRING.SPACING,STRING.SPACING);
-		return sql ;
-	}
 	 
-	/**
-	 * 获取参数注入后的SQL语句。</br>
-	 * 注意：该SQL不一定能直接远行！
-	 * @return 参数注入后的SQL语句
-	 */
-	public String getSql() {
-		StringBuilder sql = new StringBuilder();
-		sql.append(this.readySql);
-		if (this.params.size() > 0) {
-
-			for (int i = 1; i <= this.params.size(); i++) {
-				Object value = this.params.get(i);
-				int n = sql.indexOf(STRING.QUESTION);
-				sql.replace(n, n + 1, STRING.S_QUOTES  + value.toString() +  STRING.S_QUOTES );
-			}
-		} else {
-			return readySql;
-		}
-		return sql.toString();
-	}
+	
+	
+	 
+	 
+	 
 	/**
 	 * 参数模型是否没有异常</br>
 	 * 当预编译SQL为空（null），或 为空字符串时，为存在异常；当预编译中的参数大于参数Map中的个数时，存在异常。
@@ -138,7 +90,6 @@ public class Parameter {
 				sql.replace(n, n + 1, STRING.AT); 
 				size ++;
 			}
-			
 			if(this.params.size()>=size){
 				return true;
 			}else{
@@ -149,10 +100,6 @@ public class Parameter {
 				}
 				 return false;
 			}
-			 
 		}
-		
-		
 	}
-
 }

@@ -120,7 +120,7 @@ public class JdbcDao_Test {
 		SystemUser u = new SystemUser();
 		u.setId(11809);
 		u.setAge(34);
-		u.setName("ioouuy");
+		u.setName("IOOUUY");
 		u.setSex("1");
 		dao.saveOrUpdate(u);
 	}
@@ -214,7 +214,7 @@ public class JdbcDao_Test {
 		c.setCondition("name", LikeSign.LIKE , "hello jdbc");
 		c.setCondition("sex", EqualSign.NOT_EQ , "0");
 	    //c.setCondition( "createDate" ,EqualSign.LT,new Date(), DATE_FORMAT.yyyy_MM_dd);
-	//	c.setCondition( "createDate" ,EqualSign.LT,"2017-06-13", DATE_FORMAT.yyyy_MM_dd);
+	    //c.setCondition( "createDate" ,EqualSign.LT,"2017-06-13", DATE_FORMAT.yyyy_MM_dd);
 		c.setCondition( "createDate" ,BetweenSign.NOT_BETWEEN_AND,new Date(),new Date(), DATE_FORMAT.yyyy_MM_dd);
 	    c.setCondition("age",BetweenSign.NOT_BETWEEN_AND, 10, 100);
 		c.setCondition("type", InSign.IN, new String[]{"AA","BB"});
@@ -235,6 +235,17 @@ public class JdbcDao_Test {
 		List<SystemUser> list = dao.gets(u);
 		logger.info(list);
 
+	}
+	
+	
+	@Test
+	public void gets() {
+		SystemUser u = new SystemUser();
+		u.setSex("1");
+		Conditions c = new Conditions(u);
+		List<SystemUser> list = dao.gets(c);
+		logger.info(list);
+		
 	}
 
 	 
