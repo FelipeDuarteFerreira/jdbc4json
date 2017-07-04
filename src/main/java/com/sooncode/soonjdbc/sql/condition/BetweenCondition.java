@@ -22,11 +22,11 @@ public class BetweenCondition extends Condition {
 		}
 		
 		List<Object> values = new LinkedList<>();
-		values.add(this.values[0]);
-		values.add(this.values[1]);
+		values.add(this.values.get(0));
+		values.add(this.values.get(1));
 		SqlAndParameter sap = new SqlAndParameter();
 		sap.setSqlSlice(sqlSlice);
-		sap.setValues(values);
+		sap.addValues(values);
 		return sap;
 	}
 

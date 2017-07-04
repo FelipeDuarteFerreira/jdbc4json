@@ -13,11 +13,11 @@ public class LikeCondition extends Condition {
 	public SqlAndParameter getSqlSlice() {
 		String sqlSlice = new String();
 		String key = this.getKey();
-		Object val = this.getVal();
+		Object val = this.getValues().get(0);
 		SqlAndParameter sap = new SqlAndParameter();
 		if (val == null) {
 			sap.setSqlSlice(sqlSlice);
-			sap.setValue(null);
+			sap.addValue(null);
 			return sap;
 		}
 		String conditionSign = this.conditionSign;
@@ -31,7 +31,7 @@ public class LikeCondition extends Condition {
 			value = STRING.PERCENT + val;
 		}
 		sap.setSqlSlice(sqlSlice);
-		sap.setValue(value);
+		sap.addValue(value);
 		return sap;
 	}
 

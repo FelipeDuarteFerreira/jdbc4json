@@ -1,29 +1,31 @@
 package com.sooncode.soonjdbc.sql.condition;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class SqlAndParameter {
-private String SqlSlice;
-private Object value;
-private List<Object> values;
-public String getSqlSlice() {
-	return SqlSlice;
-}
-public void setSqlSlice(String sqlSlice) {
-	SqlSlice = sqlSlice;
-}
-public Object getValue() {
-	return value;
-}
-public void setValue(Object value) {
-	this.value = value;
-}
-public List<Object> getValues() {
-	return values;
-}
-public void setValues(List<Object> values) {
-	this.values = values;
-}
+	private String sqlSlice;
 
+	private List<Object> values = new LinkedList<Object>();
+
+	public String getSqlSlice() {
+		return this.sqlSlice;
+	}
+
+	public void setSqlSlice(String sqlSlice) {
+		this.sqlSlice = sqlSlice;
+	}
+
+	public List<Object> getValues() {
+		return values;
+	}
+
+	public void addValue(Object value) {
+		this.values.add(value);
+	}
+
+	public void addValues(List<Object> values) {
+		this.values.addAll(values);
+	}
 
 }

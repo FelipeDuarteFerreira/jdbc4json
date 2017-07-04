@@ -14,7 +14,7 @@ public class DateFormatCondition extends Condition {
 		sql = sql + SQL_KEY.AND + getDateFormatString(T2E.toColumn(this.getKey()), df) + this.getConditionSign() + getDateFormatString("?", df);
 		SqlAndParameter sap = new SqlAndParameter() ;
 		sap.setSqlSlice(sql);
-		sap.setValue(this.getVal());
+		sap.addValues(this.getValues());
 		return sap;
 	}
 	

@@ -5,7 +5,7 @@ import com.sooncode.soonjdbc.sql.Parameter;
 
 public class PolymerizationSqlBuilder  {
 	
-	public static final String SELECT_POLYMERIZATION_SQL = "SELECT [POLYMERIZATION_KEY]([KEY]) AS SIZE [COLUMNS] FROM [TABLE]";
+	public static final String SELECT_POLYMERIZATION_SQL = "SELECT [POLYMERIZATION_KEY]([KEY]) AS SIZE [COLUMNS] FROM [TABLE] WHERE ";
 
  
 	public Parameter getParameter(String tableName, Polymerization polymerization ,String key,String columns) {

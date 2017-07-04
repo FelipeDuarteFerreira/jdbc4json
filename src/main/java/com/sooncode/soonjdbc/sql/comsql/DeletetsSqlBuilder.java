@@ -6,7 +6,7 @@ import com.sooncode.soonjdbc.sql.comsql.replace.SqlReplaceChain;
 import com.sooncode.soonjdbc.sql.comsql.replace.TableNameReplace;
 
 public class DeletetsSqlBuilder implements SqlBuilder {
-	public static final String DELETE_SQL = "DELETE FROM [TABLE]";
+	public static final String DELETE_SQL = "DELETE FROM [TABLE] WHERE ";
 	@Override
 	public Parameter getParameter(DbBean dbBean) {
 		Columns columns = new Columns(dbBean);

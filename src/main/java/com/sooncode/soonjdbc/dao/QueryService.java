@@ -140,13 +140,13 @@ public class QueryService {
 		String columns = ComSQL.columns4One(leftDbBean);
 		String where = conditions.getWhereParameter().getReadySql() + getLimit(pageNum, pageSize);
 		String sizeWhere = conditions.getWhereParameter().getReadySql();
-		String sql = SQL_KEY.SELECT + columns + SQL_KEY.FROM + leftTableName + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + where;
+		String sql = SQL_KEY.SELECT + columns + SQL_KEY.FROM + leftTableName + where;
 		Parameter p = conditions.getWhereParameter();
 		p.setReadySql(sql);
 		List<Map<String, Object>> list = jdbc.gets(p);
 		List<L> result = findBean(list, leftDbBean);
 
-		String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + leftTableName + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + sizeWhere;
+		String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + leftTableName  + sizeWhere;
 		Parameter sizeP = conditions.getWhereParameter();
 		sizeP.setReadySql(sizeSql);
 		Map<String, Object> map = jdbc.get(sizeP);

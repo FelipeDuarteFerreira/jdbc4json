@@ -14,7 +14,7 @@ public class EqualCondition extends Condition {
 				.replace("[CONDITION_SIGN]", this.conditionSign);
 		SqlAndParameter sap = new SqlAndParameter();
 		sap.setSqlSlice(sqlSlice);
-		sap.setValue(this.val);
+		sap.addValue(this.values.get(0));
 		return sap;
 	}
 

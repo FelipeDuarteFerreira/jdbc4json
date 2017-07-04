@@ -1,6 +1,7 @@
 package com.sooncode.soonjdbc.sql;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.sooncode.soonjdbc.constant.STRING;
@@ -37,14 +38,24 @@ public class Parameter {
 	 * @param value
 	 */
 	public void addParameter(Object value){
-			this.params.put(params.size()+1, value);
+		    if(value != null) {
+		    	this.params.put(params.size()+1, value);
+		    }
+	}
+	
+	public void addParameters(List<Object> values){
+		if(values != null) {
+			for (Object value : values) {
+				this.addParameter(value);
+			}
+		}
 	}
 	
 	
-	public void addParameter(Map<Integer,Object> values){
+	public void addParameters(Map<Integer,Object> values){
 		for (int i = 1; i <= values.size() ;i++) {
 		 Object value = values.get(i);
-		 this.params.put(params.size()+1, value);
+		 addParameter(value);
 		}
 	}
 	

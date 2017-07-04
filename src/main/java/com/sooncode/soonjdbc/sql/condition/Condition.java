@@ -1,51 +1,37 @@
 package com.sooncode.soonjdbc.sql.condition;
 
-import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * 查询条件 最小单位
- * @author pc
+ * 
+ * @author hechenwe@gmail.com
  *
  */
- public abstract class  Condition {
-    /**
-     * 字段(属性) 
-     */
-	protected String key ;
-	
+public abstract class Condition {
 	/**
-	 * 条件对应的值
+	 * 字段(属性)
 	 */
-	protected Object val;
-	/**
-	 *  条件对应的值(数组)
-	 */
-	protected Object [] values;
-	
+	protected String key;
+
+	protected List<Object> values = new LinkedList<Object>();
+
 	/**
 	 * 条件使用的符号
 	 */
 	protected String conditionSign;
- 
-	
+
 	protected Object other;
-	
-	
-	
+
+	public abstract SqlAndParameter getSqlSlice();
+
 	public String getKey() {
 		return key;
 	}
 
 	public void setKey(String key) {
 		this.key = key;
-	}
-
-	public Object getVal() {
-		return val;
-	}
-
-	public void setVal(Object val) {
-		this.val = val;
 	}
 
 	public String getConditionSign() {
@@ -57,30 +43,20 @@ import java.util.Arrays;
 	}
 
 	public Condition() {
-		 
 	}
-	public Condition(String key, Object val, String conditionSign) {
+
+	public Condition(String key, Object value, String conditionSign) {
 		super();
 		this.key = key;
-		this.val = val;
-		this.conditionSign = conditionSign;
-	}
-	public Condition(String key, Object[] values, String conditionSign) {
-		super();
-		this.key = key;
-		this.values = values;
+		this.values.add(value);
 		this.conditionSign = conditionSign;
 	}
 
-	 
-	 
-
-	public Object[] getValues() {
-		return values;
-	}
-
-	public void setValues(Object[] values) {
-		this.values = values;
+	public Condition(String key, List<Object> values, String conditionSign) {
+		super();
+		this.key = key;
+		this.values.addAll(values);
+		this.conditionSign = conditionSign;
 	}
 
 	public Object getOther() {
@@ -91,13 +67,22 @@ import java.util.Arrays;
 		this.other = other;
 	}
 
-	 
-	public abstract SqlAndParameter getSqlSlice () ;
-
-	@Override
-	public String toString() {
-		return "Condition [key=" + key + ", val=" + val + ", values=" + Arrays.toString(values) + ", conditionSign=" + conditionSign + ", other=" + other + "]";
+	public void addValue(Object value) {
+		if (value != null) {
+			this.values.add(value);
+		}
 	}
-	
-	
+
+	public void addValues(List<Object> values) {
+		if (values != null) {
+			for (Object value : values) {
+				this.addValue(value);
+			}
+		}
+	}
+
+	public List<Object> getValues() {
+		return values;
+	}
+
 }

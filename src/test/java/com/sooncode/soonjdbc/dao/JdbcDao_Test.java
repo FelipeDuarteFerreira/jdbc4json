@@ -211,15 +211,15 @@ public class JdbcDao_Test {
 		SystemUser u = new SystemUser();
 		//u.setAge(23);
 		Conditions c = new Conditions(u);
-		c.setCondition("name", LikeSign.LIKE , "hello jdbc");
-		c.setCondition("sex", EqualSign.NOT_EQ , "0");
-	    //c.setCondition( "createDate" ,EqualSign.LT,new Date(), DATE_FORMAT.yyyy_MM_dd);
+		//c.setCondition("name", LikeSign.LIKE , "hello jdbc");
+		//c.setCondition("sex", EqualSign.NOT_EQ , "0");
+	   // c.setCondition( "createDate" ,EqualSign.LT,new Date(), DATE_FORMAT.yyyy_MM_dd);
 	    //c.setCondition( "createDate" ,EqualSign.LT,"2017-06-13", DATE_FORMAT.yyyy_MM_dd);
-		c.setCondition( "createDate" ,BetweenSign.NOT_BETWEEN_AND,new Date(),new Date(), DATE_FORMAT.yyyy_MM_dd);
-	    c.setCondition("age",BetweenSign.NOT_BETWEEN_AND, 10, 100);
-		c.setCondition("type", InSign.IN, new String[]{"AA","BB"});
-		c.setCondition("name",NullSign.IS_NOT_NULL);
-		c.setCondition("sex",NullSign.IS_NULL);
+		//c.setCondition( "createDate" ,BetweenSign.NOT_BETWEEN_AND,new Date(),new Date(), DATE_FORMAT.yyyy_MM_dd);
+	   // c.setCondition("age",BetweenSign.NOT_BETWEEN_AND, 10, 100);
+		//c.setCondition("type", InSign.IN, new String[]{"AA","BB"});
+		//c.setCondition("name",NullSign.IS_NOT_NULL);
+		//c.setCondition("sex",NullSign.IS_NULL);
 		c.setOderBy("name", Sort.DESC);
 		c.setOderBy("sex", Sort.ASC);
 		Page p = dao.getPage(1L, 2L, c);
@@ -318,7 +318,7 @@ public class JdbcDao_Test {
 	@Test
 	public void getPage1() {
 		SystemUser u = new SystemUser();
-		//u.setSex("1");
+		u.setSex("1");
 		Conditions c = new Conditions(u);
 		//c.setOderBy("age", Sort.DESC);
 		//c.setIsNullCondition("createDate");

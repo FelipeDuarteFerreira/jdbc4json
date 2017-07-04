@@ -12,7 +12,7 @@ import com.sooncode.soonjdbc.sql.comsql.replace.TableNameReplace;
  *
  */
 public class UpdatesBuilder implements SqlBuilder {
-	public static final String UPDATE_SQL = "UPDATE [TABLE] SET [SET_PARAMETERS]";
+	public static final String UPDATE_SQL = "UPDATE [TABLE] SET [SET_PARAMETERS] WHERE ";
 	@Override
 	public Parameter getParameter(DbBean dbBean) {
 		Columns columns = new Columns(dbBean);
