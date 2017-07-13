@@ -3,12 +3,10 @@ package com.sooncode.soonjdbc.sql.condition;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 
 import com.sooncode.soonjdbc.bean.DbBean;
 import com.sooncode.soonjdbc.constant.DATE_FORMAT;
@@ -42,13 +40,10 @@ public class Conditions {
 	private List<GroupByCondition> groupByConditions = new LinkedList<GroupByCondition>();
 
 	 
-	public Conditions(Object leftJavaBean, Object... otherJavaBeans) {
-		DbBean leftBean = new DbBean(leftJavaBean);
-		DbBean[] dbBeans = new DbBean[otherJavaBeans.length];
-		for (int i = 0; i < otherJavaBeans.length; i++) {
-			dbBeans[i] = new DbBean(otherJavaBeans[i]);
-		}
-		this.init(leftBean, dbBeans);
+	Conditions(DbBean leftBean ,DbBean[] otherBeans,Map<String, Condition> conditionMap) {
+		 this.leftBean = leftBean;
+		 this.otherBeans = otherBeans;
+		 this.conditionMap = conditionMap;
 	}
 
 	 
@@ -223,46 +218,7 @@ public class Conditions {
 		return otherBeans;
 	}
 
-	private void init(DbBean leftBean, DbBean... otherBeans) {
-		this.leftBean = leftBean;
-		this.otherBeans = otherBeans;
-		Map<String, Object> map = leftBean.getFields();
-		Map<String, Object> newMap = new TreeMap<>();
-
-		for (Entry<String, Object> en : map.entrySet()) {
-			String key = en.getKey();
-			Object value = en.getValue();
-			if (otherBeans != null && otherBeans.length > 0) {
-				newMap.put(leftBean.getBeanName() + STRING.POINT + key, value);
-			} else {
-				newMap.put(key, value);
-			}
-		}
-
-		if (otherBeans != null && otherBeans.length > 0) {
-			for (DbBean bean : otherBeans) {
-				Map<String, Object> otherMap = bean.getFields();
-				for (Entry<String, Object> en : otherMap.entrySet()) {
-					String key = en.getKey();
-					Object val = en.getValue();
-					newMap.put(bean.getBeanName() + STRING.POINT + key, val);
-				}
-			}
-		}
-
-		Map<String, Condition> list = new IdentityHashMap<>();
-		for (Entry<String, Object> en : newMap.entrySet()) {
-			String key = en.getKey();
-			Object val = en.getValue();
-			Condition c = new EqualCondition();
-			c.setKey(key);
-			c.addValue(val);
-			c.setConditionSign(SQL_KEY.EQ);
-			list.put(new String(key), c);
-		}
-
-		this.conditionMap = list;
-	}
+	 
 
 	private boolean containsKey(String key) {
 		for (Entry<String, Condition> en : this.conditionMap.entrySet()) {

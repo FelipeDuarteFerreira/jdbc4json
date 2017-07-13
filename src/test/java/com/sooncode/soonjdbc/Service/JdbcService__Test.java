@@ -13,6 +13,7 @@ import com.sooncode.soonjdbc.constant.Sort;
 import com.sooncode.soonjdbc.entity.SystemUser;
 import com.sooncode.soonjdbc.service.JdbcService;
 import com.sooncode.soonjdbc.sql.condition.Conditions;
+import com.sooncode.soonjdbc.sql.condition.ConditionsBuilderProcess;
 import com.sooncode.soonjdbc.sql.condition.sign.LikeSign;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -26,7 +27,7 @@ public class JdbcService__Test {
 		SystemUser u = new SystemUser();
 		u.setSex("1");
 		//u.setName("hello jdbc");
-		Conditions c = new Conditions(u);
+		Conditions c = ConditionsBuilderProcess.getConditions(u);
 		 
 		c.setOderBy("name", Sort.DESC);
 

@@ -35,6 +35,7 @@ import com.sooncode.soonjdbc.page.One2One;
 import com.sooncode.soonjdbc.page.Page;
 
 import com.sooncode.soonjdbc.sql.condition.Conditions;
+import com.sooncode.soonjdbc.sql.condition.ConditionsBuilderProcess;
 import com.sooncode.soonjdbc.sql.condition.sign.BetweenSign;
 import com.sooncode.soonjdbc.sql.condition.sign.EqualSign;
 import com.sooncode.soonjdbc.sql.condition.sign.InSign;
@@ -109,7 +110,7 @@ public class JdbcDao_Test {
 		 
 		u.setAge(100);
 		u.setName("hechen");
-		Conditions c = new Conditions(new SystemUser() );
+		Conditions c = ConditionsBuilderProcess.getConditions(new SystemUser() );
 		c.setCondition("id", InSign.IN, new Integer[]{642,643});
 		long n = dao.updates(u,c);
 		logger.info(n);
@@ -129,7 +130,7 @@ public class JdbcDao_Test {
 	@Test
 	public void deletes() {
 		SystemUser u = new SystemUser();
-		Conditions c = new Conditions(u);
+		Conditions c = ConditionsBuilderProcess.getConditions(u);
 		c.setCondition("id", EqualSign.GT, 700);
 		dao.deletes(c);
 		 
@@ -166,7 +167,7 @@ public class JdbcDao_Test {
 	@Test
 	public void max() {
 		SystemUser u = new SystemUser();
-		Conditions c = new Conditions(u);
+		Conditions c = ConditionsBuilderProcess.getConditions(u);
 		int max = dao.polymerization(Polymerization.MAX, c, "age");
 		logger.info(max); 
 	}
@@ -176,14 +177,14 @@ public class JdbcDao_Test {
 	@Test
 	public void polymerization() {
 		SystemUser u = new SystemUser();
-		Conditions c = new Conditions(u);
+		Conditions c = ConditionsBuilderProcess.getConditions(u);
 		int max = dao.polymerization(Polymerization.MAX, c, "age");
 		logger.info(max); 
 	}
 	@Test
 	public void polymerization2() {
 		SystemUser u = new SystemUser();
-		Conditions c = new Conditions(u);
+		Conditions c = ConditionsBuilderProcess.getConditions(u);
 		c.setGroupBy("sex");
 		List<PolymerizationModel<SystemUser>>  pms =  dao.polymerization(Polymerization.MIN, c, "age","name");
 		for (PolymerizationModel<SystemUser> pm : pms) {
@@ -196,7 +197,7 @@ public class JdbcDao_Test {
 	public void max2() {
 		SystemUser u = new SystemUser();
 		u.setSex("1");
-		//Conditions c = new Conditions(u);
+		//Conditions c = ConditionsBuilderProcess.getConditions(u);
 		int max = dao.polymerization(Polymerization.MAX, u, "age");
 		logger.info(max); 
 	}
@@ -210,7 +211,7 @@ public class JdbcDao_Test {
 	public void get() {
 		SystemUser u = new SystemUser();
 		//u.setAge(23);
-		Conditions c = new Conditions(u);
+		Conditions c = ConditionsBuilderProcess.getConditions(u);
 		//c.setCondition("name", LikeSign.LIKE , "hello jdbc");
 		//c.setCondition("sex", EqualSign.NOT_EQ , "0");
 	   // c.setCondition( "createDate" ,EqualSign.LT,new Date(), DATE_FORMAT.yyyy_MM_dd);
@@ -242,7 +243,7 @@ public class JdbcDao_Test {
 	public void gets() {
 		SystemUser u = new SystemUser();
 		u.setSex("1");
-		Conditions c = new Conditions(u);
+		Conditions c = ConditionsBuilderProcess.getConditions(u);
 		List<SystemUser> list = dao.gets(c);
 		logger.info(list);
 		
@@ -254,7 +255,7 @@ public class JdbcDao_Test {
 	public void count() {
 		SystemUser u = new SystemUser();
 		u.setSex("1");
-		Conditions c = new Conditions(u);
+		Conditions c = ConditionsBuilderProcess.getConditions(u);
 		long n = dao.polymerization(Polymerization.COUNT, c, "*");
 		logger.info("------------:" + n);
 
@@ -263,7 +264,7 @@ public class JdbcDao_Test {
 	public void count2() {
 		SystemUser u = new SystemUser();
 		//u.setSex("1");
-		Conditions c = new Conditions(u);
+		Conditions c = ConditionsBuilderProcess.getConditions(u);
 		c.setGroupBy("sex");
 		List<PolymerizationModel<SystemUser>> list  = dao.polymerization(Polymerization.COUNT, c, "*", new String[]{"sex"});
 		logger.info("------------:" + list);
@@ -274,7 +275,7 @@ public class JdbcDao_Test {
 	public void sum() {
 		SystemUser u = new SystemUser();
 		//u.setSex("0");
-		Conditions c = new Conditions(u);
+		Conditions c = ConditionsBuilderProcess.getConditions(u);
 		Object n = dao.polymerization(Polymerization.SUM, c, "doog");
 		logger.info("------------:" + n);
 		
@@ -283,7 +284,7 @@ public class JdbcDao_Test {
 	public void sum2() {
 		SystemUser u = new SystemUser();
 		//u.setSex("0");
-		Conditions c = new Conditions(u);
+		Conditions c = ConditionsBuilderProcess.getConditions(u);
 		c.setGroupBy("sex");
 		List<PolymerizationModel<SystemUser>> list = dao.polymerization( Polymerization.SUM, c , "doog", new String[]{"age"});
 		logger.info("------------:" +list);
@@ -293,7 +294,7 @@ public class JdbcDao_Test {
 	public void avg() {
 		SystemUser u = new SystemUser();
 		//u.setSex("0");
-		Conditions c = new Conditions(u);
+		Conditions c = ConditionsBuilderProcess.getConditions(u);
 		Object n = dao.polymerization(Polymerization.AVG, u,"doog");
 		logger.info("------------:" + n);
 		
@@ -319,7 +320,7 @@ public class JdbcDao_Test {
 	public void getPage1() {
 		SystemUser u = new SystemUser();
 		u.setSex("1");
-		Conditions c = new Conditions(u);
+		Conditions c = ConditionsBuilderProcess.getConditions(u);
 		//c.setOderBy("age", Sort.DESC);
 		//c.setIsNullCondition("createDate");
        // c.setInCondition("sex", new String[]{"1"});
@@ -341,7 +342,7 @@ public class JdbcDao_Test {
 		SooncodeStudent s = new SooncodeStudent();
 		SooncodeIdentity id = new SooncodeIdentity();
 		SooncodeClazz sc = new SooncodeClazz();
-		Conditions c = new Conditions(s, id,sc);
+		Conditions c = ConditionsBuilderProcess.getConditions(s, id,sc);
 		 
 		Page page = dao.getPage(1L, 5L, c);
 
@@ -370,7 +371,7 @@ public class JdbcDao_Test {
 		SooncodeStudent s = new SooncodeStudent();
 		SooncodeIdentity id = new SooncodeIdentity();
 		SooncodeClazz cl = new SooncodeClazz();
-		Conditions c = new Conditions(s, id, cl);
+		Conditions c = ConditionsBuilderProcess.getConditions(s, id, cl);
 		Page page = dao.getPage(1L, 5L, c);
 
 		List<One2One> list = page.getOne2One();
@@ -395,7 +396,7 @@ public class JdbcDao_Test {
 		// s.setAge(22);
 		SooncodeClazz clazz = new SooncodeClazz();
 		clazz.setClazzId("002");
-		//Conditions c = new Conditions(clazz, s);
+		//Conditions c = ConditionsBuilderProcess.getConditions(clazz, s);
 		Page page = dao.getPage(1L, 10L, TableRelation.ONE_MANY, clazz,s);//you qi yi shi shi yong 
 		One2Many<SooncodeClazz, SooncodeStudent> o2m = page.getOne2Many();
 		SooncodeClazz cl = o2m.getOne();
@@ -421,7 +422,7 @@ public class JdbcDao_Test {
 		s.setStudentId("001");
 		ChooseCourse cc = new ChooseCourse();
 		SooncodeCourse co = new SooncodeCourse();
-		Conditions c = new Conditions(s, cc, co);
+		Conditions c = ConditionsBuilderProcess.getConditions(s, cc, co);
 		// c.setBetweenCondition("chooseCourse.score", 50, 100);
 		Page page = dao.getPage(1L, 10L, c);
 		Many2Many<SooncodeStudent, ChooseCourse, SooncodeCourse> m2m = page.getMany2Many();
@@ -450,7 +451,7 @@ public class JdbcDao_Test {
 		s.setStudentId("001");
 		ChooseCourse cc = new ChooseCourse();
 		SooncodeCourse co = new SooncodeCourse();
-		Conditions c = new Conditions(cc, s, co);
+		Conditions c = ConditionsBuilderProcess.getConditions(cc, s, co);
 		c.setCondition("chooseCourse.score",BetweenSign.NOT_BETWEEN_AND, 50, 100);
 		Page page = dao.getPage(1L, 10L, c);
 		List<One2One> list = page.getOne2One();
@@ -474,7 +475,7 @@ public class JdbcDao_Test {
 
 		SystemFriend f = new SystemFriend();
 		f.setMeUserId(16);
-		Conditions c = new Conditions(f, u);
+		Conditions c = ConditionsBuilderProcess.getConditions(f, u);
 
 		Page page = dao.getPage(1L, 10L, c);
 		List<One2One> o2os = page.getOne2One();
@@ -498,7 +499,7 @@ public class JdbcDao_Test {
 		ChooseCourse cc = new ChooseCourse();
 		SooncodeCourse co = new SooncodeCourse();
 		co.setCourseId("001");
-		Conditions c = new Conditions(co, cc, s);
+		Conditions c = ConditionsBuilderProcess.getConditions(co, cc, s);
 		c.setCondition("chooseCourse.score",BetweenSign.BETWEEN_AND, 50, 100);
 		Page page = dao.getPage(1L, 10L, c);
 		List<Many2Many<SooncodeCourse, ChooseCourse, SooncodeStudent>> m2ms = page.getMany2Manys();
@@ -530,7 +531,7 @@ public class JdbcDao_Test {
 		SooncodeClazz clazz = new SooncodeClazz();
 		SooncodeStudent student = new SooncodeStudent();
 
-		Conditions c = new Conditions(school, clazz, student);
+		Conditions c = ConditionsBuilderProcess.getConditions(school, clazz, student);
 
 		Page page = dao.getPage(1L, 10L, c);
 		List<One2Many2Many<SooncodeSchool, SooncodeClazz, SooncodeStudent>> o2m2ms = page.getOne2Many2Manys();
@@ -564,7 +565,7 @@ public class JdbcDao_Test {
 		SooncodeStudent student = new SooncodeStudent();
 		SooncodeSchool school = new SooncodeSchool();
 		SooncodeTeacher teacher = new SooncodeTeacher();
-		Conditions c = new Conditions(clazz, school, student, teacher);
+		Conditions c = ConditionsBuilderProcess.getConditions(clazz, school, student, teacher);
 
 		Page page = dao.getPage(1L, 10L, c);
 		List<One2One> o2os = page.getOne2One();
@@ -591,7 +592,7 @@ public class JdbcDao_Test {
 		SooncodeSchool school = new SooncodeSchool();
 		school.setSchoolId(1);
 		SooncodeTeacher teacher = new SooncodeTeacher();
-		Conditions c = new Conditions(school, teacher);
+		Conditions c = ConditionsBuilderProcess.getConditions(school, teacher);
 
 		Page page = dao.getPage(1L, 10L, c);
 		List<One2One> o2os = page.getOne2One();
@@ -618,7 +619,7 @@ public class JdbcDao_Test {
 		// school.setSchoolId(1);
 		SooncodeTeacher teacher = new SooncodeTeacher();
 		teacher.setTeacherId(4);
-		Conditions c = new Conditions(teacher, school);
+		Conditions c = ConditionsBuilderProcess.getConditions(teacher, school);
 
 		Page page = dao.getPage(1L, 10L, c);
 		List<One2One> o2os = page.getOne2One();
@@ -642,7 +643,7 @@ public class JdbcDao_Test {
 		clazz.setClazzId("001");
 		SooncodeTeaching teaching = new SooncodeTeaching();
 		SooncodeTeacher teacher = new SooncodeTeacher();
-		Conditions c = new Conditions(clazz, teaching, teacher);
+		Conditions c = ConditionsBuilderProcess.getConditions(clazz, teaching, teacher);
 
 		Page page = dao.getPage(1L, 10L, c);
 		List<Many2Many<SooncodeClazz, SooncodeTeaching, SooncodeTeacher>> m2ms = page.getMany2Manys();

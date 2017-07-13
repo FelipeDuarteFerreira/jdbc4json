@@ -29,6 +29,7 @@ import com.sooncode.soonjdbc.sql.comsql.SqlBuilder;
 import com.sooncode.soonjdbc.sql.comsql.UpdateSql4PrimaryKeyBuilder;
 import com.sooncode.soonjdbc.sql.comsql.UpdatesBuilder;
 import com.sooncode.soonjdbc.sql.condition.Conditions;
+import com.sooncode.soonjdbc.sql.condition.ConditionsBuilderProcess;
 import com.sooncode.soonjdbc.util.T2E;
 
 /**
@@ -130,7 +131,7 @@ public class JdbcDao {
 	 * @return
 	 */
 	public <T> long deletes(final T javaBean) {
-		Conditions conditions = new Conditions(javaBean);
+		Conditions conditions = ConditionsBuilderProcess.getConditions(javaBean);
 		return this.deletes(conditions);
 
 	}
@@ -196,7 +197,7 @@ public class JdbcDao {
 	}
 
 	public <T> List<T> gets(T javaBean) {
-		Conditions conditions = new Conditions(javaBean);
+		Conditions conditions = ConditionsBuilderProcess.getConditions(javaBean);
 		return this.get(conditions);
 	}
 
@@ -211,17 +212,17 @@ public class JdbcDao {
 	}
 
 	public Page getPage(long pageNum, long pageSize, Object leftBean, Object... otherBean) {
-		Conditions conditions = new Conditions(leftBean, otherBean);
+		Conditions conditions = ConditionsBuilderProcess.getConditions(leftBean, otherBean);
 		return getPage(pageNum, pageSize, conditions);
 	}
 
 	public Page getPage(long pageNum, long pageSize, TableRelation TableRelation, Object leftBean, Object... otherBean) {
-		Conditions conditions = new Conditions(leftBean, otherBean);
+		Conditions conditions = ConditionsBuilderProcess.getConditions(leftBean, otherBean);
 		return getPage(pageNum, pageSize, TableRelation, conditions);
 	}
 
 	public One2One getOne2One(Object left, Object... other) {
-		Conditions conditions = new Conditions(left, other);
+		Conditions conditions = ConditionsBuilderProcess.getConditions(left, other);
 		return this.getOne2One(conditions);
 	}
 
@@ -236,7 +237,7 @@ public class JdbcDao {
 	}
 
 	public <L, R> One2Many<L, R> getOne2Many(Object left, Object... others) {
-		Conditions conditions = new Conditions(left, others);
+		Conditions conditions = ConditionsBuilderProcess.getConditions(left, others);
 		return this.getOne2Many(conditions);
 	}
 
@@ -336,7 +337,7 @@ public class JdbcDao {
 	}
 
 	public <T, E> T polymerization(Polymerization Polymerization, E entity, String key) {
-		Conditions c = new Conditions(entity);
+		Conditions c = ConditionsBuilderProcess.getConditions(entity);
 		return this.polymerization(Polymerization, c, key);
 	}
 
