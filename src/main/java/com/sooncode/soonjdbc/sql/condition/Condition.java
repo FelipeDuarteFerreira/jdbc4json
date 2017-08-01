@@ -46,14 +46,12 @@ public abstract class Condition {
 	}
 
 	public Condition(String key, Object value, String conditionSign) {
-		super();
 		this.key = key;
 		this.values.add(value);
 		this.conditionSign = conditionSign;
 	}
 
 	public Condition(String key, List<Object> values, String conditionSign) {
-		super();
 		this.key = key;
 		this.values.addAll(values);
 		this.conditionSign = conditionSign;
