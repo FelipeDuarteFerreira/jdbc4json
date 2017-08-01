@@ -30,7 +30,6 @@ import com.sooncode.soonjdbc.sql.condition.Conditions;
 import com.sooncode.soonjdbc.util.T2E;
 
 public class QueryService {
-	 
 
 	public List<TableType> getTableType(Jdbc jdbc, Conditions conditions) {
 		List<TableType> nes = new LinkedList<>();
@@ -56,9 +55,8 @@ public class QueryService {
 
 	}
 
-	 
 	public <L, R> List<Bean<R>> findBean(List<Map<String, Object>> list, Bean<L> bean, DbBean dbBean) {
-		 
+
 		if (bean != null) {
 			List<Map<String, Object>> newlist = new LinkedList<>();
 			for (Map<String, Object> map : list) {
@@ -103,7 +101,7 @@ public class QueryService {
 			if (beans.size() == 0 || !str.contains(resultBean.getVal())) {
 
 				str = str + resultBean.getVal() + STRING.AT;
-				resultBean.setJavaBean( rObj.getObject());
+				resultBean.setJavaBean(rObj.getObject());
 				beans.add(resultBean);
 			}
 		}
@@ -140,13 +138,13 @@ public class QueryService {
 		String columns = ComSQL.columns4One(leftDbBean);
 		String where = conditions.getWhereParameter().getReadySql() + getLimit(pageNum, pageSize);
 		String sizeWhere = conditions.getWhereParameter().getReadySql();
-		String sql = SQL_KEY.SELECT + columns + SQL_KEY.FROM + leftTableName + where;
+		String sql = SQL_KEY.SELECT + columns + SQL_KEY.FROM + leftTableName + " WHERE 1=1 " + where;
 		Parameter p = conditions.getWhereParameter();
 		p.setReadySql(sql);
 		List<Map<String, Object>> list = jdbc.gets(p);
 		List<L> result = findBean(list, leftDbBean);
 
-		String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + leftTableName  + sizeWhere;
+		String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + leftTableName + " WHERE 1=1 " + sizeWhere;
 		Parameter sizeP = conditions.getWhereParameter();
 		sizeP.setReadySql(sizeSql);
 		Map<String, Object> map = jdbc.get(sizeP);
@@ -444,8 +442,7 @@ public class QueryService {
 			for (Bean<M> mBean : mBeans) {
 				List<Bean<R>> rBeans = findBean(list, mBean, rightDbBean);
 				if (rBeans.size() > 0) {
-					One2One o2o = new One2One();// <>(mBean.getJavaBean(),
-												// rBeans.get(0).getJavaBean());
+					One2One o2o = new One2One(); 
 					o2o.add(mBean.getJavaBean());
 					o2o.add(rBeans.get(0).getJavaBean());
 					o2os.add(o2o);

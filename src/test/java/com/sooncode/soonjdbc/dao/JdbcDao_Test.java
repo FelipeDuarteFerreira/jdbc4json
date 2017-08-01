@@ -12,7 +12,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sooncode.soonjdbc.constant.DATE_FORMAT;
 import com.sooncode.soonjdbc.constant.Sort;
 import com.sooncode.soonjdbc.dao.JdbcDao;
 import com.sooncode.soonjdbc.dao.polymerization.Polymerization;
@@ -40,7 +39,6 @@ import com.sooncode.soonjdbc.sql.condition.sign.BetweenSign;
 import com.sooncode.soonjdbc.sql.condition.sign.EqualSign;
 import com.sooncode.soonjdbc.sql.condition.sign.InSign;
 import com.sooncode.soonjdbc.sql.condition.sign.LikeSign;
-import com.sooncode.soonjdbc.sql.condition.sign.NullSign;
 import com.sooncode.util.SJson;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -168,6 +166,7 @@ public class JdbcDao_Test {
 	public void max() {
 		SystemUser u = new SystemUser();
 		Conditions c = ConditionsBuilderProcess.getConditions(u);
+		c.setCondition("name", LikeSign.LIKE, "hechen");
 		int max = dao.polymerization(Polymerization.MAX, c, "age");
 		logger.info(max); 
 	}
@@ -214,10 +213,10 @@ public class JdbcDao_Test {
 		Conditions c = ConditionsBuilderProcess.getConditions(u);
 		//c.setCondition("name", LikeSign.LIKE , "hello jdbc");
 		//c.setCondition("sex", EqualSign.NOT_EQ , "0");
-	   // c.setCondition( "createDate" ,EqualSign.LT,new Date(), DATE_FORMAT.yyyy_MM_dd);
+	    //c.setCondition( "createDate" ,EqualSign.LT,new Date(), DATE_FORMAT.yyyy_MM_dd);
 	    //c.setCondition( "createDate" ,EqualSign.LT,"2017-06-13", DATE_FORMAT.yyyy_MM_dd);
 		//c.setCondition( "createDate" ,BetweenSign.NOT_BETWEEN_AND,new Date(),new Date(), DATE_FORMAT.yyyy_MM_dd);
-	   // c.setCondition("age",BetweenSign.NOT_BETWEEN_AND, 10, 100);
+	    //c.setCondition("age",BetweenSign.NOT_BETWEEN_AND, 10, 100);
 		//c.setCondition("type", InSign.IN, new String[]{"AA","BB"});
 		//c.setCondition("name",NullSign.IS_NOT_NULL);
 		//c.setCondition("sex",NullSign.IS_NULL);
@@ -267,7 +266,7 @@ public class JdbcDao_Test {
 		Conditions c = ConditionsBuilderProcess.getConditions(u);
 		c.setGroupBy("sex");
 		List<PolymerizationModel<SystemUser>> list  = dao.polymerization(Polymerization.COUNT, c, "*", new String[]{"sex"});
-		logger.info("------------:" + list);
+		logger.info("------------:" + list.size());
 		
 	}
 	
@@ -295,6 +294,7 @@ public class JdbcDao_Test {
 		SystemUser u = new SystemUser();
 		//u.setSex("0");
 		Conditions c = ConditionsBuilderProcess.getConditions(u);
+		c.setCondition("name", EqualSign.EQ, "hechen");
 		Object n = dao.polymerization(Polymerization.AVG, u,"doog");
 		logger.info("------------:" + n);
 		
@@ -323,7 +323,7 @@ public class JdbcDao_Test {
 		Conditions c = ConditionsBuilderProcess.getConditions(u);
 		//c.setOderBy("age", Sort.DESC);
 		//c.setIsNullCondition("createDate");
-       // c.setInCondition("sex", new String[]{"1"});
+        // c.setInCondition("sex", new String[]{"1"});
 		Page page = dao.getPage(2L, 5L, c);
         
 		List<SystemUser> list = page.getOnes();

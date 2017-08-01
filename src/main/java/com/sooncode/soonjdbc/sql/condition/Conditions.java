@@ -171,11 +171,6 @@ public class Conditions {
 
 		sql = sql + this.getOrderBySql();
 		sql = sql + this.getGroupBySql();
- 
-		sql = SQL_KEY.WHERE + sql;
-		sql = sql.replace(SQL_KEY.WHERE+ SQL_KEY.AND, SQL_KEY.AND)
-				 .replace(SQL_KEY.WHERE+ SQL_KEY.ORDER_BY, SQL_KEY.ONE_EQ_ONE +SQL_KEY.ORDER_BY)
-		         .replace(SQL_KEY.WHERE+ SQL_KEY.GROUP_BY, SQL_KEY.ONE_EQ_ONE +SQL_KEY.GROUP_BY);
 		p.setReadySql(sql);
 
 		return p;

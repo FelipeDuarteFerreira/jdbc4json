@@ -198,7 +198,7 @@ public class JdbcDao {
 
 	public <T> List<T> gets(T javaBean) {
 		Conditions conditions = ConditionsBuilderProcess.getConditions(javaBean);
-		return this.get(conditions);
+		return this.gets(conditions);
 	}
 
 	public <T> T get(T javaBean) {
@@ -255,6 +255,8 @@ public class JdbcDao {
 		if (nes.size() == 1) {
 			TableType tableType = nes.get(0);
 			page = tableType.getPage(pageNum, pageSize, conditions, jdbc);
+			
+			
 		} else if (nes.size() > 1) {
 			try {
 				throw new TableRelationAnalyzeException("数据库表关系分析异常，存在多种关系，无法识别！");
@@ -321,10 +323,10 @@ public class JdbcDao {
 		DbBean dbBean = jdbc.getDbBean(rObj.getObject());
 		String tableName = T2E.toTableName(dbBean.getBeanName());
 		String KEY = new String();
-		if (!key.equals("*")) {
-			KEY = T2E.toColumn(key);
-		} else {
+		if ( key.equals("*")) {
 			KEY = key;
+		} else {
+			KEY = T2E.toColumn(key);
 		}
 		Parameter parameter = new PolymerizationSqlBuilder().getParameter(tableName, Polymerization, KEY, STRING.NULL_STR);
 		parameter.setReadySql(parameter.getReadySql() + conditions.getWhereParameter().getReadySql());

@@ -7,7 +7,7 @@ import com.sooncode.soonjdbc.sql.comsql.replace.SqlReplaceChain;
 import com.sooncode.soonjdbc.sql.comsql.replace.TableNameReplace;
 
 public class SelectSqlBuilder implements SqlBuilder {
-	public static final String SELECT_SQL = "SELECT [COLUMNS] FROM [TABLE] WHERE";
+	public static final String SELECT_SQL = "SELECT [COLUMNS] FROM [TABLE] WHERE 1=1";
 	@Override
 	public Parameter getParameter(DbBean dbBean) {
 		Columns columns = new Columns(dbBean);

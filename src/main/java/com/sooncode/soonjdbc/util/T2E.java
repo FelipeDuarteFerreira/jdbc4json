@@ -5,8 +5,6 @@ import java.util.Map;
 
 import com.sooncode.soonjdbc.constant.STRING;
 
- 
-
 /**
  * 数据库表 和 对应的实体类 转换
  * 
@@ -18,7 +16,6 @@ public class T2E {
 	private static Map<String, String> columnCache = new HashMap<String, String>();
 	private static Map<String, String> fieldCache = new HashMap<String, String>();
 
-	 
 	public static String toColumn(String field) {
 		String column = new String();
 		column = columnCache.get(field);
@@ -32,7 +29,7 @@ public class T2E {
 		StringBuilder sb = new StringBuilder();
 		while (i < field.length()) {
 
-			while (i < field.length() && (isLower(c[i]) || isNumber(c[i]) ||isPont(c[i]) || is$(c[i]))) {
+			while (i < field.length() && (isLower(c[i]) || isNumber(c[i]) || isPont(c[i]) || is$(c[i]))) {
 				sb.append(c[i]);
 				i++;
 			}
@@ -64,7 +61,7 @@ public class T2E {
 		}
 
 		String[] arrays = columnName.toLowerCase().split(STRING.UNDERLINE);
-		field = new  String ();
+		field = new String();
 		if (arrays.length > 0) {
 			field = arrays[0];
 		}
@@ -74,18 +71,17 @@ public class T2E {
 		fieldCache.put(columnName, field);
 		return field;
 	}
-	
-	public static String toTableName(String className){
+
+	public static String toTableName(String className) {
 		return toColumn(className);
-		
+
 	}
-	
-    public static String toClassName(String tableName){
+
+	public static String toClassName(String tableName) {
 		String str = toField(tableName);
 		str = str.substring(0, 1).toUpperCase() + str.substring(1, str.length());
 		return str;
 	}
-	
 
 	/**
 	 * 字符是否是‘$’
@@ -94,11 +90,7 @@ public class T2E {
 	 * @return
 	 */
 	private static boolean is$(char c) {
-		if (c == '$') {
-			return true;
-		} else {
-			return false;
-		}
+		return (c == '$');
 	}
 
 	/**
@@ -108,11 +100,8 @@ public class T2E {
 	 * @return
 	 */
 	private static boolean isLower(char c) {
-		if (c >= 'a' && c <= 'z') {
-			return true;
-		} else {
-			return false;
-		}
+		return (c >= 'a' && c <= 'z');
+
 	}
 
 	/**
@@ -122,17 +111,10 @@ public class T2E {
 	 * @return
 	 */
 	private static boolean isNumber(char c) {
-		if (c >= '0' && c <= '9') {
-			return true;
-		} else {
-			return false;
-		}
+		return (c >= '0' && c <= '9');
 	}
+
 	private static boolean isPont(char c) {
-		if (c =='.') {
-			return true;
-		} else {
-			return false;
-		}
+		return (c == '.');
 	}
 }

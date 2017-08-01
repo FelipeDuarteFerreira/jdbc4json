@@ -12,7 +12,7 @@ public class ParameterReplace implements SqlReplace{
 		String sql = protogenesisParameter.getReadySql();
 		sql= sql.replace("[PARAMETERS]",   columns.getParameters());
 		protogenesisParameter.setReadySql(sql);
-		protogenesisParameter.addParameter(columns.getAllParameter());
+		protogenesisParameter.addParameters(columns.getAllParameter());
 		return sqlReplaceChain.getReplacedSql(protogenesisParameter, columns);
 	}
 
