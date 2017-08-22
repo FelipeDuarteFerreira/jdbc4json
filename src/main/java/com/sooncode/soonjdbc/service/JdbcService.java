@@ -5,15 +5,16 @@ import java.util.List;
 import com.sooncode.soonjdbc.dao.JdbcDao;
 import com.sooncode.soonjdbc.dao.polymerization.Polymerization;
 import com.sooncode.soonjdbc.dao.polymerization.PolymerizationModel;
+import com.sooncode.soonjdbc.page.Many2Many;
 import com.sooncode.soonjdbc.page.One2Many;
 import com.sooncode.soonjdbc.page.One2One;
 import com.sooncode.soonjdbc.page.Page;
 import com.sooncode.soonjdbc.sql.condition.Conditions;
 
 /**
- * Jdbc Dao 服务
+ * Jdbc Service  
  * 
- * @author pc
+ * @author hechenwe@gmail.com
  * 
  */
 public class JdbcService {
@@ -45,6 +46,12 @@ public class JdbcService {
 
 	public <L, R> One2Many<L, R> getOne2Many(Object left, Object... others) {
 		return this.jdbcDao.getOne2Many(left, others);
+	}
+	public <L,M,R> Many2Many<L,M,R> getMany2Many(Object left, Object... others) {
+		return this.jdbcDao.getMany2Many(left,others);
+	}
+	public <L,M,R> Many2Many<L,M,R> getMany2Many(Conditions conditions) {
+		return this.jdbcDao.getMany2Many(conditions);
 	}
 
 	public Page getPage(long pageNum, long pageSize, Object left, Object... other) {

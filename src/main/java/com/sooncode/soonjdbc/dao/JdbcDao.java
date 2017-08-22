@@ -15,6 +15,7 @@ import com.sooncode.soonjdbc.dao.tabletype.TableRelation;
 import com.sooncode.soonjdbc.dao.tabletype.TableType;
 import com.sooncode.soonjdbc.exception.PrimaryKeyValueInexistence;
 import com.sooncode.soonjdbc.exception.TableRelationAnalyzeException;
+import com.sooncode.soonjdbc.page.Many2Many;
 import com.sooncode.soonjdbc.page.One2Many;
 import com.sooncode.soonjdbc.page.One2One;
 import com.sooncode.soonjdbc.page.Page;
@@ -246,7 +247,18 @@ public class JdbcDao {
 		One2Many<L, R> o2m = page.getOne2Many();
 		return o2m;
 	}
-
+	public <L,M,R> Many2Many<L,M,R> getMany2Many(Object left, Object... others) {
+		Conditions conditions = ConditionsBuilderProcess.getConditions(left, others);
+		return this.getMany2Many(conditions);
+	}
+	
+	public <L,M,R> Many2Many<L,M,R> getMany2Many(Conditions conditions){
+		Page page = this.getPage(1L, Long.MAX_VALUE, conditions);
+		Many2Many<L,M,R> m2m = page.getMany2Many();
+		return m2m;
+	}
+	
+	
 	public Page getPage(long pageNum, long pageSize, Conditions conditions) {
 
 		Page page = new Page();

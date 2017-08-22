@@ -1,6 +1,5 @@
 package com.sooncode.soonjdbc.sql.pagesql;
 
-import com.sooncode.soonjdbc.bean.DbBean;
 import com.sooncode.soonjdbc.sql.comsql.Columns;
 
 public class OnePageSqlBuilder implements PageSqlBuilder{
