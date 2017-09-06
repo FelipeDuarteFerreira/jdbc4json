@@ -63,5 +63,11 @@ public class SooncodeGroups implements Serializable{
 	 public void setGroupCode(String groupCode) {
 	 	 this.groupCode = groupCode;
 	 }
+	@Override
+	public String toString() {
+		return "SooncodeGroups [groupId=" + groupId + ", groupState=" + groupState + ", groupName=" + groupName + ", createDate=" + createDate + ", groupCode=" + groupCode + "]";
+	}
 
+	 
+	 
 }

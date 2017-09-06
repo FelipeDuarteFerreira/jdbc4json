@@ -74,5 +74,11 @@ public class SooncodeDictionary implements Serializable{
 	 public void setDictionaryName(String dictionaryName) {
 	 	 this.dictionaryName = dictionaryName;
 	 }
+	@Override
+	public String toString() {
+		return "SooncodeDictionary [dictionaryId=" + dictionaryId + ", dictionaryCode=" + dictionaryCode + ", groupId=" + groupId + ", dictionaryState=" + dictionaryState + ", createDate=" + createDate + ", dictionaryName=" + dictionaryName + "]";
+	}
+	 
+	 
 
 }

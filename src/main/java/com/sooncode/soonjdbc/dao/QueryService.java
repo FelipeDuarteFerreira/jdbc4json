@@ -304,7 +304,7 @@ public class QueryService {
 				for (DbBean dbBean : otherDbBeans) {
 					List<Bean<R>> rBeans = findBean(list, lBean, dbBean);
 					List<R> rJavaBeans = bean2JavaBean(rBeans);
-					one2Many = new One2Many<L, R>(lBeans.get(0).getJavaBean(), rJavaBeans);
+					one2Many = new One2Many<L, R>(lBean.getJavaBean(), rJavaBeans);
 					o2ms.add(one2Many);
 				}
 			}

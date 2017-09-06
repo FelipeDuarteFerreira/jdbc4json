@@ -20,6 +20,8 @@ import com.sooncode.soonjdbc.dao.tabletype.TableRelation;
 import com.sooncode.soonjdbc.entity.ChooseCourse;
 import com.sooncode.soonjdbc.entity.SooncodeClazz;
 import com.sooncode.soonjdbc.entity.SooncodeCourse;
+import com.sooncode.soonjdbc.entity.SooncodeDictionary;
+import com.sooncode.soonjdbc.entity.SooncodeGroups;
 import com.sooncode.soonjdbc.entity.SooncodeIdentity;
 import com.sooncode.soonjdbc.entity.SooncodeSchool;
 import com.sooncode.soonjdbc.entity.SooncodeStudent;
@@ -34,6 +36,7 @@ import com.sooncode.soonjdbc.page.One2One;
 import com.sooncode.soonjdbc.page.Page;
 
 import com.sooncode.soonjdbc.sql.condition.Conditions;
+import com.sooncode.soonjdbc.sql.condition.ConditionsBuilder;
 import com.sooncode.soonjdbc.sql.condition.ConditionsBuilderProcess;
 import com.sooncode.soonjdbc.sql.condition.sign.BetweenSign;
 import com.sooncode.soonjdbc.sql.condition.sign.EqualSign;
@@ -94,10 +97,10 @@ public class JdbcDao_Test {
 	@Test
 	public void update() {
 		SystemUser u = new SystemUser();
-		u.setId(642);
-		u.setAge(100);
-		u.setName("HE CHEN ");
-		u.setSex("1");
+		//u.setId(642);
+		//u.setAge(100);
+		//u.setName("HE CHEN ");
+		//u.setSex("1");
 		dao.update(u);
 	}
 	
@@ -302,7 +305,7 @@ public class JdbcDao_Test {
 	
 	
 	@Test
-	public void getOne2One() {
+	public void getOne2One3() {
 		SooncodeStudent s = new SooncodeStudent();
 		s.setStudentId("001");
 	    
@@ -317,7 +320,7 @@ public class JdbcDao_Test {
 	 * 单表分页 查询：性别是‘男’的所有学生
 	 */
 	@Test
-	public void getPage1() {
+	public void getOnes() {
 		SystemUser u = new SystemUser();
 		u.setSex("1");
 		Conditions c = ConditionsBuilderProcess.getConditions(u);
@@ -338,7 +341,7 @@ public class JdbcDao_Test {
 	 * 查询 学生和与之对应的身份详情
 	 */
 	@Test
-	public void getPage4One2One() {
+	public void getOne2One2() {
 		SooncodeStudent s = new SooncodeStudent();
 		SooncodeIdentity id = new SooncodeIdentity();
 		SooncodeClazz sc = new SooncodeClazz();
@@ -367,7 +370,7 @@ public class JdbcDao_Test {
 	 * 查询 学生 ，身份 ，班级信息
 	 */
 	@Test
-	public void getPage21() {
+	public void getOne2One0() {
 		SooncodeStudent s = new SooncodeStudent();
 		SooncodeIdentity id = new SooncodeIdentity();
 		SooncodeClazz cl = new SooncodeClazz();
@@ -391,7 +394,7 @@ public class JdbcDao_Test {
 	 * 查询 班级id为‘002’的所有学生  ()
 	 */
 	@Test
-	public void getPage3() {
+	public void getOne2Many() {
 		SooncodeStudent s = new SooncodeStudent();
 		// s.setAge(22);
 		SooncodeClazz clazz = new SooncodeClazz();
@@ -419,7 +422,7 @@ public class JdbcDao_Test {
 	 * 查询 学生id 为 "001" 选修的所有课程
 	 */
 	@Test
-	public void getPage4() {
+	public void getMany2Many() {
 		SooncodeStudent s = new SooncodeStudent();
 		s.setStudentId("001");
 		ChooseCourse cc = new ChooseCourse();
@@ -448,7 +451,7 @@ public class JdbcDao_Test {
 	 * 查询 学生 选修 课程 的情况
 	 */
 	@Test
-	public void getPage41() {
+	public void getOne2One1() {
 		SooncodeStudent s = new SooncodeStudent();
 		s.setStudentId("001");
 		ChooseCourse cc = new ChooseCourse();
@@ -472,7 +475,7 @@ public class JdbcDao_Test {
 	 * 查询用户id 为 16 的所有好友
 	 */
 	@Test
-	public void getPage42() {
+	public void getOne2One() {
 		SystemUser u = new SystemUser();
 
 		SystemFriend f = new SystemFriend();
@@ -496,7 +499,7 @@ public class JdbcDao_Test {
 	 * 查询：选修 课程id为‘001’ 的所有学生
 	 */
 	@Test
-	public void getPage5() {
+	public void getMany2Manys() {
 		SooncodeStudent s = new SooncodeStudent();
 		ChooseCourse cc = new ChooseCourse();
 		SooncodeCourse co = new SooncodeCourse();
@@ -527,7 +530,7 @@ public class JdbcDao_Test {
 	 */
 
 	@Test
-	public void getPage7() {
+	public void getOne2Many2Manys() {
 		SooncodeSchool school = new SooncodeSchool();
 		school.setSchoolId(1);
 		SooncodeClazz clazz = new SooncodeClazz();
@@ -665,6 +668,26 @@ public class JdbcDao_Test {
 		}
 		logger.info("---------------------------------------------------------------");
 
+	}
+	@Test
+	public void getOne2Manys__page() {
+		
+		 SooncodeGroups sg = new SooncodeGroups();
+		  
+		 SooncodeDictionary sd = new SooncodeDictionary();
+		 
+		
+		Page page =  dao.getPage(1, Long.MAX_VALUE, ConditionsBuilderProcess.getConditions(sg, sd));
+		
+		List<One2Many<SooncodeGroups, SooncodeDictionary>> list =   page.getOne2Manys();
+		
+		for (One2Many<SooncodeGroups, SooncodeDictionary> o2m : list) {
+			logger.info(o2m.getOne());
+			logger.info(o2m.getMany());
+		}
+		
+		
+		
 	}
 	 
 	
