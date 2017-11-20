@@ -27,13 +27,18 @@ public class DbBeanCache {
 		String  beanName =javaBean.getClass().getSimpleName(); 
 		
 		List<String> fields = fieldsCache.get(beanName);
-		if(fields==null){
+		
+		if(connection == null && fields==null){
+			return null;
+		}
+		
+		if(fields==null ){
 			fields =  getFields(connection,beanName);
 			  fieldsCache.put(beanName, fields);
 		}
 		
 		String pkName = pkCache.get(beanName);
-		if(pkName == null){
+		if(pkName == null  ){
 			 pkName =  getPrimaryField(connection, beanName);
 			 pkCache.put(beanName,pkName);
 		}
@@ -41,13 +46,13 @@ public class DbBeanCache {
 		
 		List<ForeignKey> foreignKeies = fkCache.get(beanName);
 		
-		if(foreignKeies == null){
+		if(foreignKeies == null ){
 			foreignKeies =  getForeignKeies(connection, beanName);
 			fkCache.put(beanName, foreignKeies);
 		}
 		List<Index> indexes = indexCache.get(beanName);
 		
-		if(indexes == null){
+		if(indexes == null  ){
 			indexes =  getIndex(connection, beanName);
 			indexCache.put(beanName, indexes);
 		}
@@ -79,7 +84,7 @@ public class DbBeanCache {
 		for(Entry<String, Object> en : map.entrySet()){
 			String key = en.getKey();
 			Object val = en.getValue();
-			if(fields.contains(key)==true ){
+			if(  fields.contains(key)==true ){
 				fes.put(key, val);
 			}
 		}

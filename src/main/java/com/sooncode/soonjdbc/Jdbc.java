@@ -159,6 +159,11 @@ public class Jdbc {
 
 	public <T> DbBean getDbBean(final T javaBean) {
 
+		DbBean db = DbBeanCache.getDbBean(null, javaBean);
+		if (db != null) {
+			return db;
+		}
+
 		return jdbcTemplate.execute(new ConnectionCallback<DbBean>() {
 
 			@Override
@@ -246,7 +251,7 @@ public class Jdbc {
 	}
 
 	public int[] batchInsert(final String sql, final List<Map<Integer, Object>> parameters) {
-		
+
 		logger.debug("【SoonJdbc SQL】" + sql);
 		logger.debug("【SoonJdbc Parameters】" + parameters);
 		return jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
