@@ -12,19 +12,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-
  
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+ 
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 public class JavaBeanBuilder {
-	private static Log logger = LogFactory.getLog(JavaBeanBuilder.class);
+	 
 	private JdbcTemplate jdbcTemplate;
     private String codePath;
     private String packageName;
@@ -57,7 +53,7 @@ public class JavaBeanBuilder {
 
 	private void init(){
     	if(this.codePath != null  &&  this.jdbcTemplate != null && this.packageName != null){
-    		logger.debug("【JavaBean代码生成路径】："+this.codePath);
+    		 
     		List<Table> list = getTables();
     		for (Table table : list) {
     			String javaName = T2E.toClassName(  table.getTableName());
@@ -79,8 +75,8 @@ public class JavaBeanBuilder {
 				DatabaseMetaData dm = con.getMetaData();
 				String[] types = { "Table" };
 				ResultSet tableSet = dm.getTables(null,  null, tableName, types);//
-				while (tableSet.next()) { // 遍历数据库的表
-					String tableRemarks = tableSet.getString("REMARKS");// 表注释
+				while (tableSet.next()) {  
+					String tableRemarks = tableSet.getString("REMARKS"); 
 					t.setTableName(tableName);
 					t.setTableRemarks(tableRemarks);
 				}
@@ -102,13 +98,13 @@ public class JavaBeanBuilder {
 				int m = url.lastIndexOf('/');
 				String dataName  =  url.substring(m+1, n);
 				String[] types = { "Table" };
-				// 数据库名称/ userName/ 表名称 / 类型
+				 
 				List<Table> list = new ArrayList<>();
 				ResultSet tableSet = dm.getTables(dataName,  null, null, types);//
-				while (tableSet.next()) { // 遍历数据库的表
+				while (tableSet.next()) {  
 					Table t = new Table();
-					String tableRemarks = tableSet.getString("REMARKS");// 表注释
-					String tableName = tableSet.getString("TABLE_NAME").toUpperCase();// 表注释
+					String tableRemarks = tableSet.getString("REMARKS"); 
+					String tableName = tableSet.getString("TABLE_NAME").toUpperCase(); 
 					t.setTableName(tableName);
 					t.setTableRemarks(tableRemarks);
 					list.add(t);
@@ -133,7 +129,7 @@ public class JavaBeanBuilder {
 
 				Map<String, Column> columnes = new HashMap<>();
 				ResultSet columnSet = con.getMetaData().getColumns(null, "%", tableName, "%");
-				while (columnSet.next()) { // 遍历某个表的字段
+				while (columnSet.next()) {  
 
 					String columnRemarks = columnSet.getString("REMARKS");
 
@@ -255,14 +251,14 @@ public class JavaBeanBuilder {
 
 	public boolean writeFile(String fileName, String content, String encoding) {
 		File file = new File(fileName);
-		if (!file.exists()) { //文件不存在
+		if (!file.exists()) {  
 			try {
 				file.createNewFile();
 			} catch (IOException e) {
 				e.printStackTrace();
 				return false;
 			}
-		}else{//文件存在
+		}else{ 
 			file.delete();
 		}
 

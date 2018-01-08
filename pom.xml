@@ -18,7 +18,7 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.28</version>
+			<version>5.1.30</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
@@ -85,11 +85,11 @@
 		</dependency>
 
 		<!-- jackson-all Spring 依赖包 -->
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-all</artifactId>
 			<version>1.7.1</version>
-		</dependency>
+		</dependency> -->
 
 		<dependency>
 			<groupId>net.sf.json-lib</groupId>

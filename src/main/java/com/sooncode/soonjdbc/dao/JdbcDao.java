@@ -106,7 +106,7 @@ public class JdbcDao {
 		Parameter parameter = sqlBuilder.getParameter(modelDbBean);// ComSQL.updates(modelDbBean);
 		Parameter wherePara = conditions.getWhereParameter();
 		String sql = parameter.getReadySql() + wherePara.getReadySql();
-		parameter.addParameter(wherePara.getParams());
+		parameter.addParameters(wherePara.getParams());
 		parameter.setReadySql(sql);
 		return jdbc.update(parameter);
 

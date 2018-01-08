@@ -8,3 +8,30 @@
 	DELETE * FROM TABLE WHERE ID = '23j2345j3lk4lkjlk'
 	</sql>
 </sqls>
+
+ create table  network_exception_warning_detail  (
+ warning_tetail_id   varchar(64) not null ,
+ warning_id   varchar(64) not null ,
+ rule_id   varchar(64) null ,
+ app_count   varchar(64) null ,
+ monitor_type varchar(64) null ,
+ bank_sign_subject_name varchar(64) null ,
+ bank_sign_subject_num varchar(64) null ,
+ time_interval varchar(64) null ,
+ time_continued varchar(64) null ,
+ run_start_time varchar(64) null ,
+ run_end_time varchar(64) null ,
+ email_group varchar(64) null ,
+ email_flag varchar(64) null ,
+ sms_group varchar(64) null ,
+ sms_flag varchar(64) null ,
+ warning_level varchar(64) null ,
+ switch_flag varchar(64) null ,
+ gmt_created varchar(64) null ,
+ gmt_created varchar(64) null ,
+ gmt_modified varchar(64) null ,
+ operator_user varchar(64) null ,
+ remark varchar(64) null ,
+primary key (warning_id)
+)
+;

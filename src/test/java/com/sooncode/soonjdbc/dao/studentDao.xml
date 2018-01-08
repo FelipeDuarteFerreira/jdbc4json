@@ -1,44 +1,134 @@
 <sqls>
-	<sql id="sqlId">
-				SELECT
-					m.id,
-					m.title,
-					m.stem,
-					m.ques_option,
-					m.ques_analyze,
-					m.answer,
-					m.difficult_star,
-					m.audio_listen_path,
-					m.video_path,
-					m.type,
-					m.audio_analyze_path,
-					m.remark,
-					m.stage_code,
-					m.grade_code,
-					m.subject_name,
-					m.score,
-					m.knowledges 
-				FROM
-					book_knowledge_tree bkt,
-					resources_knowledge_tree rkt,
-					rel_question_knowledge rqk,
-					#{xxx_question} m
-				WHERE
-					bkt.product_code = rkt.ctb_code
-				AND rkt.ctb_code = rqk.product_code
-				AND rqk.question_code = m.id
-				AND bkt.subject_code = ${subjectCode} 
-				AND bkt.booktype_code = ${booktypeCode}  
-				AND bkt.grade_code = ${gradeCode}
-				AND bkt.selfLabel = '1'
-				AND rkt.selfLabel = '1'
-				AND m.isdel = 0
-				AND m.type in (1,5) 
-				AND m.grade_code = 21
-				GROUP BY
-					m.id
-				ORDER BY
-					bkt.path
+	<sql id="creadTabel">
+DROP TABLE IF EXISTS rule_library;
+CREATE TABLE rule_library (
+  rule_library_id varchar(32) NOT NULL COMMENT '规则库编号',
+  business_system_id  varchar(32) DEFAULT NULL COMMENT '业务系统编号',
+  rule_library_name varchar(32) DEFAULT NULL COMMENT '规则库名称',
+  rule_id varchar(32) DEFAULT NULL COMMENT '规则编号',
+  rule_type varchar(32) default null comment '规则类型',
+  remark varchar(64) default null COMMENT '处理方案',
+  email_group varchar(64) DEFAULT NULL COMMENT '邮件组编号',
+  sms_group varchar(64) DEFAULT NULL COMMENT '短信组编号',
+  create_time datetime DEFAULT NULL COMMENT '创建时间',
+  update_time  datetime  DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (rule_library_id)
+   
+  
+)   COMMENT '监控规则库';
+
+DROP TABLE IF EXISTS business_system;
+CREATE TABLE business_system (
+  business_system_id varchar(32) NOT NULL COMMENT '业务系统编号',
+  business_system_code varchar(32) DEFAULT NULL COMMENT '业务系统代码',
+  business_system_name varchar(32) DEFAULT NULL COMMENT '业务系统名称',
+   
+  create_time datetime DEFAULT NULL COMMENT '创建时间',
+  update_time  datetime  DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (business_system_id)
+   
+  
+)   COMMENT '业务系统';
+
+DROP TABLE IF EXISTS rule_description;
+CREATE TABLE rule_description (
+  rule_description_id varchar(32) NOT NULL COMMENT '规则描述编号',
+  rule_id varchar(32) DEFAULT NULL COMMENT '规则编号',
+  rule_type_id varchar(32) default null comment '规则类型编号',
+  rule_description_code varchar(32) DEFAULT NULL COMMENT '规则描述代码',
+  rule_description_name varchar(32) DEFAULT NULL COMMENT '规则描述名称',
+  rule_description_content varchar(256) DEFAULT NULL COMMENT '规则描述内容',
+  rule_description_ int(11) default null COMMENT '规则描述序号',
+  create_time datetime DEFAULT NULL COMMENT '创建时间',
+  update_time  datetime  DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (rule_description_id)
+   
+  
+)   COMMENT '监控规则描述';
+
+DROP TABLE IF EXISTS alarm;
+CREATE TABLE alarm (
+  alarm_id varchar(32) NOT NULL COMMENT '警报编号',
+  business_system_id  varchar(32) DEFAULT NULL COMMENT '业务系统编号',
+  rule_id varchar(32) DEFAULT NULL COMMENT '规则编号',
+  rule_type varchar(32) default null comment '规则类型',
+  alarm_level varchar(32) DEFAULT NULL COMMENT '警报级别',
+  alarm_title varchar (256) DEFAULT NULL COMMENT '警报标题',
+   
+  create_time datetime DEFAULT NULL COMMENT '创建时间',
+  update_time  datetime  DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (alarm_id)
+  
+)   COMMENT '警报';
+
+DROP TABLE
+IF EXISTS alarm_element;
+
+CREATE TABLE alarm_element (
+	alarm_element_id VARCHAR (32) NOT NULL COMMENT '警报因素编号',
+	alarm_id VARCHAR (32) NOT NULL COMMENT '警报编号',
+	system_id VARCHAR (64) DEFAULT NULL COMMENT '系统标识',
+	time_code VARCHAR (64) DEFAULT NULL COMMENT '埋点时间节点',
+	batch_flag VARCHAR (64) DEFAULT NULL COMMENT '批次标记(0：单笔 1：批次)',
+	out_batch_no VARCHAR (64) DEFAULT NULL COMMENT '外部业务批次号',
+	out_order_no VARCHAR (64) DEFAULT NULL COMMENT '外部业务订单号',
+	batch_no VARCHAR (64) DEFAULT NULL COMMENT '全局批次号',
+	batch_total_count varchar (64) DEFAULT NULL COMMENT '批次中订单总条数',
+	order_no_list VARCHAR (64) DEFAULT NULL COMMENT '子订单号集合',
+	order_no VARCHAR (64) DEFAULT NULL COMMENT '全局订单号',
+	split_batch_no VARCHAR (64) DEFAULT NULL COMMENT '拆分后的小批次号',
+	split_batch_count VARCHAR (64) DEFAULT NULL COMMENT '拆分后的小批次的订单条数',
+	system_tag VARCHAR (64) DEFAULT NULL COMMENT '外部系统标识(如：oa scf nf 超时给) 业务系统存',
+	internal_system_tag VARCHAR (64) DEFAULT NULL COMMENT '内部系统标识(如：outpay bpm 超时给) 业务系统存',
+	dbtr_bank_id VARCHAR (64) DEFAULT NULL COMMENT '付款方银行编号',
+	dbtr_bank_name VARCHAR (64) DEFAULT NULL COMMENT '付款方银行名称',
+	dbtr_name VARCHAR (64) DEFAULT NULL COMMENT '付款方客户名称',
+	bank_channel VARCHAR (64) DEFAULT NULL COMMENT '签约主体号(响应、网络、超时都给) 通道存',
+	ip VARCHAR (64) DEFAULT NULL COMMENT 'IP地址',
+	inter_bank_flag VARCHAR (64) DEFAULT NULL COMMENT '跨行标识(0:跨行;1:同行)',
+	pay_type VARCHAR (64) DEFAULT NULL COMMENT '支付类型(指一个银行的不同接口，如代扣，网络必传) 通道接口',
+	settle_type VARCHAR (64) DEFAULT NULL COMMENT '结算方式( N:普通 ; Y:快速)',
+	amount VARCHAR (64) DEFAULT NULL COMMENT '总金额',
+	status_code VARCHAR (64) DEFAULT NULL COMMENT '交易状态',
+	status_msg VARCHAR (256) DEFAULT NULL COMMENT '状态描述',
+	resp_code VARCHAR (64) DEFAULT NULL COMMENT '响应码',
+	resp_msg VARCHAR (64) DEFAULT NULL COMMENT '响应码信息',
+	error_describe VARCHAR (64) DEFAULT NULL COMMENT '错误描述',
+	create_time datetime DEFAULT NULL COMMENT '创建时间',
+	update_time datetime DEFAULT NULL COMMENT '更新时间',
+	PRIMARY KEY (alarm_element_id)
+) COMMENT '警报因素';
+
+DROP TABLE IF EXISTS user_role;
+CREATE TABLE user_role (
+  role_id varchar(32) NOT NULL COMMENT '角色_编号',
+  role_code varchar(32) DEFAULT NULL COMMENT '角色代码',
+  role_name varchar(32) DEFAULT NULL COMMENT '角色名称',
+      
+  create_time datetime DEFAULT NULL COMMENT '创建时间',
+  update_time  datetime  DEFAULT NULL COMMENT '更新时间',
+
+  PRIMARY KEY (role_id)
+  
+)   COMMENT '用户角色';
+
+DROP TABLE IF EXISTS rule_type;
+CREATE TABLE rule_type (
+  rule_type_id varchar(32) NOT NULL COMMENT '监控规则类型编号',
+  rule_type_code varchar(32) DEFAULT NULL COMMENT '监控规则类型代码',
+  rule_type_name varchar(32) DEFAULT NULL COMMENT '监控规则类型名称',
+  business_system_id  varchar(32) DEFAULT NULL COMMENT '业务系统编号',
+  create_time datetime DEFAULT NULL COMMENT '创建时间',
+  update_time  datetime  DEFAULT NULL COMMENT '更新时间',
+
+  PRIMARY KEY (rule_type_id)
+  
+)   COMMENT '监控规则类型';
+ 
+ 
+
+ 
+
 		 
 	</sql>
 </sqls>

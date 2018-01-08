@@ -14,7 +14,7 @@
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="url" value="jdbc:mysql://127.0.0.1:3306/jdbc?" />
 		<property name="username" value="root" />
-		<property name="password" value="hechenwe@gmail.com" />
+		<property name="password" value="123456" />
 	</bean>
 	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate"
 		abstract="false" lazy-init="false" autowire="default">
@@ -32,13 +32,13 @@
 		<property name="jdbcDao" ref="jdbcDao" />
 	</bean>
 	<bean id="sqlXmlManager" class="com.sooncode.soonjdbc.sql.xml.SqlXmlManager">
-		<property name="xmlFileLocation" value="classpath:/sql" />
+		<property name="xmlFileLocation" value="classpath:sql" />
 	</bean>
-	<!-- <bean id="javaBeanBuilder" class="com.sooncode.soonjdbc.util.create_entity.JavaBeanBuilder"> 
+	   <bean id="javaBeanBuilder" class="com.sooncode.soonjdbctool.JavaBeanBuilder"> 
 		<property name="jdbcTemplate" ref="jdbcTemplate" /> 
-		<property name="codePath" value="E:\代码备份"/> 
-		<property name="packageName" value="com.sooncode.soonjdbc.entity"/> 
-		</bean> -->
+		<property name="codePath" value="D:\workspaces\config-client\src\main\java\com\sooncode\entity"/> 
+		<property name="packageName" value="com.sooncode.entity"/> 
+		</bean>  
 
 	<!-- (事务管理)transaction manager, use JtaTransactionManager for global tx -->
 	<bean id="transactionManager"
