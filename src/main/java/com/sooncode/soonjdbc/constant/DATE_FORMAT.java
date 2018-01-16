@@ -4,6 +4,7 @@ package com.sooncode.soonjdbc.constant;
 public class DATE_FORMAT {
 	private String formatString;
 
+	public static final DATE_FORMAT ALL = new DATE_FORMAT("'%Y-%m-%d %T'");
 	public static final DATE_FORMAT yyyy_MM_dd = new DATE_FORMAT("'%Y-%m-%d'");
 	public static final DATE_FORMAT yyyy_MM = new DATE_FORMAT("'%Y-%m'");
 	public static final DATE_FORMAT MM_dd = new DATE_FORMAT("'%m-%d'");

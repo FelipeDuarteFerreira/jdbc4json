@@ -17,8 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.ConnectionCallback;
@@ -40,8 +38,9 @@ import com.sooncode.soonjdbc.util.T2E;
 
 public class Jdbc {
 
-	public final static Log logger = LogFactory.getLog(Jdbc.class);
 	private JdbcTemplate jdbcTemplate;
+
+	private String showSqlLevel = "debug";
 
 	public Jdbc() {
 
@@ -53,6 +52,10 @@ public class Jdbc {
 
 	public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
+	}
+
+	public void setShowSqlLevel(String showSqlLevel) {
+		this.showSqlLevel = showSqlLevel;
 	}
 
 	/**
@@ -70,8 +73,8 @@ public class Jdbc {
 			return 0L;
 		}
 		String sql = parameter.getReadySql();
-		logger.debug("【SoonJdbc SQL】" + parameter.getReadySql());
-		logger.debug("【SoonJdbc Parameter】" + parameter.getParams());
+		LoggerController.print(getClass(), "【SoonJdbc SQL】" + parameter.getReadySql(), showSqlLevel);
+		LoggerController.print(getClass(), "【SoonJdbc Parameter】" + parameter.getParams(), showSqlLevel);
 
 		if (SqlVerification.isUpdateSql(sql) == false) {
 			return 0L;
@@ -108,14 +111,13 @@ public class Jdbc {
 		if (SqlVerification.isSelectSql(parameter.getReadySql()) == false) {
 			return new LinkedList<>();
 		}
-		logger.debug("【SoonJdbc SQL】" + parameter.getReadySql());
-		logger.debug("【SoonJdbc Parameter】" + parameter.getParams());
+		LoggerController.print(getClass(), "【SoonJdbc SQL】" + parameter.getReadySql(), showSqlLevel);
+		LoggerController.print(getClass(), "【SoonJdbc Parameter】" + parameter.getParams(), showSqlLevel);
 		return jdbcTemplate.execute(new ConnectionCallback<List<Map<String, Object>>>() {
 
 			@Override
 			public List<Map<String, Object>> doInConnection(Connection con) throws SQLException, DataAccessException {
 
-				logger.debug(con.toString());
 				PreparedStatement preparedStatement = con.prepareStatement(parameter.getReadySql());
 				preparedStatement = preparedStatementSet(preparedStatement, parameter.getParams());
 
@@ -251,9 +253,9 @@ public class Jdbc {
 	}
 
 	public int[] batchInsert(final String sql, final List<Map<Integer, Object>> parameters) {
+		LoggerController.print(getClass(), "【SoonJdbc SQL】" + sql, showSqlLevel);
+		LoggerController.print(getClass(), "【SoonJdbc Parameter】" + parameters, showSqlLevel);
 
-		logger.debug("【SoonJdbc SQL】" + sql);
-		logger.debug("【SoonJdbc Parameters】" + parameters);
 		return jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
 			@Override
 			public int getBatchSize() {

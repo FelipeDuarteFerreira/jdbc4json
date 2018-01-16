@@ -53,7 +53,8 @@ public class JdbcDao_Test {
 
 	@Test
 	public void save() {
-		SystemUser u = new SystemUser();
+		SystemUser u = new SystemUser();//system_user
+		
 		u.setAge(123);
 		u.setName("hello jdbc");
 		u.setSex("1");
@@ -327,6 +328,7 @@ public class JdbcDao_Test {
 		//c.setOderBy("age", Sort.DESC);
 		//c.setIsNullCondition("createDate");
         // c.setInCondition("sex", new String[]{"1"});
+		 
 		Page page = dao.getPage(2L, 5L, c);
         
 		List<SystemUser> list = page.getOnes();
@@ -676,8 +678,9 @@ public class JdbcDao_Test {
 		  
 		 SooncodeDictionary sd = new SooncodeDictionary();
 		 
-		
-		Page page =  dao.getPage(1, Long.MAX_VALUE, ConditionsBuilderProcess.getConditions(sg, sd));
+		 Conditions c = ConditionsBuilderProcess.getConditions(sg, sd);
+		 c.setCondition("sooncodeGroups.groupName", LikeSign.LIKE, "类型");
+		Page page =  dao.getPage(1, Long.MAX_VALUE, c);
 		
 		List<One2Many<SooncodeGroups, SooncodeDictionary>> list =   page.getOne2Manys();
 		

@@ -24,6 +24,7 @@
 	</bean>
 	<bean id="jdbc" class="com.sooncode.soonjdbc.Jdbc">
 		<property name="jdbcTemplate" ref="jdbcTemplate" />
+		<property name="showSqlLevel" value="debug" />
 	</bean>
 	<bean id="jdbcDao" class="com.sooncode.soonjdbc.dao.JdbcDao">
 		<property name="jdbc" ref="jdbc" />

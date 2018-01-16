@@ -18,10 +18,10 @@ private StudentDao sd ;
 private static Logger logger = Logger.getLogger("StudentDao__Test.class"); 	
  
 @Test
-public void getStudentAndIdentity(){
+public void creadTabelTest(){
 	
 	 
-	  sd.addQuestion("chinese_question","1","21","新课标人教版");
+	  sd.creadTabel();
 	 
 	
 }

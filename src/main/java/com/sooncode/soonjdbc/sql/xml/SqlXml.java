@@ -21,14 +21,15 @@ public class SqlXml {
 
 	private File file;
 
+	private String fileName;
+
 	/**
 	 * 
 	 * @param xmlName
 	 *            如： com/sooncode/jdbc4json/dao/studentDao.xml
 	 */
 	public SqlXml(String xmlFileName) {
-
-		file = SqlXmlManager.fielMap.get(xmlFileName);
+		this.fileName = xmlFileName;
 
 	}
 
@@ -58,6 +59,8 @@ public class SqlXml {
 	 * @return 参数模型
 	 */
 	public Parameter getParameter(String id, Object... obs) {
+		if (this.file == null)
+			this.file = SqlXmlManager.fielMap.get(this.fileName);
 		String xml = readFile(this.file);
 		ParaXml paraXml = new ParaXml(xml);
 		String sql = paraXml.getValue(id);
@@ -102,7 +105,7 @@ public class SqlXml {
 	 * @throws IOException
 	 */
 	private String readFile(File file) {
-		if (!file.exists() || file.isDirectory()) {
+		if (file == null || !file.exists() || file.isDirectory()) {
 			return null;
 		}
 
