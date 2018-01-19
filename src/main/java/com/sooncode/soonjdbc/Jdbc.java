@@ -75,7 +75,8 @@ public class Jdbc {
 		String sql = parameter.getReadySql();
 		LoggerController.print(getClass(), "【SoonJdbc SQL】" + parameter.getReadySql(), showSqlLevel);
 		LoggerController.print(getClass(), "【SoonJdbc Parameter】" + parameter.getParams(), showSqlLevel);
-
+		
+		 
 		if (SqlVerification.isUpdateSql(sql) == false) {
 			return 0L;
 		}
