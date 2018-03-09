@@ -169,8 +169,8 @@ public class Conditions {
 			sql = sql + nullCondition.getSqlSlice().getSqlSlice();
 		}
 
-		sql = sql + this.getOrderBySql();
 		sql = sql + this.getGroupBySql();
+		sql = sql + this.getOrderBySql();
 		p.setReadySql(sql);
 
 		return p;
