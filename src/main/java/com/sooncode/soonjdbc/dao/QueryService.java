@@ -1,6 +1,7 @@
 package com.sooncode.soonjdbc.dao;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -147,7 +148,8 @@ public class QueryService {
 		String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + leftTableName + " WHERE 1=1 " + sizeWhere;
 		Parameter sizeP = conditions.getWhereParameter();
 		sizeP.setReadySql(sizeSql);
-		Map<String, Object> map = jdbc.get(sizeP);
+		//Map<String, Object> map = jdbc.get(sizeP);
+		Map<String, Object> map = getSize(jdbc, sizeP);
 		Long size = (Long) map.get(T2E.toField(SQL_KEY.SIZE));
 		if (size == null) {
 			size = 0L;
@@ -155,6 +157,28 @@ public class QueryService {
 		Page page = new Page(pageNum, pageSize, size);
 		page.setOnes(result);
 		return page;
+	}
+	
+	private Map<String, Object> getSize(Jdbc jdbc,Parameter sizeP){
+		
+		
+		List<Map<String, Object>> list = jdbc.gets(sizeP);
+		long size =0;
+		
+		boolean isGroupBy = sizeP.getReadySql().contains(SQL_KEY.GROUP_BY.trim());
+		if(list.size()==1 && isGroupBy == false ) {
+			size = Long.parseLong( list.get(0).get(T2E.toField(SQL_KEY.SIZE)).toString()) ;
+		}
+		 
+		
+		if(list.size()>0 && isGroupBy == true) {
+			size = list.size();
+		}
+		 
+		Map<String, Object> map = new HashMap<>();
+		
+		map.put(T2E.toField(SQL_KEY.SIZE), size);
+		return map;
 	}
 
 	private List<ForeignKey> comparison(List<ForeignKey> fkes, List<DbBean> dbBeans) {
@@ -235,7 +259,8 @@ public class QueryService {
 		String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + leftTableName + otherTableNames + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + condition + sizeWhere;
 		Parameter sizeP = conditions.getWhereParameter();
 		sizeP.setReadySql(sizeSql);
-		Map<String, Object> map = jdbc.get(sizeP);
+		//Map<String, Object> map = jdbc.get(sizeP);
+		Map<String, Object> map = getSize(jdbc, sizeP);
 		Long size = (Long) map.get(T2E.toField(SQL_KEY.SIZE));
 		List<One2One> one2ones = new LinkedList<>();
 		List<Bean<L>> lBeans = findBean(list, null, leftDbBean);
@@ -294,7 +319,8 @@ public class QueryService {
 		String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + leftTableName + otherTableName + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + condition + sizeWhere;
 		Parameter sizeP = conditions.getWhereParameter();
 		sizeP.setReadySql(sizeSql);
-		Map<String, Object> map = jdbc.get(sizeP);
+		//Map<String, Object> map = jdbc.get(sizeP);
+		Map<String, Object> map = getSize(jdbc, sizeP);
 		Long size = (Long) map.get(T2E.toField(SQL_KEY.SIZE));
 
 		List<Bean<L>> lBeans = findBean(list, null, leftDbBean);
@@ -385,7 +411,8 @@ public class QueryService {
 		String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + tableNames + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + condition + sizeWhere;
 		Parameter sizeP = conditions.getWhereParameter();
 		sizeP.setReadySql(sizeSql);
-		Map<String, Object> map = jdbc.get(sizeP);
+		//Map<String, Object> map = jdbc.get(sizeP);
+		Map<String, Object> map = getSize(jdbc, sizeP);
 		Long size = (Long) map.get(T2E.toField(SQL_KEY.SIZE));
 		if (size == null) {
 			size = 0L;
@@ -455,7 +482,8 @@ public class QueryService {
 		String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + tableNames + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + condition + sizeWhere;
 		Parameter sizeP = conditions.getWhereParameter();
 		sizeP.setReadySql(sizeSql);
-		Map<String, Object> map = jdbc.get(sizeP);
+		//Map<String, Object> map = jdbc.get(sizeP);
+		Map<String, Object> map = getSize(jdbc, sizeP);
 		Long size = (Long) map.get(T2E.toField(SQL_KEY.SIZE));
 		if (size == null) {
 			size = 0L;
@@ -535,7 +563,8 @@ public class QueryService {
 		String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + tableNames + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + condition + sizeWhere;
 		Parameter sizeP = conditions.getWhereParameter();
 		sizeP.setReadySql(sizeSql);
-		Map<String, Object> map = jdbc.get(sizeP);
+		//Map<String, Object> map = jdbc.get(sizeP);
+		Map<String, Object> map = getSize(jdbc, sizeP);
 		Long size = (Long) map.get(T2E.toField(SQL_KEY.SIZE));
 		if (size == null) {
 			size = 0L;
