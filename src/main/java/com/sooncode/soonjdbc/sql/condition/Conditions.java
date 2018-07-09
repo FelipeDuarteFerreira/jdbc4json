@@ -14,6 +14,7 @@ import com.sooncode.soonjdbc.constant.DateFormat;
 import com.sooncode.soonjdbc.constant.SQL_KEY;
 import com.sooncode.soonjdbc.constant.STRING;
 import com.sooncode.soonjdbc.constant.Sort;
+import com.sooncode.soonjdbc.exception.PropertyInexistenceException;
 import com.sooncode.soonjdbc.sql.Parameter;
 import com.sooncode.soonjdbc.sql.condition.sign.BetweenSign;
 import com.sooncode.soonjdbc.sql.condition.sign.EqualSign;
@@ -221,6 +222,12 @@ public class Conditions {
 			if (k.toUpperCase().equals(key.toUpperCase())) {
 				return true;
 			}
+		} 
+		
+		try {
+			throw new PropertyInexistenceException("This property ["+key+"] in POJO class is not exist !" );
+		} catch (PropertyInexistenceException e) {
+			e.printStackTrace();
 		}
 		return false;
 	}

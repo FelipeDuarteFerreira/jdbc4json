@@ -1,8 +1,11 @@
 package com.sooncode.soonjdbctool;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -60,6 +63,9 @@ public class JavaBeanBuilder {
     			String fName = this.codePath  + javaName +".java";
     			String code = getEntityClassCode(table.getTableName());
     			writeFile(fName, code, "UTF-8");
+    			String fName2 = this.codePath  + javaName +"Fields.java";
+    			String code2 = getEntityFieldsClassCode(table.getTableName());
+    			writeFile(fName2, code2, "UTF-8");
     		}
     	}
     }
@@ -205,40 +211,62 @@ public class JavaBeanBuilder {
 		Column pkColumn = columns.get(pk.getPrimaryKeyName());
 
 		String code = "";
-		String importString = "\r\n";
+		String importString = "";
 		importString += "package "+ this.packageName +";\r\n";
-		importString += "import java.io.Serializable;\r\n";
+		 
 		String an = "/**\r\n";
-		an += "*" + t.getTableRemarks() + "\r\n";
-		an += "* @author hechen \r\n";
+		an += "* " + t.getTableRemarks() + "\r\n";
+		an += "* " + t.getTableName() + "\r\n";
+		an += "* " + T2E.toClassName(t.getTableName()) + "\r\n";
+		an += "* @author SOONJDBC CODE GENERATOR \r\n";
 		an += "* \r\n";
 		an += "*/ \r\n";
-		String classString = "public class " + T2E.toClassName(t.getTableName()) + " implements Serializable{ \r\n";
-		classString += "\t private static final long serialVersionUID = 1L;\r\n";
+		String classString = "public class " + T2E.toClassName(t.getTableName()) + " { \r\n";
+		 
 
-		String pkString = "\t /** " + pkColumn.getColumnRemarks() + " */ \r\n";
+		String pkString ="";
+		if( pkColumn.getColumnRemarks() != null && !pkColumn.getColumnRemarks().trim().equals("")){
+			pkString +=	"\r\n \t /** " + pkColumn.getColumnRemarks() + " */ \r\n";
+		}
 		pkString += "\t private " + pkColumn.getJavaDataType() + " " + pkColumn.getPropertyName() + "; \r\n";
 		code = importString + an + classString + pkString;
 
 		String propertys = "";
 		String getSetString = "";
+		String propertyNames = "";
 		for (Entry<String, Column> en : columns.entrySet()) {
 			Column c = en.getValue();
 			// ----------------get set ---------------
-			getSetString += "\t /** " + c.getColumnRemarks() + " */\r\n";
+			if( pkColumn.getColumnRemarks() != null && !pkColumn.getColumnRemarks().trim().equals("")){
+				getSetString += "\t /** " + c.getColumnRemarks() + " */\r\n";
+				
+			}
 			getSetString += "\t public " + c.getJavaDataType() + " get" + T2E.toClassName(c.getColumnName()) + "() { \r\n";
 			getSetString += "\t \t return " + c.getPropertyName() + ";\r\n";
 			getSetString += "\t }\r\n";
-			getSetString += "\t /** " + c.getColumnRemarks() + " */\r\n";
+			if( pkColumn.getColumnRemarks() != null && !pkColumn.getColumnRemarks().trim().equals("")){
+				getSetString += "\r\n\t /** " + c.getColumnRemarks() + " */\r\n";
+			}
 			getSetString += "\t public void set" + T2E.toClassName(c.getColumnName()) + "(" + c.getJavaDataType() + " " + c.getPropertyName() + ") {\r\n";
 			getSetString += "\t \t this." + c.getPropertyName() + " = " + c.getPropertyName() + ";\r\n";
 			getSetString += "\t }\r\n";
 			getSetString += "\r\n";
+			
+			if( pkColumn.getColumnRemarks() != null && !pkColumn.getColumnRemarks().trim().equals("")){
+				propertyNames += "\r\n\t /** " + c.getColumnRemarks() + " */\r\n";
+			}
+			propertyNames +="\t public String " + c.getPropertyName() + "(){ \r\n";
+			propertyNames += "\t \t return \"" + c.getPropertyName() + "\";\r\n";
+			propertyNames += "\t }\r\n";
 
 			if (c.getPropertyName().equals(pkColumn.getPropertyName())) {
 				continue;
 			}
-			String remarks = "\t /** " + c.getColumnRemarks() + " */\r\n";
+			
+			String remarks ="";
+			if( pkColumn.getColumnRemarks() != null && !pkColumn.getColumnRemarks().trim().equals("")){
+				remarks+="\r\n\t /** " + c.getColumnRemarks() + " */\r\n";
+			}
 			String coluString = "\t private " + c.getJavaDataType() + " " + c.getPropertyName() + " ;\r\n";
 			remarks += coluString;
 			propertys += remarks;
@@ -246,6 +274,44 @@ public class JavaBeanBuilder {
 		}
 
 		code = code + propertys + "\r\n" + getSetString + "}\r\n";
+		return code;
+	}
+	public String getEntityFieldsClassCode(String tableName) {
+		Table t = getTable( tableName);
+		Map<String, Column> columns = getColumns( tableName);
+		PrimaryKey pk = getPrimaryKey( tableName);
+		
+		Column pkColumn = columns.get(pk.getPrimaryKeyName());
+		 
+		String code = "";
+		String importString = "\r\n";
+		importString += "package "+ this.packageName +";\r\n";
+		importString += "import com.sooncode.soonjdbc.util.Field;\r\n";
+		String an = "/**\r\n";
+		an += "*" + t.getTableRemarks() + "\r\n";
+		an += "* @author SOONJDBC CODE GENERATOR \r\n";
+		an += "* \r\n";
+		an += "*/ \r\n";
+		String classString = "public class " + T2E.toClassName(t.getTableName()) + "Fields{ \r\n";
+		String pkString = "\t /** " + pkColumn.getColumnRemarks() + " */ \r\n";
+		pkString += "\t public static Field " + pkColumn.getPropertyName() + " = new Field(\""+pkColumn.getPropertyName()+"\"); \r\n";
+		code = importString + an + classString + pkString;
+		
+		String fields = "";
+		 
+		for (Entry<String, Column> en : columns.entrySet()) {
+			Column c = en.getValue();
+			if (c.getPropertyName().equals(pkColumn.getPropertyName())) {
+				continue;
+			}
+			String remarks = "\t /** " + c.getColumnRemarks() + " */\r\n";
+			String fieldString = "\t public static Field " + c.getPropertyName() + " = new Field(\""+c.getPropertyName()+"\"); \r\n";
+			remarks += fieldString;
+			fields += remarks;
+			
+		}
+		
+		code = code + fields + "}\r\n";
 		return code;
 	}
 
@@ -278,5 +344,30 @@ public class JavaBeanBuilder {
 		} 
 
 	}
+	 
+	public String getPojoTemplate() {
+		
+		File file = new File("pojo_template.txt");
+
+		try {
+			InputStreamReader isr;
+			isr = new InputStreamReader(new FileInputStream(file), "UTF-8");
+			BufferedReader br = new BufferedReader(isr);
+			String temp = null;
+			StringBuffer sb = new StringBuffer();
+			temp = br.readLine();
+			while (temp != null) {
+				sb.append(temp + " ");
+				temp = br.readLine();
+			}
+			br.close();
+			return sb.toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+
+	}
+
 
 }
