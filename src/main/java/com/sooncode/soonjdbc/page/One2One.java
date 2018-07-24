@@ -3,21 +3,23 @@ package com.sooncode.soonjdbc.page;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sooncode.soonjdbc.util.DbModel;
+
 
  
-public class One2One {
+public class One2One  {
 
-	private Map<Class<?>  ,Object> map = new HashMap<Class<?>, Object>();
+	private Map<Class<?>  ,DbModel> map = new HashMap<Class<?>, DbModel>();
 	
-	@SuppressWarnings("unchecked")
-	public <T> T getOne (Class<T> clas){
+	 
+	public DbModel getOne (Class<? extends DbModel> clas ){
 		 
-		return (T) map.get(clas);
+		return   map.get(clas);
 	}
 	
-	public <T> void add(T t ){
+	public void add(DbModel dbModel ){
 		
-		map.put(t.getClass(), t);
+		map.put(dbModel.getClass(), dbModel);
 		
 	}
 	

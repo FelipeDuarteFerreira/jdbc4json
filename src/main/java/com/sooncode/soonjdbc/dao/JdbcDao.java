@@ -1,5 +1,6 @@
 package com.sooncode.soonjdbc.dao;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,7 +31,7 @@ import com.sooncode.soonjdbc.sql.comsql.SqlBuilder;
 import com.sooncode.soonjdbc.sql.comsql.UpdateSql4PrimaryKeyBuilder;
 import com.sooncode.soonjdbc.sql.comsql.UpdatesBuilder;
 import com.sooncode.soonjdbc.sql.condition.Conditions;
-import com.sooncode.soonjdbc.sql.condition.ConditionsBuilderProcess;
+import com.sooncode.soonjdbc.util.DbModel;
 import com.sooncode.soonjdbc.util.T2E;
 
 /**
@@ -62,21 +63,21 @@ public class JdbcDao {
 		this.jdbc = jdbc;
 	}
 
-	public <T> long save(final T javaBean) {
+	public long save(final DbModel dbModel) {
 
-		DbBean dbBean = jdbc.getDbBean(javaBean);
+		DbBean dbBean = jdbc.getDbBean(dbModel);
 		InsertSqlBuilder isb = new InsertSqlBuilder();
 		Parameter parameter = isb.getParameter(dbBean);
 		return jdbc.update(parameter);
 
 	}
 
-	public <T> int[] saves(final List<T> javaBeans) {
+	public int[] saves(final List<DbModel> dbModels) {
 
 		String sql = new String();
 		List<Map<Integer, Object>> parameters = new ArrayList<>();
-		for (T javaBean : javaBeans) {
-			DbBean dbBean = jdbc.getDbBean(javaBean);
+		for (DbModel dbModel : dbModels) {
+			DbBean dbBean = jdbc.getDbBean(dbModel);
 			InsertSqlBuilder isb = new InsertSqlBuilder();
 			Parameter parameter = isb.getParameter(dbBean);
 			sql = parameter.getReadySql();
@@ -86,9 +87,9 @@ public class JdbcDao {
 
 	}
 
-	public <T> long update(final T javaBean) {
+	public <T> long update(final DbModel dbModel) {
 
-		DbBean dbBean = jdbc.getDbBean(javaBean);
+		DbBean dbBean = jdbc.getDbBean(dbModel);
 		Object pkValue = dbBean.getPrimaryFieldValue();
 		if (pkValue == null) {
 			throw new PrimaryKeyValueInexistence("primary key value inexistence ! (主键值不存在!)");
@@ -99,7 +100,7 @@ public class JdbcDao {
 
 	}
 
-	public <T> long updates(final T model, final Conditions conditions) {
+	public <T> long updates(final Conditions conditions, final T model) {
 		DbBean modelDbBean = jdbc.getDbBean(model);
 
 		SqlBuilder sqlBuilder = new UpdatesBuilder();
@@ -112,9 +113,9 @@ public class JdbcDao {
 
 	}
 
-	public <T> long delete(final T javaBean) {
+	public <T> long delete(final DbModel dbModel) {
 
-		DbBean dbBean = jdbc.getDbBean(javaBean);
+		DbBean dbBean = jdbc.getDbBean(dbModel);
 		Object pkValue = dbBean.getPrimaryFieldValue();
 		if (pkValue == null) {
 			throw new PrimaryKeyValueInexistence("primary key value inexistence ! (主键值不存在!)");
@@ -131,8 +132,8 @@ public class JdbcDao {
 	 * @param javaBean
 	 * @return
 	 */
-	public <T> long deletes(final T javaBean) {
-		Conditions conditions = ConditionsBuilderProcess.getConditions(javaBean);
+	public <T> long deletes(final DbModel dbModel) {
+		Conditions conditions = new Conditions(dbModel);
 		return this.deletes(conditions);
 
 	}
@@ -145,31 +146,42 @@ public class JdbcDao {
 	 */
 	public <T> long deletes(final Conditions conditions) {
 
-		DbBean dbBean = jdbc.getDbBean(conditions.getLeftBean().getJavaBean());
+		DbBean dbBean = jdbc.getDbBean(conditions.getMainDbModel());
 		Parameter where = conditions.getWhereParameter();
 		Parameter parameter = new DeletetsSqlBuilder().getParameter(dbBean);
-		String sql = parameter.getReadySql()+ where.getReadySql();
+		String sql = parameter.getReadySql() + where.getReadySql();
 		parameter.setReadySql(sql);
 		parameter.setParams(where.getParams());
 		return jdbc.update(parameter);
 
 	}
 
-	public <T> long saveOrUpdate(final T javaBean) {
+	public long saveOrUpdate(final DbModel dbModel) {
 
-		DbBean dbBean = jdbc.getDbBean(javaBean);
+		DbBean dbBean = jdbc.getDbBean(dbModel);
 		Object pkValue = dbBean.getPrimaryFieldValue();
 		Parameter p = null;
-		boolean pkValueIsInexistence = (pkValue != null);
-		if (pkValueIsInexistence) {
-			RObject<T> rObj = new RObject<>(javaBean.getClass());
-			rObj.invokeSetMethod(dbBean.getPrimaryField(), pkValue);
-			T tJavaBean = rObj.getObject();
-			List<T> list = gets(tJavaBean);
-			boolean haveOneJavaBean = (list.size() == 1);
-			if (haveOneJavaBean) {
-				SqlBuilder sqlBuilder = new UpdateSql4PrimaryKeyBuilder();
-				p = sqlBuilder.getParameter(dbBean);
+		if (pkValue != null) {
+
+			Class<?> dbModelClass = dbModel.getClass();
+			Object model = null;
+			try {
+				DbModel tempModel = (DbModel) dbModelClass.newInstance();
+				tempModel.setJavaBeanClass(dbModel.getJavaBeanClass());
+				Field field = dbModelClass.getField(dbBean.getPrimaryField());
+				field.setAccessible(true);
+				for(Field f :dbModelClass.getDeclaredFields()) {
+					if( !f.getName().equals(dbBean.getPrimaryField()) ) {
+						f.set(tempModel, new com.sooncode.soonjdbc.util.Field(dbBean.getTableName(), T2E.toColumn(f.getName())));
+					}
+				}
+				model = get(tempModel);
+				if (model != null) {
+					SqlBuilder sqlBuilder = new UpdateSql4PrimaryKeyBuilder();
+					p = sqlBuilder.getParameter(dbBean);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 
@@ -183,27 +195,25 @@ public class JdbcDao {
 
 	public <T> List<T> gets(final Conditions conditions) {
 
-		String className = conditions.getLeftBean().getClassName();
-		RObject<?> rObj = new RObject<>(className);
-		DbBean dbBean = jdbc.getDbBean(rObj.getObject());
+		DbBean dbBean = jdbc.getDbBean(conditions.getMainDbModel());
 		Parameter where = conditions.getWhereParameter();
 		Parameter parameter = new SelectSqlBuilder().getParameter(dbBean);
 		String sql = parameter.getReadySql() + where.getReadySql();
 		parameter.setReadySql(sql);
 		parameter.setParams(where.getParams());
 		List<Map<String, Object>> list = jdbc.gets(parameter);
-		List<T> tes = Entity.findEntity(list, rObj.getObject().getClass());
+		List<T> tes = Entity.findEntity(list, conditions.getMainDbModel().getJavaBeanClass());
 		return tes;
 
 	}
 
-	public <T> List<T> gets(T javaBean) {
-		Conditions conditions = ConditionsBuilderProcess.getConditions(javaBean);
+	public <T> List<T> gets(DbModel dbModel) {
+		Conditions conditions = new Conditions(dbModel);
 		return this.gets(conditions);
 	}
 
-	public <T> T get(T javaBean) {
-		List<T> list = this.gets(javaBean);
+	public <T> T get(DbModel dbModel) {
+		List<T> list = this.gets(dbModel);
 		return (list.size() == 1) ? list.get(0) : null;
 	}
 
@@ -212,18 +222,18 @@ public class JdbcDao {
 		return (list.size() == 1) ? list.get(0) : null;
 	}
 
-	public Page getPage(long pageNum, long pageSize, Object leftBean, Object... otherBean) {
-		Conditions conditions = ConditionsBuilderProcess.getConditions(leftBean, otherBean);
+	public Page getPage(long pageNum, long pageSize, DbModel mainDbModel, DbModel... otherDbModels) {
+		Conditions conditions = new Conditions(mainDbModel, otherDbModels);
 		return getPage(pageNum, pageSize, conditions);
 	}
 
-	public Page getPage(long pageNum, long pageSize, TableRelation TableRelation, Object leftBean, Object... otherBean) {
-		Conditions conditions = ConditionsBuilderProcess.getConditions(leftBean, otherBean);
+	public Page getPage(long pageNum, long pageSize, TableRelation TableRelation, DbModel mainDbModel, DbModel... otherDbModels) {
+		Conditions conditions = new Conditions(mainDbModel, otherDbModels);
 		return getPage(pageNum, pageSize, TableRelation, conditions);
 	}
 
-	public One2One getOne2One(Object left, Object... other) {
-		Conditions conditions = ConditionsBuilderProcess.getConditions(left, other);
+	public One2One getOne2One(DbModel mainDbModel, DbModel... otherDbModels) {
+		Conditions conditions = new Conditions(mainDbModel, otherDbModels);
 		return this.getOne2One(conditions);
 	}
 
@@ -237,8 +247,8 @@ public class JdbcDao {
 		return o2o;
 	}
 
-	public <L, R> One2Many<L, R> getOne2Many(Object left, Object... others) {
-		Conditions conditions = ConditionsBuilderProcess.getConditions(left, others);
+	public <L, R> One2Many<L, R> getOne2Many(DbModel mainDbModel, DbModel... otherDbModels) {
+		Conditions conditions = new Conditions(mainDbModel, otherDbModels);
 		return this.getOne2Many(conditions);
 	}
 
@@ -247,18 +257,18 @@ public class JdbcDao {
 		One2Many<L, R> o2m = page.getOne2Many();
 		return o2m;
 	}
-	public <L,M,R> Many2Many<L,M,R> getMany2Many(Object left, Object... others) {
-		Conditions conditions = ConditionsBuilderProcess.getConditions(left, others);
+
+	public <L, M, R> Many2Many<L, M, R> getMany2Many(DbModel mainDbModel, DbModel... otherDbModels) {
+		Conditions conditions = new Conditions(mainDbModel, otherDbModels);
 		return this.getMany2Many(conditions);
 	}
-	
-	public <L,M,R> Many2Many<L,M,R> getMany2Many(Conditions conditions){
+
+	public <L, M, R> Many2Many<L, M, R> getMany2Many(Conditions conditions) {
 		Page page = this.getPage(1L, Long.MAX_VALUE, conditions);
-		Many2Many<L,M,R> m2m = page.getMany2Many();
+		Many2Many<L, M, R> m2m = page.getMany2Many();
 		return m2m;
 	}
-	
-	
+
 	public Page getPage(long pageNum, long pageSize, Conditions conditions) {
 
 		Page page = new Page();
@@ -267,8 +277,7 @@ public class JdbcDao {
 		if (nes.size() == 1) {
 			TableType tableType = nes.get(0);
 			page = tableType.getPage(pageNum, pageSize, conditions, jdbc);
-			
-			
+
 		} else if (nes.size() > 1) {
 			try {
 				throw new TableRelationAnalyzeException("数据库表关系分析异常，存在多种关系，无法识别！");
@@ -292,23 +301,23 @@ public class JdbcDao {
 		return tableType.getPage(pageNum, pageSize, conditions, jdbc);
 	}
 
-	public <E> List<PolymerizationModel<E>> polymerization(Polymerization Polymerization, Conditions conditions, String key, String... fields) {
-
+	public <E> List<PolymerizationModel<E>> polymerization(Polymerization Polymerization, Conditions conditions, com.sooncode.soonjdbc.util.Field key, com.sooncode.soonjdbc.util.Field... fields) {
+        String k = key.getPropertyName();
 		String column = new String();
 		if (fields.length > 0) {
-			for (String field : fields) {
-				column = column + " , " + T2E.toColumn(field);
+			for (com.sooncode.soonjdbc.util.Field field : fields) {
+				column = column + " , " + T2E.toColumn(field.getPropertyName());
 			}
 		}
-		RObject<?> rObj = new RObject<>(conditions.getLeftBean().getClassName());
-		DbBean dbBean = jdbc.getDbBean(rObj.getObject());
+		 
+		DbBean dbBean = jdbc.getDbBean(conditions.getMainDbModel());
 		String tableName = T2E.toTableName(dbBean.getBeanName());
 		String KEY = new String();
 
-		if (!key.equals("*")) {
-			KEY = T2E.toColumn(key);
+		if (!k.equals("*")) {
+			KEY = T2E.toColumn(k);
 		} else {
-			KEY = key;
+			KEY = k;
 		}
 
 		Parameter parameter = new PolymerizationSqlBuilder().getParameter(tableName, Polymerization, KEY, column);
@@ -320,7 +329,7 @@ public class JdbcDao {
 			PolymerizationModel<E> pm = new PolymerizationModel<>();
 			pm.setSize(map.get("size"));
 			@SuppressWarnings("unchecked")
-			E entity = (E) Entity.findEntity(map, rObj.getObject().getClass());
+			E entity = (E) Entity.findEntity(map, conditions.getMainDbModel().getJavaBeanClass());
 			pm.setEntity(entity);
 			polymerizationModels.add(pm);
 		}
@@ -329,29 +338,35 @@ public class JdbcDao {
 
 	}
 
-	public <T> T polymerization(Polymerization Polymerization, Conditions conditions, String key) {
-
-		RObject<?> rObj = new RObject<>(conditions.getLeftBean().getClassName());
-		DbBean dbBean = jdbc.getDbBean(rObj.getObject());
+	/**
+	 * 
+	 * @param Polymerization
+	 * @param conditions
+	 * @param key
+	 * @return MAX MIN return type int ;
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> T polymerization(Polymerization Polymerization, Conditions conditions, com.sooncode.soonjdbc.util.Field key) {
+        String k = key.getPropertyName();
+		DbBean dbBean = jdbc.getDbBean(conditions.getMainDbModel());
 		String tableName = T2E.toTableName(dbBean.getBeanName());
 		String KEY = new String();
-		if ( key.equals("*")) {
-			KEY = key;
+		if (k.equals("*")) {
+			KEY = k;
 		} else {
-			KEY = T2E.toColumn(key);
+			KEY = T2E.toColumn(k);
 		}
 		Parameter parameter = new PolymerizationSqlBuilder().getParameter(tableName, Polymerization, KEY, STRING.NULL_STR);
 		parameter.setReadySql(parameter.getReadySql() + conditions.getWhereParameter().getReadySql());
 		parameter.setParams(conditions.getWhereParameter().getParams());
 		Map<String, Object> map = jdbc.get(parameter);
-		@SuppressWarnings("unchecked")
 		T size = (T) map.get("size");
-		return size;
+		return (T) (size == null ? 0 : size);
 
 	}
 
-	public <T, E> T polymerization(Polymerization Polymerization, E entity, String key) {
-		Conditions c = ConditionsBuilderProcess.getConditions(entity);
+	public <T, E> T polymerization(Polymerization Polymerization, DbModel dbModel, com.sooncode.soonjdbc.util.Field key) {
+		Conditions c = new Conditions(dbModel);
 		return this.polymerization(Polymerization, c, key);
 	}
 

@@ -4,14 +4,15 @@ import java.util.List;
 import java.util.Map;
 
 import com.sooncode.soonjdbc.exception.JavaBeanException;
-import com.sooncode.soonjdbc.reflect.RObject;
+import com.sooncode.soonjdbc.util.DbModel;
+import com.sooncode.soonjdbc.util.DbModel2JavaBean;
 import com.sooncode.soonjdbc.util.T2E;
 
 public class DbBean {
 	private Object javaBean;
 	private String className;
 	private String beanName;
-    private String tableName;
+	private String tableName;
 	private String primaryField;
 	private Object primaryFieldValue;
 	private List<ForeignKey> foreignKeies;
@@ -21,21 +22,36 @@ public class DbBean {
 
 	}
 
-	public <T> DbBean(T t) {
-		if(t==null){
+	/*
+	 * public <T> DbBean(T t) { if(t==null){ try { throw new
+	 * JavaBeanException("数据库表 对应的Java Bean 为空!"); } catch (JavaBeanException e) {
+	 * e.printStackTrace(); } }
+	 * 
+	 * this.javaBean = t; this.className = t.getClass().getName(); this.beanName =
+	 * t.getClass().getSimpleName(); this.tableName = T2E.toTableName(this.beanName
+	 * ); RObject<T> rObj = new RObject<T>(t); this.fields =
+	 * rObj.getFiledAndValue();
+	 * 
+	 * }
+	 */
+	public <T> DbBean(DbModel dbModel) {
+
+		DbModel2JavaBean dmjb = new DbModel2JavaBean(dbModel);
+
+		if (dbModel == null) {
 			try {
 				throw new JavaBeanException("数据库表 对应的Java Bean 为空!");
 			} catch (JavaBeanException e) {
 				e.printStackTrace();
 			}
 		}
-		
-			this.javaBean = t;
-			this.className = t.getClass().getName();
-			this.beanName = t.getClass().getSimpleName();
-			this.tableName = T2E.toTableName(this.beanName );
-			RObject<T> rObj = new RObject<T>(t);
-			this.fields = rObj.getFiledAndValue();
+
+		this.javaBean = dmjb;
+		this.className = dmjb.getJavaBeanClass() == null ? null : dmjb.getJavaBeanClass().getName();
+		this.beanName = dmjb.getBeanName();
+		this.tableName = T2E.toTableName(this.beanName);
+		this.fields = dmjb.getFields();
+
 	}
 
 	public String getBeanName() {
@@ -90,8 +106,6 @@ public class DbBean {
 		return javaBean;
 	}
 
- 
-
 	public void setJavaBean(Object javaBean) {
 		this.javaBean = javaBean;
 	}
@@ -104,5 +118,4 @@ public class DbBean {
 		this.tableName = tableName;
 	}
 
-	
 }

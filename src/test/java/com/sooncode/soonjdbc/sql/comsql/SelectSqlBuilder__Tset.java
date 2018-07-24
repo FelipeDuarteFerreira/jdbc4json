@@ -23,7 +23,7 @@ public class SelectSqlBuilder__Tset {
 	@Test
 	public void getPreparedSql() {
 		SystemUser user = new SystemUser();
-		user.setId(1);
+		user.setUserId(1);
 
 		DbBean db = jdbc.getDbBean(user);
 		SqlBuilder sb = new DeletetSqlBuilder();

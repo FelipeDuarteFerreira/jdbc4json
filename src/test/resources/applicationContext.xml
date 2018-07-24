@@ -29,17 +29,17 @@
 	<bean id="jdbcDao" class="com.sooncode.soonjdbc.dao.JdbcDao">
 		<property name="jdbc" ref="jdbc" />
 	</bean>
-	<bean id="jdbcService" class="com.sooncode.soonjdbc.service.JdbcService">
+	<!-- <bean id="jdbcService" class="com.sooncode.soonjdbc.service.JdbcService">
 		<property name="jdbcDao" ref="jdbcDao" />
-	</bean>
-	<bean id="sqlXmlManager" class="com.sooncode.soonjdbc.sql.xml.SqlXmlManager">
+	</bean> -->
+	<!-- <bean id="sqlXmlManager" class="com.sooncode.soonjdbc.sql.xml.SqlXmlManager">
 		<property name="xmlFileLocation" value="classpath:sql" />
-	</bean>
-	   <bean id="javaBeanBuilder" class="com.sooncode.soonjdbctool.JavaBeanBuilder"> 
+	</bean> -->
+	   <!--    <bean id="javaBeanBuilder" class="com.sooncode.soonjdbctool.JavaBeanBuilder"> 
 		<property name="jdbcTemplate" ref="jdbcTemplate" /> 
-		<property name="codePath" value="D:\workspaces\config-client\src\main\java\com\sooncode\entity"/> 
-		<property name="packageName" value="com.sooncode.entity"/> 
-		</bean>  
+		<property name="codePath" value="C:\Users\Administrator\git\jdbc4json\src\test\java\com\sooncode\soonjdbc\entity"/> 
+		<property name="packageName" value="com.sooncode.soonjdbc.entity"/> 
+		</bean>   -->
 
 	<!-- (事务管理)transaction manager, use JtaTransactionManager for global tx -->
 	<bean id="transactionManager"

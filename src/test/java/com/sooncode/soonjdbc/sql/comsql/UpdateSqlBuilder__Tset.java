@@ -9,7 +9,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.sooncode.soonjdbc.Jdbc;
 import com.sooncode.soonjdbc.bean.DbBean;
-import com.sooncode.soonjdbc.bean.DbBeanCache;
 import com.sooncode.soonjdbc.entity.SystemUser;
 import com.sooncode.soonjdbc.sql.Parameter;
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -23,7 +22,7 @@ public class UpdateSqlBuilder__Tset {
 	@Test
 	public void getPreparedSql(){
 		SystemUser user = new SystemUser();
-		user.setId(1);
+		user.setUserId(1);
 		user.setName("TOM");
 		user.setAge(23);
 		DbBean db = jdbc.getDbBean(user);

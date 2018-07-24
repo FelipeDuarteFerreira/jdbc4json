@@ -27,6 +27,8 @@ import com.sooncode.soonjdbc.bean.DbBeanCache;
 import com.sooncode.soonjdbc.constant.DateFormat;
 import com.sooncode.soonjdbc.sql.Parameter;
 import com.sooncode.soonjdbc.sql.verification.SqlVerification;
+import com.sooncode.soonjdbc.util.DbModel;
+import com.sooncode.soonjdbc.util.DbModel2JavaBean;
 import com.sooncode.soonjdbc.util.T2E;
 
 /**
@@ -176,6 +178,23 @@ public class Jdbc {
 			}
 		});
 
+	}
+	public   DbBean getDbBean(final DbModel dbModel) {
+		
+		DbBean db = DbBeanCache.getDbBean(null, new DbModel2JavaBean(dbModel));
+		if (db != null) {
+			return db;
+		}
+		
+		return jdbcTemplate.execute(new ConnectionCallback<DbBean>() {
+			
+			@Override
+			public DbBean doInConnection(Connection con) throws SQLException, DataAccessException {
+				DbBean db = DbBeanCache.getDbBean(con, new DbModel2JavaBean(dbModel));
+				return db;
+			}
+		});
+		
 	}
 
 	/**

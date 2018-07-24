@@ -44,5 +44,7 @@ public class Jdbc_Test {
 		List<Map<String,Object>> list = jdbc.gets(p);
 	    logger.info(list);
 	}
+	
+	
 	 
 }

@@ -12,6 +12,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.sooncode.soonjdbc.constant.DATE_FORMAT;
 import com.sooncode.soonjdbc.constant.Sort;
 import com.sooncode.soonjdbc.dao.JdbcDao;
 import com.sooncode.soonjdbc.dao.polymerization.Polymerization;
@@ -19,29 +20,34 @@ import com.sooncode.soonjdbc.dao.polymerization.PolymerizationModel;
 import com.sooncode.soonjdbc.dao.tabletype.TableRelation;
 import com.sooncode.soonjdbc.entity.ChooseCourse;
 import com.sooncode.soonjdbc.entity.SooncodeClazz;
+import com.sooncode.soonjdbc.entity.SooncodeClazzDbModel;
 import com.sooncode.soonjdbc.entity.SooncodeCourse;
 import com.sooncode.soonjdbc.entity.SooncodeDictionary;
 import com.sooncode.soonjdbc.entity.SooncodeGroups;
 import com.sooncode.soonjdbc.entity.SooncodeIdentity;
 import com.sooncode.soonjdbc.entity.SooncodeSchool;
 import com.sooncode.soonjdbc.entity.SooncodeStudent;
+import com.sooncode.soonjdbc.entity.SooncodeStudentDbModel;
 import com.sooncode.soonjdbc.entity.SooncodeTeacher;
 import com.sooncode.soonjdbc.entity.SooncodeTeaching;
 import com.sooncode.soonjdbc.entity.SystemFriend;
 import com.sooncode.soonjdbc.entity.SystemUser;
+import com.sooncode.soonjdbc.entity.SystemUserDbModel;
 import com.sooncode.soonjdbc.page.Many2Many;
 import com.sooncode.soonjdbc.page.One2Many;
 import com.sooncode.soonjdbc.page.One2Many2Many;
 import com.sooncode.soonjdbc.page.One2One;
 import com.sooncode.soonjdbc.page.Page;
 
+ 
 import com.sooncode.soonjdbc.sql.condition.Conditions;
-import com.sooncode.soonjdbc.sql.condition.ConditionsBuilder;
-import com.sooncode.soonjdbc.sql.condition.ConditionsBuilderProcess;
 import com.sooncode.soonjdbc.sql.condition.sign.BetweenSign;
 import com.sooncode.soonjdbc.sql.condition.sign.EqualSign;
 import com.sooncode.soonjdbc.sql.condition.sign.InSign;
 import com.sooncode.soonjdbc.sql.condition.sign.LikeSign;
+import com.sooncode.soonjdbc.sql.condition.sign.NullSign;
+import com.sooncode.soonjdbc.util.DbModel;
+import com.sooncode.soonjdbc.util.Field;
 import com.sooncode.util.SJson;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -51,184 +57,187 @@ public class JdbcDao_Test {
 	private JdbcDao dao;
 	private static Logger logger = Logger.getLogger("JdbcDao_Test.class");
 
+	 
+
 	@Test
 	public void save() {
-		SystemUser u = new SystemUser();//system_user
-		
+		SystemUser u = new SystemUser();// system_user
+
 		u.setAge(123);
 		u.setName("hello jdbc");
 		u.setSex("1");
 		u.setCreateDate(new Date());
 		u.setUpdateDate(new Date());
-		dao.save(u);
-    /* for (int i = 0 ;i<1000;i++) {
-	     dao.save(u);
-			
-		}*/
+ 
+		long size = dao.save(new SystemUserDbModel(u));
 		 
-	
+		logger.info("-------------:" + size);
+
 	}
-	
-	
+
 	@Test
 	public void saves() {
 		SystemUser u = new SystemUser();
-		//u.setId(1);
+		// u.setId(1);
 		u.setAge(123);
 		u.setName("hello jdbc");
 		u.setSex("1");
 		u.setCreateDate(new Date());
 		u.setUpdateDate(new Date());
 		SystemUser u2 = new SystemUser();
-		//u2.setId(2);
+		// u2.setId(2);
 		u2.setName("fjlskjlk");
 		u2.setSex("0");
 		u2.setCreateDate(new Date());
 		u2.setUpdateDate(new Date());
-		
-		List<SystemUser> list = new ArrayList<>();
-		list.add(u);
-		list.add(u2);
-		int [] ids = dao.saves(list);
+
+		List<DbModel> list = new ArrayList<>();
+		list.add(new SystemUserDbModel(u));
+		list.add(new SystemUserDbModel(u2));
+		int[] ids = dao.saves(list);
 		logger.info(ids);
-		
-		
+
 	}
 
 	@Test
 	public void update() {
 		SystemUser u = new SystemUser();
-		//u.setId(642);
-		//u.setAge(100);
-		//u.setName("HE CHEN ");
-		//u.setSex("1");
-		dao.update(u);
+		u.setUserId(642);
+		u.setAge(100);
+		// u.setName("HE CHEN ");
+		// u.setSex("1");
+		dao.update(new SystemUserDbModel(u));
 	}
 	
 	
 	@Test
-	public void updates() {
+	public void update3() {
+		SystemUserDbModel sudm = new SystemUserDbModel(); 
+		sudm.userId.setValue(642);
+		sudm.age.setValue(34);
+		dao.update(sudm);
+	}
+
+	 
+
+	@Test
+	public void updates1() {
 		SystemUser u = new SystemUser();
-		 
 		u.setAge(100);
 		u.setName("hechen");
-		Conditions c = ConditionsBuilderProcess.getConditions(new SystemUser() );
-		c.setCondition("id", InSign.IN, new Integer[]{642,643});
-		long n = dao.updates(u,c);
+		SystemUserDbModel sudm = new SystemUserDbModel();
+		Conditions c = new Conditions(sudm);
+		c.setCondition(sudm.userId, InSign.IN, new Integer[] { 642, 643 });
+		c.setCondition(sudm.name, LikeSign.R_LIKE, "hec");
+		long n = dao.updates(c, u);
 		logger.info(n);
 	}
 
 	@Test
-	public void saveOrUpdate(){
+	public void saveOrUpdate() {
 		SystemUser u = new SystemUser();
-		u.setId(11809);
+		u.setUserId(2206);
 		u.setAge(34);
 		u.setName("IOOUUY");
 		u.setSex("1");
-		dao.saveOrUpdate(u);
+		
+		
+		dao.saveOrUpdate(new SystemUserDbModel(u));
 	}
-	
-	
+
 	@Test
 	public void deletes() {
-		SystemUser u = new SystemUser();
-		Conditions c = ConditionsBuilderProcess.getConditions(u);
-		c.setCondition("id", EqualSign.GT, 700);
+		Conditions c = new Conditions(new SystemUserDbModel());
+		c.setCondition(new SystemUserDbModel().age,NullSign.IS_NULL);
 		dao.deletes(c);
-		 
+
 	}
+
 	@Test
 	public void deletes2() {
 		SystemUser u = new SystemUser();
-	    u.setId(456);
-		dao.deletes(u);
-		
+		u.setSex("1");
+		dao.deletes(new SystemUserDbModel(u));
+
 	}
+
 	@Test
 	public void delete() {
 		SystemUser u = new SystemUser();
-		u.setId(2);
+		u.setUserId(2209);
 		u.setAddress("hsdk");
 		u.setAge(34);
-		dao.delete(u);
-		
+		dao.delete(new SystemUserDbModel(u));
+
 	}
 
 	@Test
 	@Transactional
 	public void transactional() {
 		SystemUser u = new SystemUser();
-		u.setId(20);
-		dao.delete(u);
-		//u.setName("hh");
-		//dao.update(u);
-		//int n = 1/0;
+		u.setUserId(20);
+		dao.delete(new SystemUserDbModel(u));
+		// u.setName("hh");
+		// dao.update(u);
+		// int n = 1/0;
 	}
-	
-	
-	@Test
-	public void max() {
-		SystemUser u = new SystemUser();
-		Conditions c = ConditionsBuilderProcess.getConditions(u);
-		c.setCondition("name", LikeSign.LIKE, "hechen");
-		int max = dao.polymerization(Polymerization.MAX, c, "age");
-		logger.info(max); 
-	}
-	
-	
-	
+
+	 
+
 	@Test
 	public void polymerization() {
-		SystemUser u = new SystemUser();
-		Conditions c = ConditionsBuilderProcess.getConditions(u);
-		int max = dao.polymerization(Polymerization.MAX, c, "age");
-		logger.info(max); 
+		Conditions c = new Conditions(new SystemUserDbModel());
+		c.setCondition(new SystemUserDbModel().name, LikeSign.LIKE, "hechen");
+		int max = dao.polymerization(Polymerization.MAX, c, new SystemUserDbModel().age);
+		logger.info(max);
 	}
+
 	@Test
 	public void polymerization2() {
-		SystemUser u = new SystemUser();
-		Conditions c = ConditionsBuilderProcess.getConditions(u);
-		c.setGroupBy("sex");
-		List<PolymerizationModel<SystemUser>>  pms =  dao.polymerization(Polymerization.MIN, c, "age","name");
+		 
+		Conditions c = new Conditions(new SystemUserDbModel(new SystemUser())); 
+		c.setGroupBy(new SystemUserDbModel().sex);
+		List<PolymerizationModel<SystemUser>> pms = dao.polymerization(Polymerization.MIN, c, new SystemUserDbModel().age, new SystemUserDbModel().name);
 		for (PolymerizationModel<SystemUser> pm : pms) {
-			logger.info(pm.getSize()); 
-			logger.info(pm.getEntity()); 
+			logger.info(pm.getSize());
+			logger.info(pm.getEntity());
 		}
 	}
-	
+
 	@Test
 	public void max2() {
 		SystemUser u = new SystemUser();
 		u.setSex("1");
-		//Conditions c = ConditionsBuilderProcess.getConditions(u);
-		int max = dao.polymerization(Polymerization.MAX, u, "age");
-		logger.info(max); 
+		SystemUserDbModel sudm = new SystemUserDbModel(u);
+		int max = dao.polymerization(Polymerization.MAX, sudm, new SystemUserDbModel().age);
+		logger.info(max);
 	}
 
-	
-	
-	
-	
-	
 	@Test
 	public void get() {
-		SystemUser u = new SystemUser();
-		//u.setAge(23);
-		Conditions c = ConditionsBuilderProcess.getConditions(u);
-		//c.setCondition("name", LikeSign.LIKE , "hello jdbc");
-		//c.setCondition("sex", EqualSign.NOT_EQ , "0");
-	    //c.setCondition( "createDate" ,EqualSign.LT,new Date(), DATE_FORMAT.yyyy_MM_dd);
-	    //c.setCondition( "createDate" ,EqualSign.LT,"2017-06-13", DATE_FORMAT.yyyy_MM_dd);
-		//c.setCondition( "createDate" ,BetweenSign.NOT_BETWEEN_AND,new Date(),new Date(), DATE_FORMAT.yyyy_MM_dd);
-	    //c.setCondition("age",BetweenSign.NOT_BETWEEN_AND, 10, 100);
-		//c.setCondition("type", InSign.IN, new String[]{"AA","BB"});
-		//c.setCondition("name",NullSign.IS_NOT_NULL);
-		//c.setCondition("sex",NullSign.IS_NULL);
-		c.setOderBy("name", Sort.DESC);
-		c.setOderBy("sex", Sort.ASC);
-		Page p = dao.getPage(1L, 2L, c);
-		List<SystemUser> list = p.getOnes();
-		logger.info(list);
+		 SystemUser u = new SystemUser();
+		 u.setCreateDate(new Date());
+		 u.setAge(23);
+		 Conditions c = new Conditions( new SystemUserDbModel(u));
+		 c.setCondition(new SystemUserDbModel().name, LikeSign.LIKE , "he");
+		// c.setCondition(u.sex(), EqualSign.NOT_EQ , "0");
+		// c.setCondition( "createDate" ,EqualSign.LT,new Date(),
+		// DATE_FORMAT.yyyy_MM_dd);
+		// c.setCondition( "createDate" ,EqualSign.LT,"2017-06-13",
+		// DATE_FORMAT.yyyy_MM_dd);
+		// c.setCondition( u.createDate() ,BetweenSign.BETWEEN_AND,new Date(),new
+		// Date(), DATE_FORMAT.yyyy_MM_dd);
+		// c.setCondition(u.age(),BetweenSign.NOT_BETWEEN_AND, 10, 100);
+		// c.setCondition(u.type(), InSign.IN, new String[]{"AA","BB"});
+		// c.setCondition("name",NullSign.IS_NOT_NULL);
+		// c.setCondition("sex",NullSign.IS_NULL);
+		// c.setOderBy("name", Sort.DESC);
+		// c.setOderBy("sex", Sort.ASC);
+		  Page p = dao.getPage(1L, 2L, c);
+		  List<SystemUser> list = p.getOnes();
+		  logger.info(list);
+
+		 
 
 	}
 
@@ -236,85 +245,86 @@ public class JdbcDao_Test {
 	public void get2() {
 		SystemUser u = new SystemUser();
 		u.setSex("1");
-		List<SystemUser> list = dao.gets(u);
+		List<SystemUser> list = dao.gets(new SystemUserDbModel(u));
 		logger.info(list);
 
 	}
-	
-	
+
 	@Test
 	public void gets() {
 		SystemUser u = new SystemUser();
 		u.setSex("1");
-		Conditions c = ConditionsBuilderProcess.getConditions(u);
+		Conditions c =  new Conditions(new SystemUserDbModel(u));
+		c.setCondition(new SystemUserDbModel().name, LikeSign.LIKE, "he");
+		c.setCondition(new SystemUserDbModel().age, EqualSign.GT, 23);
 		List<SystemUser> list = dao.gets(c);
 		logger.info(list);
-		
-	}
 
-	 
+	}
 
 	@Test
 	public void count() {
 		SystemUser u = new SystemUser();
 		u.setSex("1");
-		Conditions c = ConditionsBuilderProcess.getConditions(u);
-		long n = dao.polymerization(Polymerization.COUNT, c, "*");
+		Conditions c = new Conditions(new SystemUserDbModel(u));
+		long n = dao.polymerization(Polymerization.COUNT, c, new SystemUserDbModel().userId);
 		logger.info("------------:" + n);
 
 	}
+
 	@Test
 	public void count2() {
 		SystemUser u = new SystemUser();
-		//u.setSex("1");
-		Conditions c = ConditionsBuilderProcess.getConditions(u);
-		c.setGroupBy("sex");
-		List<PolymerizationModel<SystemUser>> list  = dao.polymerization(Polymerization.COUNT, c, "*", new String[]{"sex"});
+		// u.setSex("1");
+		Conditions c = new Conditions(new SystemUserDbModel(u));
+		c.setGroupBy(new SystemUserDbModel().sex);
+		List<PolymerizationModel<SystemUser>> list = dao.polymerization(Polymerization.COUNT, c, new SystemUserDbModel().userId,new SystemUserDbModel().age,new SystemUserDbModel().name );
 		logger.info("------------:" + list.size());
-		
+
 	}
-	
+
 	@Test
 	public void sum() {
 		SystemUser u = new SystemUser();
-		//u.setSex("0");
-		Conditions c = ConditionsBuilderProcess.getConditions(u);
-		Object n = dao.polymerization(Polymerization.SUM, c, "doog");
+		Conditions c = new Conditions(new SystemUserDbModel(u));
+		Object n = dao.polymerization(Polymerization.SUM, c, new SystemUserDbModel().name);
 		logger.info("------------:" + n);
-		
+
 	}
+
 	@Test
 	public void sum2() {
 		SystemUser u = new SystemUser();
-		//u.setSex("0");
-		Conditions c = ConditionsBuilderProcess.getConditions(u);
-		c.setGroupBy("sex");
-		List<PolymerizationModel<SystemUser>> list = dao.polymerization( Polymerization.SUM, c , "doog", new String[]{"age"});
-		logger.info("------------:" +list);
-		
+		// u.setSex("0");
+		Conditions c = new Conditions(new SystemUserDbModel(u));
+		c.setGroupBy(new SystemUserDbModel().sex);
+		List<PolymerizationModel<SystemUser>> list = dao.polymerization(Polymerization.COUNT, c, new SystemUserDbModel().userId,new SystemUserDbModel().age,new SystemUserDbModel().name );
+		logger.info("------------:" + list);
+
 	}
+
 	@Test
 	public void avg() {
 		SystemUser u = new SystemUser();
-		//u.setSex("0");
-		Conditions c = ConditionsBuilderProcess.getConditions(u);
-		c.setCondition("name", EqualSign.EQ, "hechen");
-		Object n = dao.polymerization(Polymerization.AVG, u,"doog");
+		// u.setSex("0");
+		Conditions c = new Conditions(new SystemUserDbModel(u));
+		c.setCondition(new SystemUserDbModel().name, EqualSign.EQ, "hechen");
+		Object n = dao.polymerization(Polymerization.AVG, c, new SystemUserDbModel().sex);
 		logger.info("------------:" + n);
-		
+
 	}
-	
-	
+
 	@Test
 	public void getOne2One3() {
 		SooncodeStudent s = new SooncodeStudent();
 		s.setStudentId("001");
-	    
-		One2One o2o = dao.getOne2One(s, new SooncodeClazz());
-		s = o2o.getOne(SooncodeStudent.class);
-		SooncodeClazz cl = o2o.getOne(SooncodeClazz.class);
-		logger.info(s+"------------:" + cl);
-		
+		SooncodeStudentDbModel student = new SooncodeStudentDbModel(s);
+		One2One o2o = dao.getOne2One(student, new SooncodeClazzDbModel());
+		DbModel scdm = o2o.getOne(SooncodeStudentDbModel.class);
+		DbModel cl = o2o.getOne(SooncodeClazzDbModel.class);
+		SooncodeClazz sc = cl.transform(SooncodeClazz.class);
+		s = scdm.transform(SooncodeStudent.class) ;
+
 	}
 
 	/**
@@ -324,31 +334,34 @@ public class JdbcDao_Test {
 	public void getOnes() {
 		SystemUser u = new SystemUser();
 		u.setSex("1");
-		Conditions c = ConditionsBuilderProcess.getConditions(u);
-		//c.setOderBy("age", Sort.DESC);
-		//c.setIsNullCondition("createDate");
-        // c.setInCondition("sex", new String[]{"1"});
+		Conditions c = new Conditions(new SystemUserDbModel(u));
+		c.setOderBy(new SystemUserDbModel().age, Sort.DESC);
 		 
-		Page page = dao.getPage(2L, 5L, c);
-        
+		Page page = dao.getPage(1L, 5L, c);
+
 		List<SystemUser> list = page.getOnes();
-		logger.info("-------"+page.getTotal() +"-------------------------------"+page.getTotalPages()+"-------------------------");
+		logger.info("-------" + page.getTotal() + "-------------------------------" + page.getTotalPages() + "-------------------------");
 		for (SystemUser SystemUser : list) {
 			logger.info(SystemUser);
 		}
 		logger.info("---------------------------------------------------------------");
 	}
 
+	
+	
+	
+	
 	/**
 	 * 查询 学生和与之对应的身份详情
 	 */
+	/* 
 	@Test
 	public void getOne2One2() {
 		SooncodeStudent s = new SooncodeStudent();
 		SooncodeIdentity id = new SooncodeIdentity();
 		SooncodeClazz sc = new SooncodeClazz();
-		Conditions c = ConditionsBuilderProcess.getConditions(s, id,sc);
-		 
+		Conditions c = ConditionsBuilderProcess.getConditions(s, id, sc);
+
 		Page page = dao.getPage(1L, 5L, c);
 
 		List<One2One> list = page.getOne2One();
@@ -362,15 +375,19 @@ public class JdbcDao_Test {
 			logger.info(new SJson(ide));
 			logger.info(new SJson(sc2));
 			logger.info("---------------------------------------------------------------");
-			//StudentAndIdentity si = ModelTransform.getModel(one2One, StudentAndIdentity.class);
-			//logger.info(new SJson(si));
+			// StudentAndIdentity si = ModelTransform.getModel(one2One,
+			// StudentAndIdentity.class);
+			// logger.info(new SJson(si));
 		}
 		logger.info("---------------------------------------------------------------");
 	}
 
+    */
 	/**
 	 * 查询 学生 ，身份 ，班级信息
 	 */
+	
+	/*
 	@Test
 	public void getOne2One0() {
 		SooncodeStudent s = new SooncodeStudent();
@@ -391,38 +408,39 @@ public class JdbcDao_Test {
 		}
 		logger.info("---------------------------------------------------------------");
 	}
-
+	*/
 	/**
-	 * 查询 班级id为‘002’的所有学生  ()
+	 * 查询 班级id为‘002’的所有学生 ()
 	 */
+	
+ 
 	@Test
 	public void getOne2Many() {
-		SooncodeStudent s = new SooncodeStudent();
-		// s.setAge(22);
+		 
+		SooncodeClazzDbModel clazzModel = new SooncodeClazzDbModel();
 		SooncodeClazz clazz = new SooncodeClazz();
 		clazz.setClazzId("002");
-		//Conditions c = ConditionsBuilderProcess.getConditions(clazz, s);
-		Page page = dao.getPage(1L, 10L, TableRelation.ONE_MANY, clazz,s);//you qi yi shi shi yong 
-		One2Many<SooncodeClazz, SooncodeStudent> o2m = page.getOne2Many();
-		SooncodeClazz cl = o2m.getOne();
-		List<SooncodeStudent> stues = o2m.getMany();
-		logger.info("---------------------------------------------------------------");
-		logger.info(cl);
-		logger.info(stues);
-		logger.info("---------------------------------------------------------------");
-		//SooncodeClazz cla = page.getOne2One().get(0).getOne(SooncodeClazz.class);
-		//SooncodeStudent mo = page.getOne2One().get(0).getOne(SooncodeStudent.class);
-		//logger.info(cla);
-		//logger.info(mo);
-		logger.info("---------------------------------------------------------------");
-
+		clazzModel.injectPropertyValue(clazz);
+		SooncodeStudentDbModel studentModel = new SooncodeStudentDbModel();
+		 
+		Page page = dao.getPage(1L, 10L, TableRelation.ONE_MANY, clazzModel, studentModel); 
+		One2Many  o2m = page.getOne2Many();
+		DbModel cl = o2m.getOne();
+		List<DbModel> stues = o2m.getMany();
+		
+		SooncodeClazz sc = cl.transform(SooncodeClazz.class);
+        List<SooncodeStudent> list = DbModel.transform(stues, SooncodeStudent.class);
+        
+        
+        logger.info(sc);
+        logger.info(list);
 	}
-	
-	 
-
+ 
 	/**
 	 * 查询 学生id 为 "001" 选修的所有课程
 	 */
+	
+	/*
 	@Test
 	public void getMany2Many() {
 		SooncodeStudent s = new SooncodeStudent();
@@ -448,10 +466,12 @@ public class JdbcDao_Test {
 		logger.info("---------------------------------------------------------------");
 
 	}
-
+	*/
 	/**
 	 * 查询 学生 选修 课程 的情况
 	 */
+	
+	/*
 	@Test
 	public void getOne2One1() {
 		SooncodeStudent s = new SooncodeStudent();
@@ -459,7 +479,7 @@ public class JdbcDao_Test {
 		ChooseCourse cc = new ChooseCourse();
 		SooncodeCourse co = new SooncodeCourse();
 		Conditions c = ConditionsBuilderProcess.getConditions(cc, s, co);
-		c.setCondition("chooseCourse.score",BetweenSign.NOT_BETWEEN_AND, 50, 100);
+		c.setCondition("chooseCourse.score", BetweenSign.NOT_BETWEEN_AND, 50, 100);
 		Page page = dao.getPage(1L, 10L, c);
 		List<One2One> list = page.getOne2One();
 		logger.info("---------------------------------------------------------------");
@@ -472,10 +492,11 @@ public class JdbcDao_Test {
 		logger.info("---------------------------------------------------------------");
 
 	}
-
+	*/
 	/**
 	 * 查询用户id 为 16 的所有好友
 	 */
+	/*
 	@Test
 	public void getOne2One() {
 		SystemUser u = new SystemUser();
@@ -496,10 +517,11 @@ public class JdbcDao_Test {
 		logger.info("---------------------------------------------------------------");
 
 	}
-
+	*/
 	/**
 	 * 查询：选修 课程id为‘001’ 的所有学生
 	 */
+	/*
 	@Test
 	public void getMany2Manys() {
 		SooncodeStudent s = new SooncodeStudent();
@@ -507,7 +529,7 @@ public class JdbcDao_Test {
 		SooncodeCourse co = new SooncodeCourse();
 		co.setCourseId("001");
 		Conditions c = ConditionsBuilderProcess.getConditions(co, cc, s);
-		c.setCondition("chooseCourse.score",BetweenSign.BETWEEN_AND, 50, 100);
+		c.setCondition("chooseCourse.score", BetweenSign.BETWEEN_AND, 50, 100);
 		Page page = dao.getPage(1L, 10L, c);
 		List<Many2Many<SooncodeCourse, ChooseCourse, SooncodeStudent>> m2ms = page.getMany2Manys();
 
@@ -526,11 +548,11 @@ public class JdbcDao_Test {
 		logger.info("---------------------------------------------------------------");
 
 	}
-
+	*/
 	/**
 	 * 查询 学校id为‘1’ 的所有班级，和班级对应 的所有学生
 	 */
-
+	/*
 	@Test
 	public void getOne2Many2Manys() {
 		SooncodeSchool school = new SooncodeSchool();
@@ -560,10 +582,11 @@ public class JdbcDao_Test {
 		logger.info("---------------------------------------------------------------");
 
 	}
-
+	*/
 	/**
 	 * 查询：班级id="001" 的班级的学校信息，和班长信息,班主任信息。
 	 */
+	/*
 	@Test
 	public void getPage8() {
 
@@ -589,10 +612,11 @@ public class JdbcDao_Test {
 		logger.info("---------------------------------------------------------------");
 
 	}
-
+	*/
 	/**
 	 * 查询：班级id="001" 的班级的学校信息，和班长信息。
 	 */
+	/*
 	@Test
 	public void getPage9() {
 
@@ -615,10 +639,11 @@ public class JdbcDao_Test {
 		logger.info("---------------------------------------------------------------");
 
 	}
-
+	*/
 	/**
 	 * 查询：老师id="4" 的老师，是哪个学校的校长。
 	 */
+	/*
 	@Test
 	public void getPage10() {
 
@@ -642,7 +667,8 @@ public class JdbcDao_Test {
 		logger.info("---------------------------------------------------------------");
 
 	}
-
+	*/
+	/*
 	@Test
 	public void getPage11() {
 
@@ -671,28 +697,28 @@ public class JdbcDao_Test {
 		logger.info("---------------------------------------------------------------");
 
 	}
+	*/
+	/*
 	@Test
 	public void getOne2Manys__page() {
-		
-		 SooncodeGroups sg = new SooncodeGroups();
-		  
-		 SooncodeDictionary sd = new SooncodeDictionary();
-		 
-		 Conditions c = ConditionsBuilderProcess.getConditions(sg, sd);
-		 c.setCondition("sooncodeGroups.groupName", LikeSign.LIKE, "类型");
-		Page page =  dao.getPage(1, Long.MAX_VALUE, c);
-		
-		List<One2Many<SooncodeGroups, SooncodeDictionary>> list =   page.getOne2Manys();
-		
+
+		SooncodeGroups sg = new SooncodeGroups();
+
+		SooncodeDictionary sd = new SooncodeDictionary();
+
+		Conditions c = ConditionsBuilderProcess.getConditions(sg, sd);
+		c.setCondition("sooncodeGroups.groupName", LikeSign.LIKE, "类型");
+		Page page = dao.getPage(1, Long.MAX_VALUE, c);
+
+		List<One2Many<SooncodeGroups, SooncodeDictionary>> list = page.getOne2Manys();
+
 		for (One2Many<SooncodeGroups, SooncodeDictionary> o2m : list) {
 			logger.info(o2m.getOne());
 			logger.info(o2m.getMany());
 		}
-		
-		
-		
+
 	}
-	 
 	
-	 
+	*/
+
 }

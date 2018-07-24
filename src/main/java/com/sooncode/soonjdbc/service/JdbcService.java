@@ -9,7 +9,7 @@ import com.sooncode.soonjdbc.page.Many2Many;
 import com.sooncode.soonjdbc.page.One2Many;
 import com.sooncode.soonjdbc.page.One2One;
 import com.sooncode.soonjdbc.page.Page;
-import com.sooncode.soonjdbc.sql.condition.Conditions;
+import com.sooncode.soonjdbc.sql.condition.Conditions2;
 
 /**
  * Jdbc Service  
@@ -32,7 +32,7 @@ public class JdbcService {
 		this.jdbcDao = jdbcDao;
 	}
 
-	public One2One getOne2One(Conditions conditions) {
+	public One2One getOne2One(Conditions2 conditions) {
 		return this.jdbcDao.getOne2One(conditions);
 	}
 
@@ -40,7 +40,7 @@ public class JdbcService {
 		return this.jdbcDao.getOne2One(left, others);
 	}
 
-	public <L, R> One2Many<L, R> getOne2Many(Conditions conditions) {
+	public <L, R> One2Many<L, R> getOne2Many(Conditions2 conditions) {
 		return this.jdbcDao.getOne2Many(conditions);
 	}
 
@@ -50,7 +50,7 @@ public class JdbcService {
 	public <L,M,R> Many2Many<L,M,R> getMany2Many(Object left, Object... others) {
 		return this.jdbcDao.getMany2Many(left,others);
 	}
-	public <L,M,R> Many2Many<L,M,R> getMany2Many(Conditions conditions) {
+	public <L,M,R> Many2Many<L,M,R> getMany2Many(Conditions2 conditions) {
 		return this.jdbcDao.getMany2Many(conditions);
 	}
 
@@ -58,7 +58,7 @@ public class JdbcService {
 		return jdbcDao.getPage(pageNum, pageSize, left, other);
 	}
 
-	public Page getPage(long pageNum, long pageSize, Conditions conditions) {
+	public Page getPage(long pageNum, long pageSize, Conditions2 conditions) {
 		return jdbcDao.getPage(pageNum, pageSize, conditions);
 	}
 
@@ -78,7 +78,7 @@ public class JdbcService {
 		return jdbcDao.update(javaBean);
 	}
 
-	public <T> long update(T model, Conditions conditions) {
+	public <T> long update(T model, Conditions2 conditions) {
 		return jdbcDao.updates(model, conditions);
 	}
 
@@ -104,7 +104,7 @@ public class JdbcService {
 	 * @param javaBean
 	 * @return
 	 */
-	public <T> long deletes(final Conditions conditions) {
+	public <T> long deletes(final Conditions2 conditions) {
 
 		return jdbcDao.deletes(conditions);
 
@@ -114,11 +114,11 @@ public class JdbcService {
 		return jdbcDao.gets(javaBean);
 	}
 
-	public <T> List<T> gets(Conditions conditions) {
+	public <T> List<T> gets(Conditions2 conditions) {
 		return jdbcDao.gets(conditions);
 	}
 
-	public <T> T get(Conditions conditions) {
+	public <T> T get(Conditions2 conditions) {
 		return jdbcDao.get(conditions);
 	}
 
@@ -126,11 +126,11 @@ public class JdbcService {
 		return jdbcDao.get(javaBean);
 	}
 
-	public <E> List<PolymerizationModel<E>> polymerization(Polymerization Polymerization, Conditions conditions, String key, String... fields) {
+	public <E> List<PolymerizationModel<E>> polymerization(Polymerization Polymerization, Conditions2 conditions, String key, String... fields) {
 		return jdbcDao.polymerization(Polymerization, conditions, key, fields);
 	}
 	
-	public <T> T polymerization(Polymerization Polymerization, Conditions conditions, String key) {
+	public <T> T polymerization(Polymerization Polymerization, Conditions2 conditions, String key) {
 		 
 		return jdbcDao.polymerization(Polymerization, conditions, key);
 		

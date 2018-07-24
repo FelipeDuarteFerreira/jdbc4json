@@ -2,36 +2,44 @@ package com.sooncode.soonjdbc.page;
 
 import java.util.List;
 
-public class One2Many<L, R> {
-	private L one;
-	private List<R> many;
+import com.sooncode.soonjdbc.util.DbModel;
+
+public class One2Many  {
+	private DbModel one;
+	private List<DbModel> many;
 
 	public One2Many(){
 		
 	}
 	
 	
-	public One2Many(L one,List<R> many){
+	public One2Many(DbModel one,List<DbModel> many){
 		this.one = one;
 		this.many = many;
 				
 	}
-	
-	
-	
-	public L getOne() {
+
+
+	public DbModel getOne() {
 		return one;
 	}
 
-	public void setOne(L one) {
+
+	public void setOne(DbModel one) {
 		this.one = one;
 	}
 
-	public List<R> getMany() {
+
+	public List<DbModel> getMany() {
 		return many;
 	}
 
-	public void setMany(List<R> many) {
+
+	public void setMany(List<DbModel> many) {
 		this.many = many;
 	}
+	
+	
+	
+	 
 }

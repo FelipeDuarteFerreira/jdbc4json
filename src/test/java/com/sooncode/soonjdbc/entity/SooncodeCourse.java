@@ -1,45 +1,50 @@
-
 package com.sooncode.soonjdbc.entity;
-import java.io.Serializable;
 /**
-*
-* @author hechen 
+* 
+* SOONCODE_COURSE
+* SooncodeCourse
+* @author SOONJDBC CODE GENERATOR 
 * 
 */ 
-public class SooncodeCourse implements Serializable{ 
-	 private static final long serialVersionUID = 1L;
-	 /** 课程编号 */ 
+public class SooncodeCourse { 
+
+ 	 /** 课程编号 */ 
 	 private String courseId; 
-	 /** 课程名称 */
-	 private String courseName ;
+
 	 /**  */
 	 private Integer score ;
 
 	 /** 课程名称 */
-	 public String getCourseName() { 
-	 	 return courseName;
+	 private String courseName ;
+
+	 /**  */
+	 public Integer getScore() { 
+	 	 return score;
 	 }
-	 /** 课程名称 */
-	 public void setCourseName(String courseName) {
-	 	 this.courseName = courseName;
+
+	 /**  */
+	 public void setScore(Integer score) {
+	 	 this.score = score;
 	 }
 
 	 /** 课程编号 */
 	 public String getCourseId() { 
 	 	 return courseId;
 	 }
+
 	 /** 课程编号 */
 	 public void setCourseId(String courseId) {
 	 	 this.courseId = courseId;
 	 }
 
-	 /**  */
-	 public Integer getScore() { 
-	 	 return score;
+	 /** 课程名称 */
+	 public String getCourseName() { 
+	 	 return courseName;
 	 }
-	 /**  */
-	 public void setScore(Integer score) {
-	 	 this.score = score;
+
+	 /** 课程名称 */
+	 public void setCourseName(String courseName) {
+	 	 this.courseName = courseName;
 	 }
 
 }

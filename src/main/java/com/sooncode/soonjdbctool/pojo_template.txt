@@ -1,0 +1,18 @@
+package ${packageName}
+ 
+/**
+* ${classRemarks}
+* @author SOONJDBC CODE GENERATOR  
+* 
+*/ 
+public class ${className} { 
+	 
+	 
+	 <list propertieName in  properties >
+	 
+	 private String ${propertieName} ;
+	 
+	 </list>
+	  
+	 
+	 }

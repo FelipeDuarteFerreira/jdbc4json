@@ -27,7 +27,7 @@ public class RObject<T> {
 	private static final String NULL_STR = "";
 	private static final String CLASS = "class ";
 	private static final String LIST_INTERFACE = "interface java.util.List";
-	private static final String JAVA_TYPES = "Integer Long Short Byte Float Double Character Boolean Date String";
+	private static final String JAVA_TYPES = "Integer Long Short Byte Float Double Character Boolean Date String ";
 	private static final String UID = "serialVersionUID";
 
 	/** 被反射代理的对象 */

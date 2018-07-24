@@ -3,9 +3,11 @@ package com.sooncode.soonjdbc.sql.condition;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import com.sooncode.soonjdbc.bean.DbBean;
@@ -22,6 +24,8 @@ import com.sooncode.soonjdbc.sql.condition.sign.InSign;
 import com.sooncode.soonjdbc.sql.condition.sign.LikeSign;
 import com.sooncode.soonjdbc.sql.condition.sign.NullSign;
 import com.sooncode.soonjdbc.sql.condition.sign.Sign;
+import com.sooncode.soonjdbc.util.DbModel;
+import com.sooncode.soonjdbc.util.Field;
 import com.sooncode.soonjdbc.util.T2E;
 
 /**
@@ -31,7 +35,9 @@ import com.sooncode.soonjdbc.util.T2E;
  *
  */
 public class Conditions {
-
+	
+	private DbModel mainDbModel;
+	private DbModel[] otherDbModels;
 	private DbBean leftBean;
 	private DbBean[] otherBeans;
 	private Map<String, Condition> conditionMap;
@@ -39,17 +45,20 @@ public class Conditions {
 	private List<OrderByCondition> orderByConditions = new LinkedList<OrderByCondition>();
 	private List<NullCondition> nullConditions = new LinkedList<NullCondition>();
 	private List<GroupByCondition> groupByConditions = new LinkedList<GroupByCondition>();
-
-	 
-	Conditions(DbBean leftBean ,DbBean[] otherBeans,Map<String, Condition> conditionMap) {
-		 this.leftBean = leftBean;
-		 this.otherBeans = otherBeans;
-		 this.conditionMap = conditionMap;
+ 
+	
+	public Conditions(DbModel mainDbModel, DbModel... otherDbModels){
+		 this.mainDbModel = mainDbModel;
+		 this.otherDbModels = otherDbModels;
+		 initMainDbBean(mainDbModel);
+		 initOtherBeans(otherDbModels);
+		 initConditionMap();
+		  
 	}
 
 	 
 
-	public Conditions setCondition(String key, EqualSign EqualSign, Object value) {
+	public Conditions setCondition(Field key, EqualSign EqualSign, Object value) {
 		return setConditionCom(key, EqualSign, value);
 	}
 
@@ -61,7 +70,7 @@ public class Conditions {
 		return this.setCondition4DateFormat(key, EqualSign, dateFormatvalue, DATE_FORMAT);
 	}
 
-	public Conditions setCondition(String key, LikeSign LikeSign, Object value) {
+	public Conditions setCondition(Field key, LikeSign LikeSign, Object value) {
 		return setConditionCom(key, LikeSign, value);
 	}
 
@@ -88,11 +97,11 @@ public class Conditions {
 	}
 
 	 
-	public Conditions setCondition(String key, NullSign NullSign) {
-
-		if (this.containsKey(key)) {
+	public Conditions setCondition(Field key, NullSign NullSign) {
+        String k = key.getPropertyName();
+		if (this.containsKey(k)) {
 			NullCondition c = new NullCondition();
-			c.setKey(key);
+			c.setKey(k);
 			c.setConditionSign(NullSign.toString());
 			nullConditions.add(c);
 		}
@@ -100,29 +109,31 @@ public class Conditions {
 	}
 
 	 
-	public Conditions setCondition(String key, InSign InSign, Object[] values) {
-
-		if (this.containsKey(key)) {
+	public Conditions setCondition(Field key, InSign InSign, Object[] values) {
+        String k = key.getPropertyName();
+		if (this.containsKey(k)) {
 			Condition c = new InCondition();
-			c.setKey(key);
+			c.setKey(k);
 			c.addValues(Arrays.asList(values));
 			c.setConditionSign(InSign.toString());
-			conditionMap.put(new String(key), c);
+			conditionMap.put(new String(k), c);
 		}
 		return this;
 	}
 
 	 
-	public Conditions setOderBy(String key, Sort Sort) {
-		if (this.containsKey(key)) {
-			String[] keys = key.split(STRING.ESCAPE_POINT);
+	public Conditions setOderBy(Field key, Sort Sort) {
+		
+		String k = key.getPropertyName();
+		if (this.containsKey(k)) {
+			String[] keys = k.split(STRING.ESCAPE_POINT);
 			if(keys.length == 2) {
-				key = T2E.toTableName(keys[0]+STRING.POINT + T2E.toColumn(keys[1]));
+				k = T2E.toTableName(keys[0]+STRING.POINT + T2E.toColumn(keys[1]));
 			}else {
-				key =  T2E.toColumn(key);
+				k =  T2E.toColumn(k);
 			}
 			OrderByCondition orderByCondition = new OrderByCondition();
-			orderByCondition.setKey(key);
+			orderByCondition.setKey(k);
 			orderByCondition.setSortKey(Sort.name());
 			this.orderByConditions.add(orderByCondition);
 		}
@@ -130,17 +141,17 @@ public class Conditions {
 
 	}
 
-	public Conditions setGroupBy(String key) {
-	 
-		if (this.containsKey(key)) {
-			String[] keys = key.split(STRING.ESCAPE_POINT);
+	public Conditions setGroupBy(Field key) {
+	    String k = key.getPropertyName();
+		if (this.containsKey(k)) {
+			String[] keys = k.split(STRING.ESCAPE_POINT);
 			if(keys.length == 2) {
-				key = T2E.toTableName(keys[0]+STRING.POINT + T2E.toColumn(keys[1]));
+				k = T2E.toTableName(keys[0]+STRING.POINT + T2E.toColumn(keys[1]));
 			}else {
-				key =  T2E.toColumn(key);
+				k =  T2E.toColumn(k);
 			}
 			GroupByCondition groupByCondition = new GroupByCondition();
-			groupByCondition.setKey(key);
+			groupByCondition.setKey(k);
 			this.groupByConditions.add(groupByCondition);
 			 
 		}
@@ -214,7 +225,20 @@ public class Conditions {
 		return otherBeans;
 	}
 
+	
 	 
+
+	public DbModel getMainDbModel() {
+		return mainDbModel;
+	}
+
+
+
+	public DbModel[] getOtherDbModels() {
+		return otherDbModels;
+	}
+
+
 
 	private boolean containsKey(String key) {
 		for (Entry<String, Condition> en : this.conditionMap.entrySet()) {
@@ -247,16 +271,16 @@ public class Conditions {
 		return this;
 	}
 
-	private Conditions setConditionCom(String key, Sign Sign, Object value) {
-
-		if (this.containsKey(key)) {
+	private Conditions setConditionCom(Field key, Sign Sign, Object value) {
+        String k = key.getPropertyName();
+		if (this.containsKey(k)) {
 			Condition c = Sign.getCondition();
-			c.setKey(key);
+			c.setKey(k);
 			if (value != null) {
 				c.addValue(value);
 			}
 			c.setConditionSign(Sign.toString());
-			this.conditionMap.put(new String(key), c);
+			this.conditionMap.put(new String(k), c);
 		}
 		return this;
 	}
@@ -280,4 +304,65 @@ public class Conditions {
 		}
 		return this;
 	}
+	
+	
+	 
+	private void initConditionMap() {
+	 
+		Map<String, Object> map = this.leftBean.getFields();
+		Map<String, Object> newMap = new TreeMap<>();
+
+		for (Entry<String, Object> en : map.entrySet()) {
+			String key = en.getKey();
+			Object value = en.getValue();
+			if (this.otherBeans != null && this.otherBeans.length > 0) {
+				newMap.put(this.leftBean.getBeanName() + STRING.POINT + key, value);
+			} else {
+				newMap.put(key, value);
+			}
+		}
+
+		if (this.otherBeans != null && this.otherBeans.length > 0) {
+			for (DbBean bean : this.otherBeans) {
+				Map<String, Object> otherMap = bean.getFields();
+				for (Entry<String, Object> en : otherMap.entrySet()) {
+					String key = en.getKey();
+					Object val = en.getValue();
+					newMap.put(bean.getBeanName() + STRING.POINT + key, val);
+				}
+			}
+		}
+
+		Map<String, Condition> list = new IdentityHashMap<>();
+		for (Entry<String, Object> en : newMap.entrySet()) {
+			String key = en.getKey();
+			Object val = en.getValue();
+			Condition c = new EqualCondition();
+			c.setKey(key);
+			c.addValue(val);
+			c.setConditionSign(SQL_KEY.EQ);
+			list.put(new String(key), c);
+		}
+
+		this.conditionMap = list;
+	 
+		
+	}
+	
+	 
+	private void initMainDbBean(DbModel mainDbModel) {
+		this.leftBean = new DbBean(mainDbModel);
+	}
+
+	 
+	private void initOtherBeans(DbModel... otherDbModels) {
+		DbBean[] dbBeans = new DbBean[otherDbModels.length];
+		for (int i = 0; i < otherDbModels.length; i++) {
+			dbBeans[i] = new DbBean(otherDbModels[i]);
+		}
+		this.otherBeans = dbBeans;
+	}
 }
+  
+ 
+

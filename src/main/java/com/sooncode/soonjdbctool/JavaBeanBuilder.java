@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -21,6 +22,8 @@ import java.util.Map.Entry;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
+
+import com.sooncode.soonjdbc.util.DbModel;
 
 public class JavaBeanBuilder {
 	 
@@ -63,8 +66,8 @@ public class JavaBeanBuilder {
     			String fName = this.codePath  + javaName +".java";
     			String code = getEntityClassCode(table.getTableName());
     			writeFile(fName, code, "UTF-8");
-    			String fName2 = this.codePath  + javaName +"Fields.java";
-    			String code2 = getEntityFieldsClassCode(table.getTableName());
+    			String fName2 = this.codePath  + javaName +"DbModel.java";
+    			String code2 = getDbModelClassCode(table.getTableName());
     			writeFile(fName2, code2, "UTF-8");
     		}
     	}
@@ -276,42 +279,26 @@ public class JavaBeanBuilder {
 		code = code + propertys + "\r\n" + getSetString + "}\r\n";
 		return code;
 	}
-	public String getEntityFieldsClassCode(String tableName) {
-		Table t = getTable( tableName);
+	
+	
+	
+	public String getDbModelClassCode(String tableName) {
+		Table table = getTable( tableName);
 		Map<String, Column> columns = getColumns( tableName);
 		PrimaryKey pk = getPrimaryKey( tableName);
-		
+
 		Column pkColumn = columns.get(pk.getPrimaryKeyName());
-		 
-		String code = "";
-		String importString = "\r\n";
-		importString += "package "+ this.packageName +";\r\n";
-		importString += "import com.sooncode.soonjdbc.util.Field;\r\n";
-		String an = "/**\r\n";
-		an += "*" + t.getTableRemarks() + "\r\n";
-		an += "* @author SOONJDBC CODE GENERATOR \r\n";
-		an += "* \r\n";
-		an += "*/ \r\n";
-		String classString = "public class " + T2E.toClassName(t.getTableName()) + "Fields{ \r\n";
-		String pkString = "\t /** " + pkColumn.getColumnRemarks() + " */ \r\n";
-		pkString += "\t public static Field " + pkColumn.getPropertyName() + " = new Field(\""+pkColumn.getPropertyName()+"\"); \r\n";
-		code = importString + an + classString + pkString;
+		InputStream inputStream = T2E.class.getResourceAsStream("db_model_template.txt");// JavaBeanBuilder.class.getClassLoader().getResource("db_model_template.txt").getPath();
+		String  template = getPojoTemplate(inputStream);//当前类名.class.getClassLoader().getResource(“4.txt”).getPath()
 		
-		String fields = "";
-		 
-		for (Entry<String, Column> en : columns.entrySet()) {
-			Column c = en.getValue();
-			if (c.getPropertyName().equals(pkColumn.getPropertyName())) {
-				continue;
-			}
-			String remarks = "\t /** " + c.getColumnRemarks() + " */\r\n";
-			String fieldString = "\t public static Field " + c.getPropertyName() + " = new Field(\""+c.getPropertyName()+"\"); \r\n";
-			remarks += fieldString;
-			fields += remarks;
-			
-		}
+		Map<String,Object> map = new HashMap<>();
+		map.put("table", table);
+		map.put("columns", columns);
+		map.put("pkColumn", pkColumn);
+		map.put("packageName", this.packageName);
+		map.put("className", T2E.toClassName(tableName));
 		
-		code = code + fields + "}\r\n";
+		String code = FreemarkerSimpleService.getProcessString(template, map, "utf-8");
 		return code;
 	}
 
@@ -345,19 +332,18 @@ public class JavaBeanBuilder {
 
 	}
 	 
-	public String getPojoTemplate() {
-		
-		File file = new File("pojo_template.txt");
-
+	
+	public String getPojoTemplate(InputStream inputStream) {
+		 
 		try {
 			InputStreamReader isr;
-			isr = new InputStreamReader(new FileInputStream(file), "UTF-8");
+			isr = new InputStreamReader(inputStream, "UTF-8");
 			BufferedReader br = new BufferedReader(isr);
 			String temp = null;
 			StringBuffer sb = new StringBuffer();
 			temp = br.readLine();
 			while (temp != null) {
-				sb.append(temp + " ");
+				sb.append(temp + "\n");
 				temp = br.readLine();
 			}
 			br.close();
@@ -366,7 +352,7 @@ public class JavaBeanBuilder {
 			e.printStackTrace();
 			return null;
 		}
-
+		
 	}
 
 

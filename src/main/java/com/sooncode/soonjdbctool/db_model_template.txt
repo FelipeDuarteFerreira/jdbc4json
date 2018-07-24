@@ -1,0 +1,44 @@
+package ${packageName};
+import java.util.Arrays;
+import java.util.List;
+
+import com.sooncode.soonjdbc.util.DbModel;
+import com.sooncode.soonjdbc.util.Field;
+
+
+/**
+* ${table.tableRemarks}
+* ${table.tableName}
+* @author SOONJDBC CODE GENERATOR  
+* 
+*/ 
+ 
+public class ${className}DbModel extends DbModel {
+	
+	private static final String  TABLE_NAME = "${table.tableName}";
+
+ <#list columns?values as column> 
+    /**${column.columnRemarks}*/
+    public  Field ${column.propertyName} = new Field(TABLE_NAME,"${column.columnName}");
+ </#list>
+ 
+	public <T> ${className}DbModel (T javaBean) {
+		super.init(javaBean);
+	}
+	
+	public ${className}DbModel () {
+		
+	}
+
+	@Override
+	public String tableName() {
+		return TABLE_NAME;
+	}
+
+    @Override
+	public List<Field> primaryKeys() {
+		return Arrays.asList(new Field[] {${pkColumn.propertyName}});
+	}
+	 
+}
+	 

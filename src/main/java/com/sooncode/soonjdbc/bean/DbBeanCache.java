@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 
 import com.sooncode.soonjdbc.constant.STRING;
 import com.sooncode.soonjdbc.reflect.RObject;
+import com.sooncode.soonjdbc.util.DbModel2JavaBean;
 import com.sooncode.soonjdbc.util.T2E;
 
 public class DbBeanCache {
@@ -93,6 +94,71 @@ public class DbBeanCache {
 		dbBean.setPrimaryFieldValue(primaryFieldValue);
 		dbBean.setClassName(javaBean.getClass().getName());
        return dbBean;
+	}
+	
+	public static <T> DbBean getDbBean(Connection connection , DbModel2JavaBean dbModel2JavaBean){
+		
+		String  beanName =dbModel2JavaBean.getBeanName(); 
+		
+		List<String> fields = fieldsCache.get(beanName);
+		
+		if(connection == null && fields==null){
+			return null;
+		}
+		
+		if(fields==null ){
+			fields =  getFields(connection,beanName);
+			fieldsCache.put(beanName, fields);
+		}
+		
+		String pkName = pkCache.get(beanName);
+		if(pkName == null  ){
+			pkName =  getPrimaryField(connection, beanName);
+			pkCache.put(beanName,pkName);
+		}
+		
+		
+		List<ForeignKey> foreignKeies = fkCache.get(beanName);
+		
+		if(foreignKeies == null ){
+			foreignKeies =  getForeignKeies(connection, beanName);
+			fkCache.put(beanName, foreignKeies);
+		}
+		List<Index> indexes = indexCache.get(beanName);
+		
+		if(indexes == null  ){
+			indexes =  getIndex(connection, beanName);
+			indexCache.put(beanName, indexes);
+		}
+		
+		if(foreignKeies!=null&&foreignKeies.size()>0){
+			if(indexes != null && indexes.size()>0){
+				for (ForeignKey f : foreignKeies) {
+					for (Index i : indexes) {
+						if(f.getForeignProperty().equals(i.getIndexPropertyName())&& i.getUnique()==true){
+							f.setUnique(true);
+						}
+					}
+				}
+			}
+		}
+		
+		
+		DbBean dbBean = new DbBean();
+		dbBean.setJavaBean(dbModel2JavaBean);
+		dbBean.setBeanName(beanName);
+		dbBean.setTableName(T2E.toTableName(beanName));
+		dbBean.setPrimaryField(pkName);
+		dbBean.setForeignKeies(foreignKeies);
+		
+		 
+		Map<String, Object> fes = dbModel2JavaBean.getFields();
+		 
+		dbBean.setFields(fes);
+		Object primaryFieldValue = fes.get(pkName);
+		dbBean.setPrimaryFieldValue(primaryFieldValue);
+		dbBean.setClassName(dbModel2JavaBean.getJavaBeanClass() == null ? null :dbModel2JavaBean.getJavaBeanClass().getName());
+		return dbBean;
 	}
 	
 	/**

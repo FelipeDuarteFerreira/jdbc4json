@@ -14,7 +14,7 @@ public class Page {
 
 	private List<Object> ones;
 	private List<One2One> o2os;
-	private List<One2Many<?, ?>> o2ms;
+	private List<One2Many> o2ms;
 	private List<Many2Many<?, ?, ?>> m2ms;
 	private List<One2Many2Many<?, ?, ?>> o2m2ms;
 
@@ -55,20 +55,20 @@ public class Page {
 	}
 	
 	
-	public <L, R> Page(long pageNumber, long pageSize, long total, List<One2Many<L, R>> o2ms) {
+	public <L, R> Page(long pageNumber, long pageSize, long total, List<One2Many> o2ms) {
 		init(total, pageNumber, pageSize);
-		List<One2Many<?, ?>> o2mes = new LinkedList<>();
-		for (One2Many<?, ?> result : o2ms) {
-			One2Many<?, ?> o2m = result;
+		List<One2Many> o2mes = new LinkedList<>();
+		for (One2Many result : o2ms) {
+			One2Many o2m = result;
 			o2mes.add(o2m);
 		}
 		this.o2ms = o2mes;
 	}
 
-	public <L,R> void setOne2Manys (List<One2Many<L, R>> o2ms){
-		List<One2Many<?, ?>> o2mes = new LinkedList<>();
-		for (One2Many<?, ?> result : o2ms) {
-			One2Many<?, ?> o2m = result;
+	public <L,R> void setOne2Manys (List<One2Many> o2ms){
+		List<One2Many> o2mes = new LinkedList<>();
+		for (One2Many result : o2ms) {
+			One2Many o2m = result;
 			o2mes.add(o2m);
 		}
 		this.o2ms = o2mes;
@@ -209,10 +209,10 @@ public class Page {
 		return (List<L>) ones;
 	}
 
-	public <L, R> One2Many<L, R> getOne2Many() {
+	public One2Many getOne2Many() {
 
-		One2Many<L, R> o2m = new One2Many<>();
-		List<One2Many<L, R>> o2ms = getOne2Manys();
+		One2Many o2m = new One2Many();
+		List<One2Many> o2ms = getOne2Manys();
 		if (o2ms.size() == 1) {
 			o2m = o2ms.get(0);
 		}
@@ -229,12 +229,12 @@ public class Page {
 		return m2m;
 	}
 
-	public <L, R> List<One2Many<L, R>> getOne2Manys() {
-		List<One2Many<L, R>> o2ms = new LinkedList<>();
+	public <L, R> List<One2Many> getOne2Manys() {
+		List<One2Many> o2ms = new LinkedList<>();
 		if (this.o2ms != null && this.o2ms.size() > 0) {
-			for (One2Many<?, ?> result : this.o2ms) {
-				@SuppressWarnings("unchecked")
-				One2Many<L, R> o2m = (One2Many<L, R>) result;
+			for (One2Many result : this.o2ms) {
+				
+				One2Many o2m = (One2Many) result;
 				o2ms.add(o2m);
 			}
 		}

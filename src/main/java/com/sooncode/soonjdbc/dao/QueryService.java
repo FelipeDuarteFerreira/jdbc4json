@@ -28,13 +28,15 @@ import com.sooncode.soonjdbc.sql.ComSQL;
 import com.sooncode.soonjdbc.sql.Parameter;
 import com.sooncode.soonjdbc.sql.TableRelationAnalyze;
 import com.sooncode.soonjdbc.sql.condition.Conditions;
+import com.sooncode.soonjdbc.util.DbModel;
+import com.sooncode.soonjdbc.util.Field;
 import com.sooncode.soonjdbc.util.T2E;
 
 public class QueryService {
 
 	public List<TableType> getTableType(Jdbc jdbc, Conditions conditions) {
 		List<TableType> nes = new LinkedList<>();
-		DbBean leftDbBean = jdbc.getDbBean(conditions.getLeftBean().getJavaBean());
+		DbBean leftDbBean = jdbc.getDbBean(conditions.getMainDbModel());
 		List<DbBean> list = getOtherDbBeans(jdbc, conditions);
 		DbBean[] otherBeans = list.toArray(new DbBean[list.size()]);
 		if (TableRelationAnalyze.isOne(leftDbBean, otherBeans)) {
@@ -111,6 +113,44 @@ public class QueryService {
 
 	}
 
+	public List<DbModel> findDbModel(List<Map<String, Object>> list, DbModel referenceDbModel, DbModel dbModel) {
+
+		if (referenceDbModel != null) {
+			List<Map<String, Object>> newlist = new LinkedList<>();
+			for (Map<String, Object> map : list) {
+				String name = T2E.toField(referenceDbModel.tableName());
+				Field pk = referenceDbModel.primaryKeys().get(0);
+				Object thisVal = map.get(name + STRING.DOLLAR + pk.getPropertyName());
+				if (thisVal.toString().equals(pk.getValue())) {
+					newlist.add(map);
+				}
+			}
+			list = newlist;
+		}
+
+		 
+		List<DbModel> dbModels = new LinkedList<>();
+		String str = new String();
+		for (Map<String, Object> map : list) {
+			try {
+				DbModel dm = dbModel.getClass().newInstance();
+				dm.injectPropertyValue(map);
+				String pkValue = dm.primaryKeys().get(0).getValue().toString();
+
+				if (dbModels.size() == 0 || !str.contains(pkValue)) {
+					str = str + pkValue + STRING.AT;
+					dbModels.add(dm);
+				}
+			} catch (InstantiationException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
+
+		}
+
+		return dbModels;
+
+	}
+
 	public <T> List<T> bean2JavaBean(List<Bean<T>> beans) {
 		List<T> list = new LinkedList<>();
 		for (Bean<T> bean : beans) {
@@ -134,7 +174,7 @@ public class QueryService {
 	}
 
 	public <L> Page getOnes(long pageNum, long pageSize, Conditions conditions, Jdbc jdbc) {
-		DbBean leftDbBean = jdbc.getDbBean(conditions.getLeftBean().getJavaBean());
+		DbBean leftDbBean = jdbc.getDbBean(conditions.getMainDbModel());
 		String leftTableName = leftDbBean.getTableName();
 		String columns = ComSQL.columns4One(leftDbBean);
 		String where = conditions.getWhereParameter().getReadySql() + getLimit(pageNum, pageSize);
@@ -148,7 +188,7 @@ public class QueryService {
 		String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + leftTableName + " WHERE 1=1 " + sizeWhere;
 		Parameter sizeP = conditions.getWhereParameter();
 		sizeP.setReadySql(sizeSql);
-		//Map<String, Object> map = jdbc.get(sizeP);
+		// Map<String, Object> map = jdbc.get(sizeP);
 		Map<String, Object> map = getSize(jdbc, sizeP);
 		Long size = (Long) map.get(T2E.toField(SQL_KEY.SIZE));
 		if (size == null) {
@@ -158,25 +198,23 @@ public class QueryService {
 		page.setOnes(result);
 		return page;
 	}
-	
-	private Map<String, Object> getSize(Jdbc jdbc,Parameter sizeP){
-		
-		
+
+	private Map<String, Object> getSize(Jdbc jdbc, Parameter sizeP) {
+
 		List<Map<String, Object>> list = jdbc.gets(sizeP);
-		long size =0;
-		
+		long size = 0;
+
 		boolean isGroupBy = sizeP.getReadySql().contains(SQL_KEY.GROUP_BY.trim());
-		if(list.size()==1 && isGroupBy == false ) {
-			size = Long.parseLong( list.get(0).get(T2E.toField(SQL_KEY.SIZE)).toString()) ;
+		if (list.size() == 1 && isGroupBy == false) {
+			size = Long.parseLong(list.get(0).get(T2E.toField(SQL_KEY.SIZE)).toString());
 		}
-		 
-		
-		if(list.size()>0 && isGroupBy == true) {
+
+		if (list.size() > 0 && isGroupBy == true) {
 			size = list.size();
 		}
-		 
+
 		Map<String, Object> map = new HashMap<>();
-		
+
 		map.put(T2E.toField(SQL_KEY.SIZE), size);
 		return map;
 	}
@@ -197,7 +235,7 @@ public class QueryService {
 	}
 
 	public <L, R> Page getOne2Ones(long pageNum, long pageSize, Conditions conditions, Jdbc jdbc) {
-		DbBean leftDbBean = jdbc.getDbBean(conditions.getLeftBean().getJavaBean());
+		DbBean leftDbBean = jdbc.getDbBean(conditions.getMainDbModel());
 
 		List<DbBean> otherDbBeans = getOtherDbBeans(jdbc, conditions);
 
@@ -259,20 +297,18 @@ public class QueryService {
 		String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + leftTableName + otherTableNames + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + condition + sizeWhere;
 		Parameter sizeP = conditions.getWhereParameter();
 		sizeP.setReadySql(sizeSql);
-		//Map<String, Object> map = jdbc.get(sizeP);
+		// Map<String, Object> map = jdbc.get(sizeP);
 		Map<String, Object> map = getSize(jdbc, sizeP);
 		Long size = (Long) map.get(T2E.toField(SQL_KEY.SIZE));
 		List<One2One> one2ones = new LinkedList<>();
-		List<Bean<L>> lBeans = findBean(list, null, leftDbBean);
-		for (Bean<L> lb : lBeans) {
-			One2One o2o = new One2One();// <L, R>(lb.getJavaBean(),
-										// rBean.getJavaBean());
-			for (DbBean dbBean : otherDbBeans) {
-				List<Bean<R>> beans = findBean(list, lb, dbBean);
+		List<DbModel> mainDbModels = findDbModel(list, null, conditions.getMainDbModel());
+		for (DbModel mainDbModel : mainDbModels) {
+			One2One o2o = new One2One();
+			for (DbModel dbModel : conditions.getOtherDbModels()) {
+				List<DbModel> beans = findDbModel(list, mainDbModel, dbModel);
 				if (beans != null && beans.size() == 1) {
-					Bean<R> rBean = beans.get(0);
-					o2o.add(lb.getJavaBean());
-					o2o.add(rBean.getJavaBean());
+					o2o.add(mainDbModel);
+					o2o.add(dbModel);
 				}
 			}
 			one2ones.add(o2o);
@@ -283,9 +319,9 @@ public class QueryService {
 		return page;
 	}
 
-	public <L, R> Page getOne2Manys(long pageNum, long pageSize, Conditions conditions, Jdbc jdbc) {
-		One2Many<L, R> one2Many = new One2Many<>();
-		DbBean leftDbBean = jdbc.getDbBean(conditions.getLeftBean().getJavaBean());
+	public  Page getOne2Manys(long pageNum, long pageSize, Conditions conditions, Jdbc jdbc) {
+		One2Many  one2Many = new One2Many ();
+		DbBean leftDbBean = jdbc.getDbBean(conditions.getMainDbModel());
 		List<DbBean> otherDbBeans = getOtherDbBeans(jdbc, conditions);
 
 		String leftTableName = leftDbBean.getTableName();
@@ -319,20 +355,16 @@ public class QueryService {
 		String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + leftTableName + otherTableName + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + condition + sizeWhere;
 		Parameter sizeP = conditions.getWhereParameter();
 		sizeP.setReadySql(sizeSql);
-		//Map<String, Object> map = jdbc.get(sizeP);
 		Map<String, Object> map = getSize(jdbc, sizeP);
 		Long size = (Long) map.get(T2E.toField(SQL_KEY.SIZE));
 
-		List<Bean<L>> lBeans = findBean(list, null, leftDbBean);
-		List<One2Many<L, R>> o2ms = new LinkedList<>();
-		if (lBeans.size() > 0) {
-			for (Bean<L> lBean : lBeans) {
-				for (DbBean dbBean : otherDbBeans) {
-					List<Bean<R>> rBeans = findBean(list, lBean, dbBean);
-					List<R> rJavaBeans = bean2JavaBean(rBeans);
-					one2Many = new One2Many<L, R>(lBean.getJavaBean(), rJavaBeans);
+		List<DbModel> dbModels = findDbModel(list, null, conditions.getMainDbModel());
+		List<One2Many> o2ms = new LinkedList<>();
+		if (dbModels.size() > 0) {
+			for (DbModel dbModel : dbModels) {
+					List<DbModel> rBeans = findDbModel(list, conditions.getMainDbModel(), dbModel);
+					one2Many = new One2Many(dbModel, rBeans);
 					o2ms.add(one2Many);
-				}
 			}
 		}
 
@@ -341,7 +373,7 @@ public class QueryService {
 	}
 
 	public <L, M, R> Page getMany2Manys(long pageNum, long pageSize, Conditions conditions, Jdbc jdbc) {
-		DbBean leftDbBean = jdbc.getDbBean(conditions.getLeftBean().getJavaBean());
+		DbBean leftDbBean = jdbc.getDbBean(conditions.getMainDbModel());
 		List<DbBean> otherDbBeans = getOtherDbBeans(jdbc, conditions);
 		List<DbBean> newDbBeans = new ArrayList<>();
 		newDbBeans.add(leftDbBean);
@@ -387,15 +419,15 @@ public class QueryService {
 		String sql = SQL_KEY.SELECT + columns + SQL_KEY.FROM + tableNames + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + condition + where;
 		p.setReadySql(sql);
 		List<Map<String, Object>> list = jdbc.gets(p);
-		List<Bean<L>> lBeans = findBean(list, null, leftDbBean);
+		List<DbModel> dbModels = findDbModel(list, null, conditions.getMainDbModel());
 		LinkedList<Many2Many<L, M, R>> m2ms = new LinkedList<>();
-		for (Bean<L> lBean : lBeans) {
+		for (DbModel dbModel : dbModels) {
 			Many2Many<L, M, R> many2many = new Many2Many<>();
 			many2many.setOne(lBean.getJavaBean());
-			List<Bean<M>> mBeans = findBean(list, lBean, middleDbBean);
+			List<Bean<M>> mBeans = findDbModel(list, lBean, middleDbBean);
 			List<One2One> o2os = new LinkedList<>();
 			for (Bean<M> mBean : mBeans) {
-				List<Bean<R>> rBeans = findBean(list, mBean, rightDbBean);
+				List<Bean<R>> rBeans = findDbModel(list, mBean, rightDbBean);
 				if (rBeans.size() > 0) {
 					One2One o2o = new One2One();
 
@@ -411,7 +443,7 @@ public class QueryService {
 		String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + tableNames + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + condition + sizeWhere;
 		Parameter sizeP = conditions.getWhereParameter();
 		sizeP.setReadySql(sizeSql);
-		//Map<String, Object> map = jdbc.get(sizeP);
+		// Map<String, Object> map = jdbc.get(sizeP);
 		Map<String, Object> map = getSize(jdbc, sizeP);
 		Long size = (Long) map.get(T2E.toField(SQL_KEY.SIZE));
 		if (size == null) {
@@ -469,7 +501,7 @@ public class QueryService {
 			for (Bean<M> mBean : mBeans) {
 				List<Bean<R>> rBeans = findBean(list, mBean, rightDbBean);
 				if (rBeans.size() > 0) {
-					One2One o2o = new One2One(); 
+					One2One o2o = new One2One();
 					o2o.add(mBean.getJavaBean());
 					o2o.add(rBeans.get(0).getJavaBean());
 					o2os.add(o2o);
@@ -482,7 +514,7 @@ public class QueryService {
 		String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + tableNames + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + condition + sizeWhere;
 		Parameter sizeP = conditions.getWhereParameter();
 		sizeP.setReadySql(sizeSql);
-		//Map<String, Object> map = jdbc.get(sizeP);
+		// Map<String, Object> map = jdbc.get(sizeP);
 		Map<String, Object> map = getSize(jdbc, sizeP);
 		Long size = (Long) map.get(T2E.toField(SQL_KEY.SIZE));
 		if (size == null) {
@@ -563,7 +595,7 @@ public class QueryService {
 		String sizeSql = SQL_KEY.SELECT + SQL_KEY.COUNT_START + SQL_KEY.AS + SQL_KEY.SIZE + SQL_KEY.FROM + tableNames + SQL_KEY.WHERE + SQL_KEY.ONE_EQ_ONE + condition + sizeWhere;
 		Parameter sizeP = conditions.getWhereParameter();
 		sizeP.setReadySql(sizeSql);
-		//Map<String, Object> map = jdbc.get(sizeP);
+		// Map<String, Object> map = jdbc.get(sizeP);
 		Map<String, Object> map = getSize(jdbc, sizeP);
 		Long size = (Long) map.get(T2E.toField(SQL_KEY.SIZE));
 		if (size == null) {
@@ -580,13 +612,11 @@ public class QueryService {
 	}
 
 	public List<DbBean> getOtherDbBeans(Jdbc jdbc, Conditions conditions) {
-		DbBean[] otherBeans = conditions.getOtherBeans();
+		DbModel[] otherDbModels = conditions.getOtherDbModels();
 		List<DbBean> otherDbBeans = new ArrayList<>();
-		if (otherBeans.length > 0) {
-			for (DbBean jBean : otherBeans) {
-				DbBean dbBean = jdbc.getDbBean(jBean.getJavaBean());
-				dbBean.setBeanName(jBean.getBeanName());
-				dbBean.setBeanName(jBean.getBeanName());
+		if (otherDbModels.length > 0) {
+			for (DbModel dbModel : otherDbModels) {
+				DbBean dbBean = jdbc.getDbBean(dbModel);
 				otherDbBeans.add(dbBean);
 			}
 		}

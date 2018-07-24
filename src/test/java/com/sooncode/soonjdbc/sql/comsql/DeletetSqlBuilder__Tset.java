@@ -25,7 +25,7 @@ public class DeletetSqlBuilder__Tset {
 	@Test
 	public void getPreparedSql() {
 		SystemUser user = new SystemUser();
-		user.setId(11833);
+		user.setUserId(11833);
         
 		DbBean db = jdbc.getDbBean(user);
 		SqlBuilder sb = new SelectSqlBuilder();
