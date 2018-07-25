@@ -28,7 +28,7 @@ public class DbModel2JavaBean {
 				field.setAccessible(true);
 				Field f;
 				try {
-					f = (Field) field.get(key);
+					f = (Field) field.get(dbModel);
 					newFields.put(key, f.getValue());
 				} catch (IllegalArgumentException e) {
 					e.printStackTrace();

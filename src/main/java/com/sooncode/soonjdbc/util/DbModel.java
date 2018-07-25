@@ -78,7 +78,7 @@ public abstract class DbModel {
 		for (java.lang.reflect.Field f : dbModelR.getFields()) {
 			if (f.getType().equals(Field.class)) {
 				try {
-					Field field = (Field) f.get(null);
+					Field field = (Field) f.get(this);
 					fields.add(field);
 				} catch (IllegalArgumentException | IllegalAccessException e) {
 					e.printStackTrace();
