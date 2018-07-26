@@ -68,7 +68,7 @@ public class JavaBeanBuilder {
     			writeFile(fName, code, "UTF-8");
     			String fName2 = this.codePath  + javaName +"DbModel.java";
     			String code2 = getDbModelClassCode(table.getTableName());
-    			writeFile(fName2, code2, "UTF-8");
+    			//writeFile(fName2, code2, "UTF-8");
     		}
     	}
     }
@@ -212,6 +212,10 @@ public class JavaBeanBuilder {
 		PrimaryKey pk = getPrimaryKey( tableName);
 
 		Column pkColumn = columns.get(pk.getPrimaryKeyName());
+		
+		if(pkColumn == null ) {
+			return null;
+		}
 
 		String code = "";
 		String importString = "";
