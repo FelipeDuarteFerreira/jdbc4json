@@ -14,7 +14,7 @@
 
 	<bean id="dmds"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-		<property name="url" value="jdbc:mysql://127.0.0.1:3306/eaglewood?" />
+		<property name="url" value="jdbc:mysql://127.0.0.1:3306/?" />
 		<property name="username" value="root" />
 		<property name="password" value="123456" />
 		<property name="connectionProperties" >
@@ -45,7 +45,7 @@
 		<property name="jdbcTemplate" ref="jdbcTemplate" />
 		<property name="codePath"
 			value="D:\workspaces3\mybatis_generator\src" />
-		<property name="packageName" value="com.eaglewood.core.mybatis.pojo" />
+		<property name="packageName" value="" />
 	</bean>
 
 	<!-- (事务管理)transaction manager, use JtaTransactionManager for global tx -->
