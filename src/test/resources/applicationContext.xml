@@ -9,12 +9,20 @@
 
 	<context:component-scan base-package="com.sooncode">
 	</context:component-scan>
+	
+	 
 
 	<bean id="dmds"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-		<property name="url" value="jdbc:mysql://127.0.0.1:3306/jdbc?" />
+		<property name="url" value="jdbc:mysql://127.0.0.1:3306/eaglewood?" />
 		<property name="username" value="root" />
 		<property name="password" value="123456" />
+		<property name="connectionProperties" >
+		     <map>
+                <entry key="remarks" value="true"/>
+                <entry key="useInformationSchema" value="true"/>
+            </map>
+		</property>    
 	</bean>
 	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate"
 		abstract="false" lazy-init="false" autowire="default">
@@ -29,17 +37,16 @@
 	<bean id="jdbcDao" class="com.sooncode.soonjdbc.dao.JdbcDao">
 		<property name="jdbc" ref="jdbc" />
 	</bean>
-	<!-- <bean id="jdbcService" class="com.sooncode.soonjdbc.service.JdbcService">
-		<property name="jdbcDao" ref="jdbcDao" />
-	</bean> -->
-	<!-- <bean id="sqlXmlManager" class="com.sooncode.soonjdbc.sql.xml.SqlXmlManager">
-		<property name="xmlFileLocation" value="classpath:sql" />
-	</bean> -->
-	   <!--    <bean id="javaBeanBuilder" class="com.sooncode.soonjdbctool.JavaBeanBuilder"> 
-		<property name="jdbcTemplate" ref="jdbcTemplate" /> 
-		<property name="codePath" value="C:\Users\Administrator\git\jdbc4json\src\test\java\com\sooncode\soonjdbc\entity"/> 
-		<property name="packageName" value="com.sooncode.soonjdbc.entity"/> 
-		</bean>   -->
+	<!-- <bean id="jdbcService" class="com.sooncode.soonjdbc.service.JdbcService"> 
+		<property name="jdbcDao" ref="jdbcDao" /> </bean> -->
+	<!-- <bean id="sqlXmlManager" class="com.sooncode.soonjdbc.sql.xml.SqlXmlManager"> 
+		<property name="xmlFileLocation" value="classpath:sql" /> </bean> -->
+	<bean id="javaBeanBuilder" class="com.sooncode.soonjdbctool.JavaBeanBuilder">
+		<property name="jdbcTemplate" ref="jdbcTemplate" />
+		<property name="codePath"
+			value="D:\workspaces3\mybatis_generator\src" />
+		<property name="packageName" value="com.eaglewood.core.mybatis.pojo" />
+	</bean>
 
 	<!-- (事务管理)transaction manager, use JtaTransactionManager for global tx -->
 	<bean id="transactionManager"
