@@ -10,9 +10,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.sooncode.soonjdbc.Jdbc;
-import com.sooncode.soonjdbc.bean.DbBean;
 import com.sooncode.soonjdbc.entity.SystemUser;
 import com.sooncode.soonjdbc.sql.Parameter;
+import com.sooncode.soonjdbc.table.DbBean;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/applicationContext.xml")

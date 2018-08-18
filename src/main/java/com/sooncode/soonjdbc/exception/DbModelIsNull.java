@@ -4,10 +4,10 @@ package com.sooncode.soonjdbc.exception;
  * @author pc
  *
  */
-public class JavaBeanException extends Exception {
+public class DbModelIsNull extends Exception {
 	private static final long serialVersionUID = 614301440846576181L;
  
-	public JavaBeanException(String message){
+	public DbModelIsNull(String message){
 		super(message);
 	}
 }

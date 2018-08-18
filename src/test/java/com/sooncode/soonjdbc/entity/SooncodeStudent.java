@@ -1,6 +1,6 @@
 package com.sooncode.soonjdbc.entity;
 /**
-* 
+* 学生
 * SOONCODE_STUDENT
 * SooncodeStudent
 * @author SOONJDBC CODE GENERATOR 
@@ -85,14 +85,5 @@ public class SooncodeStudent {
 	 public void setAge(Integer age) {
 	 	 this.age = age;
 	 }
-
-	@Override
-	public String toString() {
-		return "SooncodeStudent [studentId=" + studentId + ", identityId=" + identityId + ", clazzId=" + clazzId + ", sex=" + sex + ", name=" + name + ", age=" + age + "]";
-	}
-
- 
-	 
-	 
 
 }

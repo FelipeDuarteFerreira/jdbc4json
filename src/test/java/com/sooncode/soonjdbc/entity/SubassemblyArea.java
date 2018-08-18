@@ -1,6 +1,6 @@
 package com.sooncode.soonjdbc.entity;
 /**
-* 
+* 全国地区表
 * SUBASSEMBLY_AREA
 * SubassemblyArea
 * @author SOONJDBC CODE GENERATOR 

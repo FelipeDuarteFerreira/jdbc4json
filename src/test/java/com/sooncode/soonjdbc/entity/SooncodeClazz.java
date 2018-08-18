@@ -1,6 +1,6 @@
 package com.sooncode.soonjdbc.entity;
 /**
-* 
+* 班级
 * SOONCODE_CLAZZ
 * SooncodeClazz
 * @author SOONJDBC CODE GENERATOR 
@@ -71,12 +71,7 @@ public class SooncodeClazz {
 	 	 return mainTeacherId;
 	 }
 
-	 @Override
-	public String toString() {
-		return "SooncodeClazz [clazzId=" + clazzId + ", clazzName=" + clazzName + ", studentNumber=" + studentNumber + ", schoolId=" + schoolId + ", mainTeacherId=" + mainTeacherId + ", monitorId=" + monitorId + "]";
-	}
-
-	/** 班主任编号 */
+	 /** 班主任编号 */
 	 public void setMainTeacherId(Integer mainTeacherId) {
 	 	 this.mainTeacherId = mainTeacherId;
 	 }
@@ -90,7 +85,5 @@ public class SooncodeClazz {
 	 public void setMonitorId(String monitorId) {
 	 	 this.monitorId = monitorId;
 	 }
-	 
-	 
 
 }

@@ -10,7 +10,7 @@ public abstract class DbModel {
 
 	public abstract String tableName();
 
-	public abstract List<Field> primaryKeys();
+	public abstract <T> List<DbField<T>> primaryKeys();
 
 	private Class<?> javaBeanClass;
 
@@ -24,8 +24,8 @@ public abstract class DbModel {
 
 	public <T> T transform(Class<?> clas) {
 		RObject<T> javaBeanR = new RObject<>(clas);
-		List<Field> fields = getAllField();
-		for (Field field : fields) {
+		List<DbField<Object>> fields = getAllField();
+		for (DbField<Object> field : fields) {
 			javaBeanR.invokeSetMethod(field.getPropertyName(), field.getValue());
 		}
 		return javaBeanR.getObject();
@@ -44,21 +44,21 @@ public abstract class DbModel {
 		}
 
 	}
-
+	 
 	protected <T> void init(T javaBean) {
 
 		this.javaBeanClass = javaBean.getClass();
 		RObject<T> javaBeanR = new RObject<>(javaBean);
-		List<Field> fields = getAllField();
-		for (Field field : fields) {
+		List<DbField<Object>> fields = getAllField();
+		for (DbField<Object> field : fields) {
 			field.setValue(javaBeanR.invokeGetMethod(field.getPropertyName()));
 		}
 
 	}
 
 	public void injectPropertyValue(Map<String, Object> map) {
-		List<Field> fields = getAllField();
-		for (Field field : fields) {
+		List<DbField<Object>> fields = getAllField();
+		for (DbField<Object> field : fields) {
 
 			Object val = map.get(field.getPropertyName());
 			if (val == null) {
@@ -72,13 +72,14 @@ public abstract class DbModel {
 		init(javaBean);
 	}
 
-	private List<Field> getAllField() {
-		List<Field> fields = new ArrayList<Field>();
+	public List<DbField<Object>> getAllField() {
+		List<DbField<Object>> fields = new ArrayList<DbField<Object>>();
 		RObject<DbModel> dbModelR = new RObject<DbModel>(this);
 		for (java.lang.reflect.Field f : dbModelR.getFields()) {
-			if (f.getType().equals(Field.class)) {
+			if (f.getType().equals(DbField.class)) {
 				try {
-					Field field = (Field) f.get(this);
+					@SuppressWarnings("unchecked")
+					DbField<Object> field = (DbField<Object>) f.get(this);
 					fields.add(field);
 				} catch (IllegalArgumentException | IllegalAccessException e) {
 					e.printStackTrace();

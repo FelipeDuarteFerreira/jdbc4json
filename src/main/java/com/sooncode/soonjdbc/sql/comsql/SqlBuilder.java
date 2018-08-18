@@ -1,10 +1,10 @@
 package com.sooncode.soonjdbc.sql.comsql;
 
-import com.sooncode.soonjdbc.bean.DbBean;
 import com.sooncode.soonjdbc.sql.Parameter;
+import com.sooncode.soonjdbc.util.DbModel;
 
 public interface SqlBuilder {
 
-	public Parameter getParameter (DbBean dbBean);
+	public Parameter getParameter (DbModel dbModel);
 	
 }

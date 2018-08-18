@@ -1,6 +1,6 @@
 package com.sooncode.soonjdbc.entity;
 /**
-* 
+* 好友
 * SYSTEM_FRIEND
 * SystemFriend
 * @author SOONJDBC CODE GENERATOR 

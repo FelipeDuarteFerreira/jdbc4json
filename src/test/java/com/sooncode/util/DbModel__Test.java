@@ -6,7 +6,7 @@ import java.util.Map;
 
 import com.sooncode.soonjdbc.entity.SystemUser;
 import com.sooncode.soonjdbc.entity.SystemUserDbModel;
-import com.sooncode.soonjdbc.util.Field;
+import com.sooncode.soonjdbc.util.DbField;
 
 public class DbModel__Test {
 
@@ -19,7 +19,7 @@ public class DbModel__Test {
 		
 		SystemUserDbModel sudm = new SystemUserDbModel();
 		sudm.injectPropertyValue(su);
-		List<Field> fields = sudm.primaryKeys();
+		List<DbField<?>> fields = sudm.primaryKeys();
 		
 		Map<String , Object> map = new HashMap<>();
 		map.put("userId", 100);
@@ -28,7 +28,7 @@ public class DbModel__Test {
 		
 		sudm.injectPropertyValue(map);
 		
-		List<Field> fields2 = sudm.primaryKeys();
+		List<DbField<?>> fields2 = sudm.primaryKeys();
 		
 		
 	}

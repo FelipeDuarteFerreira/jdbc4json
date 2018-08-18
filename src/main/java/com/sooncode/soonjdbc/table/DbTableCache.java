@@ -1,4 +1,4 @@
-package com.sooncode.soonjdbc.bean;
+package com.sooncode.soonjdbc.table;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -11,10 +11,11 @@ import java.util.Map.Entry;
 
 import com.sooncode.soonjdbc.constant.STRING;
 import com.sooncode.soonjdbc.reflect.RObject;
+import com.sooncode.soonjdbc.util.DbModel;
 import com.sooncode.soonjdbc.util.DbModel2JavaBean;
 import com.sooncode.soonjdbc.util.T2E;
 
-public class DbBeanCache {
+public class DbTableCache {
     
 	private static Map<String,List<String>> fieldsCache = new HashMap<>();
 	private static Map<String,String> pkCache = new HashMap<>();
@@ -23,39 +24,39 @@ public class DbBeanCache {
 		
 	 
 	
-	public static <T> DbBean getDbBean(Connection connection , T javaBean){
+	public static <T> DbTable getDbTable(Connection connection , DbModel dbModel){
 		 
-		String  beanName =javaBean.getClass().getSimpleName(); 
+		String  tableName = dbModel.tableName();
 		
-		List<String> fields = fieldsCache.get(beanName);
+		List<String> fields = fieldsCache.get(tableName);
 		
 		if(connection == null && fields==null){
 			return null;
 		}
 		
 		if(fields==null ){
-			fields =  getFields(connection,beanName);
-			  fieldsCache.put(beanName, fields);
+			fields =  getFields(connection,tableName);
+			  fieldsCache.put(tableName, fields);
 		}
 		
-		String pkName = pkCache.get(beanName);
+		String pkName = pkCache.get(tableName);
 		if(pkName == null  ){
-			 pkName =  getPrimaryField(connection, beanName);
-			 pkCache.put(beanName,pkName);
+			 pkName =  getPrimaryField(connection, tableName);
+			 pkCache.put(tableName,pkName);
 		}
 		 
 		
-		List<ForeignKey> foreignKeies = fkCache.get(beanName);
+		List<ForeignKey> foreignKeies = fkCache.get(tableName);
 		
 		if(foreignKeies == null ){
-			foreignKeies =  getForeignKeies(connection, beanName);
-			fkCache.put(beanName, foreignKeies);
+			foreignKeies =  getForeignKeies(connection, tableName);
+			fkCache.put(tableName, foreignKeies);
 		}
-		List<Index> indexes = indexCache.get(beanName);
+		List<Index> indexes = indexCache.get(tableName);
 		
 		if(indexes == null  ){
-			indexes =  getIndex(connection, beanName);
-			indexCache.put(beanName, indexes);
+			indexes =  getIndex(connection, tableName);
+			indexCache.put(tableName, indexes);
 		}
 		
 		if(foreignKeies!=null&&foreignKeies.size()>0){
@@ -71,12 +72,11 @@ public class DbBeanCache {
 		}
 		
 		
-		DbBean dbBean = new DbBean();
-		dbBean.setJavaBean(javaBean);
-		dbBean.setBeanName(beanName);
-        dbBean.setTableName(T2E.toTableName(beanName));
-		dbBean.setPrimaryField(pkName);
-		dbBean.setForeignKeies(foreignKeies);
+		DbTable dbTable = new DbTable();
+		 
+		dbTable.setTableName(T2E.toTableName(tableName));
+        dbTable.setPrimaryField(pkName);
+        dbTable.setForeignKeies(foreignKeies);
 		
 		RObject<?> rObj = new RObject<>(javaBean);
 		
@@ -96,7 +96,7 @@ public class DbBeanCache {
        return dbBean;
 	}
 	
-	public static <T> DbBean getDbBean(Connection connection , DbModel2JavaBean dbModel2JavaBean){
+	public static <T> DbTable getDbTable(Connection connection , DbModel2JavaBean dbModel2JavaBean){
 		
 		String  beanName =dbModel2JavaBean.getBeanName(); 
 		
@@ -144,21 +144,18 @@ public class DbBeanCache {
 		}
 		
 		
-		DbBean dbBean = new DbBean();
-		dbBean.setJavaBean(dbModel2JavaBean);
-		dbBean.setBeanName(beanName);
-		dbBean.setTableName(T2E.toTableName(beanName));
-		dbBean.setPrimaryField(pkName);
-		dbBean.setForeignKeies(foreignKeies);
+		DbTable dbTable = new DbTable();
+		dbTable.setTableName(T2E.toTableName(beanName));
+		dbTable.setPrimaryField(pkName);
+		dbTable.setForeignKeies(foreignKeies);
 		
 		 
 		Map<String, Object> fes = dbModel2JavaBean.getFields();
 		 
-		dbBean.setFields(fes);
+		dbTable.setFields(fes);
 		Object primaryFieldValue = fes.get(pkName);
-		dbBean.setPrimaryFieldValue(primaryFieldValue);
-		dbBean.setClassName(dbModel2JavaBean.getJavaBeanClass() == null ? null :dbModel2JavaBean.getJavaBeanClass().getName());
-		return dbBean;
+		dbTable.setPrimaryFieldValue(primaryFieldValue);
+		return dbTable;
 	}
 	
 	/**

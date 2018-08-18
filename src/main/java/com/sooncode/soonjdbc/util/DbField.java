@@ -1,20 +1,14 @@
 package com.sooncode.soonjdbc.util;
 
-public class Field {
+public abstract class DbField<T>{
 	
 	private String tableName;
 
 	private String propertyName ;
 	
 	private String columnName;
-	
-	
-	private Object value;
-	
-	
-	
-	
-	public Field (String tableName,String columnName) {
+	protected T value;
+	public DbField (String tableName,String columnName) {
 		this.tableName = tableName;
 		this.propertyName = T2E.toField(columnName) ;
 		this.columnName = columnName ; 
@@ -30,19 +24,15 @@ public class Field {
 		return columnName;
 	}
 
-	 
-
-	public Object getValue() {
-		return value;
-	}
-
-	public void setValue(Object value) {
-		this.value = value;
-	}
-
 	public String getTableName() {
 		return tableName;
 	}
+	 
+
+	public abstract T getValue();  
+
+	public abstract void setValue(T value);  
+
 
 	 
 	

@@ -1,6 +1,6 @@
 package com.sooncode.soonjdbc.entity;
 /**
-* 
+* 用户
 * SYSTEM_USER
 * SystemUser
 * @author SOONJDBC CODE GENERATOR 
@@ -111,5 +111,10 @@ public class SystemUser {
 	 public void setAge(Integer age) {
 	 	 this.age = age;
 	 }
+
+	@Override
+	public String toString() {
+		return "SystemUser [userId=" + userId + ", createDate=" + createDate + ", updateDate=" + updateDate + ", address=" + address + ", sex=" + sex + ", type=" + type + ", name=" + name + ", age=" + age + "]";
+	}
 
 }

@@ -1,6 +1,6 @@
 package com.sooncode.soonjdbc.entity;
 /**
-* 
+* 组件模块_数据字典
 * SOONCODE_DICTIONARY
 * SooncodeDictionary
 * @author SOONJDBC CODE GENERATOR 

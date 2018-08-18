@@ -217,8 +217,8 @@ public class TableBuilder {
 	}
 
 	 public static void main(String[] args) {
-		TableBuilder tb = new TableBuilder("127.0.0.1", "3306", "root", "123456", "jdbc");
-		String code = tb.getEntityClassCode("system_user");
+		TableBuilder tb = new TableBuilder("10.100.146.228", "3306", "eaglewood", "eaglewood", "eaglewood");
+		String code = tb.getEntityClassCode("ea_bill_simple");
 		System.out.println(code);
 	}
 

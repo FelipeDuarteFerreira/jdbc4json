@@ -1,7 +1,5 @@
 package com.sooncode.soonjdbc.sql.condition;
 
-import com.sooncode.soonjdbc.util.T2E;
-
 public class EqualCondition extends Condition {
 
 	
@@ -10,7 +8,7 @@ public class EqualCondition extends Condition {
 	@Override
 	public SqlAndParameter getSqlSlice() {
 		String sqlSlice = SQL_SLICE
-				.replace("[COLUMN]", T2E.toColumn(this.getKey()))
+				.replace("[COLUMN]",  this.getKey() )
 				.replace("[CONDITION_SIGN]", this.conditionSign);
 		SqlAndParameter sap = new SqlAndParameter();
 		sap.setSqlSlice(sqlSlice);

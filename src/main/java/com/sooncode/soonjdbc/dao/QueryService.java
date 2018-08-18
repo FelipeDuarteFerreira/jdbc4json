@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.sooncode.soonjdbc.Jdbc;
-import com.sooncode.soonjdbc.bean.DbBean;
-import com.sooncode.soonjdbc.bean.ForeignKey;
 import com.sooncode.soonjdbc.constant.SQL_KEY;
 import com.sooncode.soonjdbc.constant.STRING;
 import com.sooncode.soonjdbc.dao.tabletype.Many2ManyTable;
@@ -28,6 +26,8 @@ import com.sooncode.soonjdbc.sql.ComSQL;
 import com.sooncode.soonjdbc.sql.Parameter;
 import com.sooncode.soonjdbc.sql.TableRelationAnalyze;
 import com.sooncode.soonjdbc.sql.condition.Conditions;
+import com.sooncode.soonjdbc.table.DbBean;
+import com.sooncode.soonjdbc.table.ForeignKey;
 import com.sooncode.soonjdbc.util.DbModel;
 import com.sooncode.soonjdbc.util.Field;
 import com.sooncode.soonjdbc.util.T2E;

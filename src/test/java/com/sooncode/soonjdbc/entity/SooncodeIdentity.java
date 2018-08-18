@@ -1,6 +1,6 @@
 package com.sooncode.soonjdbc.entity;
 /**
-* 
+* 身份
 * SOONCODE_IDENTITY
 * SooncodeIdentity
 * @author SOONJDBC CODE GENERATOR 

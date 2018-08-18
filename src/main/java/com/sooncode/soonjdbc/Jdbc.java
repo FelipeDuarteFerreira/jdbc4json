@@ -22,17 +22,17 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import com.sooncode.soonjdbc.bean.DbBean;
-import com.sooncode.soonjdbc.bean.DbBeanCache;
 import com.sooncode.soonjdbc.constant.DateFormat;
 import com.sooncode.soonjdbc.sql.Parameter;
 import com.sooncode.soonjdbc.sql.verification.SqlVerification;
+import com.sooncode.soonjdbc.table.DbTable;
+import com.sooncode.soonjdbc.table.DbTableCache;
 import com.sooncode.soonjdbc.util.DbModel;
 import com.sooncode.soonjdbc.util.DbModel2JavaBean;
 import com.sooncode.soonjdbc.util.T2E;
 
 /**
- * 执行SQL语句核心类
+ *  
  * 
  * @author hechenwe@gmail.com
  *
@@ -162,35 +162,19 @@ public class Jdbc {
 		}
 	}
 
-	public <T> DbBean getDbBean(final T javaBean) {
-
-		DbBean db = DbBeanCache.getDbBean(null, javaBean);
-		if (db != null) {
-			return db;
-		}
-
-		return jdbcTemplate.execute(new ConnectionCallback<DbBean>() {
-
-			@Override
-			public DbBean doInConnection(Connection con) throws SQLException, DataAccessException {
-				DbBean db = DbBeanCache.getDbBean(con, javaBean);
-				return db;
-			}
-		});
-
-	}
-	public   DbBean getDbBean(final DbModel dbModel) {
+	 
+	public   DbTable getDbTable(final DbModel dbModel) {
 		
-		DbBean db = DbBeanCache.getDbBean(null, new DbModel2JavaBean(dbModel));
+		DbTable db = DbTableCache.getDbTable(null, new DbModel2JavaBean(dbModel));
 		if (db != null) {
 			return db;
 		}
 		
-		return jdbcTemplate.execute(new ConnectionCallback<DbBean>() {
+		return jdbcTemplate.execute(new ConnectionCallback<DbTable>() {
 			
 			@Override
-			public DbBean doInConnection(Connection con) throws SQLException, DataAccessException {
-				DbBean db = DbBeanCache.getDbBean(con, new DbModel2JavaBean(dbModel));
+			public DbTable doInConnection(Connection con) throws SQLException, DataAccessException {
+				DbTable db = DbTableCache.getDbTable(con, new DbModel2JavaBean(dbModel));
 				return db;
 			}
 		});

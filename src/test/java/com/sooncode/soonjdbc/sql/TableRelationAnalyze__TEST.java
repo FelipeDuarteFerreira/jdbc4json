@@ -2,7 +2,7 @@ package com.sooncode.soonjdbc.sql;
 
 import org.junit.Test;
 
-import com.sooncode.soonjdbc.bean.DbBean;
+import com.sooncode.soonjdbc.table.DbBean;
 
 public class TableRelationAnalyze__TEST {
 

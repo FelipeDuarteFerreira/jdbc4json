@@ -1,5 +1,7 @@
 package com.sooncode.soonjdbc.dao;
 
+
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,74 +14,60 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sooncode.soonjdbc.constant.DATE_FORMAT;
 import com.sooncode.soonjdbc.constant.Sort;
-import com.sooncode.soonjdbc.dao.JdbcDao;
 import com.sooncode.soonjdbc.dao.polymerization.Polymerization;
 import com.sooncode.soonjdbc.dao.polymerization.PolymerizationModel;
-import com.sooncode.soonjdbc.dao.tabletype.TableRelation;
-import com.sooncode.soonjdbc.entity.ChooseCourse;
-import com.sooncode.soonjdbc.entity.SooncodeClazz;
-import com.sooncode.soonjdbc.entity.SooncodeClazzDbModel;
-import com.sooncode.soonjdbc.entity.SooncodeCourse;
-import com.sooncode.soonjdbc.entity.SooncodeDictionary;
-import com.sooncode.soonjdbc.entity.SooncodeGroups;
-import com.sooncode.soonjdbc.entity.SooncodeIdentity;
-import com.sooncode.soonjdbc.entity.SooncodeSchool;
-import com.sooncode.soonjdbc.entity.SooncodeStudent;
-import com.sooncode.soonjdbc.entity.SooncodeStudentDbModel;
-import com.sooncode.soonjdbc.entity.SooncodeTeacher;
-import com.sooncode.soonjdbc.entity.SooncodeTeaching;
+import com.sooncode.soonjdbc.entity.ClassStudent;
+import com.sooncode.soonjdbc.entity.ClassStudentDbModel;
 import com.sooncode.soonjdbc.entity.SystemFriend;
+import com.sooncode.soonjdbc.entity.SystemFriendDbModel;
 import com.sooncode.soonjdbc.entity.SystemUser;
 import com.sooncode.soonjdbc.entity.SystemUserDbModel;
-import com.sooncode.soonjdbc.page.Many2Many;
-import com.sooncode.soonjdbc.page.One2Many;
-import com.sooncode.soonjdbc.page.One2Many2Many;
-import com.sooncode.soonjdbc.page.One2One;
 import com.sooncode.soonjdbc.page.Page;
-
- 
 import com.sooncode.soonjdbc.sql.condition.Conditions;
-import com.sooncode.soonjdbc.sql.condition.sign.BetweenSign;
 import com.sooncode.soonjdbc.sql.condition.sign.EqualSign;
 import com.sooncode.soonjdbc.sql.condition.sign.InSign;
 import com.sooncode.soonjdbc.sql.condition.sign.LikeSign;
 import com.sooncode.soonjdbc.sql.condition.sign.NullSign;
 import com.sooncode.soonjdbc.util.DbModel;
-import com.sooncode.soonjdbc.util.Field;
-import com.sooncode.util.SJson;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/applicationContext.xml")
-public class JdbcDao_Test {
+public class DbService_Test {
 	@Autowired
-	private JdbcDao dao;
+	private DbService dbService;
 	private static Logger logger = Logger.getLogger("JdbcDao_Test.class");
 
 	 
 
 	@Test
 	public void save() {
-		SystemUser u = new SystemUser();// system_user
-
-		u.setAge(123);
-		u.setName("hello jdbc");
-		u.setSex("1");
-		u.setCreateDate(new Date());
-		u.setUpdateDate(new Date());
+		SystemUser user = new SystemUser();// system_user
+		user.setAge(123);
+		user.setName("hello jdbc");
+		user.setSex("1");
+		user.setCreateDate(new Date());
+		user.setUpdateDate(new Date());
  
-		long size = dao.save(new SystemUserDbModel(u));
+		
+		SystemUserDbModel sudm = new SystemUserDbModel(user);
+		long size = dbService.save(sudm);
 		 
-		logger.info("-------------:" + size);
+		logger.info("-------------------------------------------------" );
+		logger.info("size=" + size);
+		logger.info("-------------------------------------------------" );
 
 	}
 
+	/**
+	 * 测试 批量保存
+	 */
 	@Test
-	public void saves() {
+	public void saves4batch() {
 		SystemUser u = new SystemUser();
 		// u.setId(1);
 		u.setAge(123);
+		u.setAddress("heco");
 		u.setName("hello jdbc");
 		u.setSex("1");
 		u.setCreateDate(new Date());
@@ -93,63 +81,94 @@ public class JdbcDao_Test {
 
 		List<DbModel> list = new ArrayList<>();
 		list.add(new SystemUserDbModel(u));
-		list.add(new SystemUserDbModel(u2));
-		int[] ids = dao.saves(list);
+		//list.add(new SystemUserDbModel(u2));
+		int[] ids = dbService.saves(list);
 		logger.info(ids);
 
+	}
+	
+	/**
+	 * 测试 非批量保存
+	 */
+	@Test
+	public void saves() {
+		SystemUser u = new SystemUser();
+		// u.setId(1);
+		u.setAge(123);
+		u.setName("hello jdbc");
+		u.setSex("1");
+		u.setCreateDate(new Date());
+		u.setUpdateDate(new Date());
+		 
+		SystemFriend fr = new SystemFriend();
+		fr.setFriendId(34345);
+		
+		List<DbModel> list = new ArrayList<>();
+		list.add(new SystemUserDbModel(u));
+		list.add(new SystemFriendDbModel(fr));
+		int[] ids = dbService.saves(list);
+		logger.info(ids);
+		
 	}
 
 	@Test
 	public void update() {
-		SystemUser u = new SystemUser();
-		u.setUserId(642);
-		u.setAge(100);
+		ClassStudent cs = new ClassStudent();
+		cs.setClassId(1);
+		cs.setStudentId(2);
+		cs.setStudentName("hechn");
 		// u.setName("HE CHEN ");
 		// u.setSex("1");
-		dao.update(new SystemUserDbModel(u));
+		dbService.update(new ClassStudentDbModel(cs));
 	}
 	
 	
 	@Test
 	public void update3() {
 		SystemUserDbModel sudm = new SystemUserDbModel(); 
-		sudm.userId.setValue(642);
+		sudm.userId.setValue(2213);
 		sudm.age.setValue(34);
-		dao.update(sudm);
+		sudm.createDate.setValue(new Date());
+		
+		
+		long size = dbService.update(sudm);
+		
+		logger.info("--------------------------------------------------");
+		logger.info("update size " + size);
+		logger.info("--------------------------------------------------");
 	}
 
 	 
 
 	@Test
 	public void updates1() {
-		SystemUser u = new SystemUser();
-		u.setAge(100);
-		u.setName("hechen");
+		SystemUserDbModel u = new SystemUserDbModel();
+		u.age.setValue(12);
+		u.name.setValue("hechn");
 		SystemUserDbModel sudm = new SystemUserDbModel();
 		Conditions c = new Conditions(sudm);
-		c.setCondition(sudm.userId, InSign.IN, new Integer[] { 642, 643 });
+		c.setCondition(sudm.userId, InSign.IN, new String[] { "123", "456" });
 		c.setCondition(sudm.name, LikeSign.R_LIKE, "hec");
-		long n = dao.updates(c, u);
+		long n = dbService.updates(c, u);
 		logger.info(n);
 	}
 
 	@Test
 	public void saveOrUpdate() {
 		SystemUser u = new SystemUser();
-		u.setUserId(2206);
+		u.setUserId(2207);
 		u.setAge(34);
 		u.setName("IOOUUY");
 		u.setSex("1");
 		
-		
-		dao.saveOrUpdate(new SystemUserDbModel(u));
+		dbService.saveOrUpdate(new SystemUserDbModel(u));
 	}
 
 	@Test
 	public void deletes() {
 		Conditions c = new Conditions(new SystemUserDbModel());
-		c.setCondition(new SystemUserDbModel().age,NullSign.IS_NULL);
-		dao.deletes(c);
+		c.setCondition(new SystemUserDbModel().createDate,NullSign.IS_NULL);
+		dbService.deletes(c);
 
 	}
 
@@ -157,7 +176,7 @@ public class JdbcDao_Test {
 	public void deletes2() {
 		SystemUser u = new SystemUser();
 		u.setSex("1");
-		dao.deletes(new SystemUserDbModel(u));
+		dbService.deletes(new SystemUserDbModel(u));
 
 	}
 
@@ -167,7 +186,7 @@ public class JdbcDao_Test {
 		u.setUserId(2209);
 		u.setAddress("hsdk");
 		u.setAge(34);
-		dao.delete(new SystemUserDbModel(u));
+		dbService.delete(new SystemUserDbModel(u));
 
 	}
 
@@ -176,9 +195,9 @@ public class JdbcDao_Test {
 	public void transactional() {
 		SystemUser u = new SystemUser();
 		u.setUserId(20);
-		dao.delete(new SystemUserDbModel(u));
+		dbService.delete(new SystemUserDbModel(u));
 		// u.setName("hh");
-		// dao.update(u);
+		// dbService.update(u);
 		// int n = 1/0;
 	}
 
@@ -188,7 +207,7 @@ public class JdbcDao_Test {
 	public void polymerization() {
 		Conditions c = new Conditions(new SystemUserDbModel());
 		c.setCondition(new SystemUserDbModel().name, LikeSign.LIKE, "hechen");
-		int max = dao.polymerization(Polymerization.MAX, c, new SystemUserDbModel().age);
+		int max = dbService.polymerization(Polymerization.MAX, c, new SystemUserDbModel().age);
 		logger.info(max);
 	}
 
@@ -197,7 +216,7 @@ public class JdbcDao_Test {
 		 
 		Conditions c = new Conditions(new SystemUserDbModel(new SystemUser())); 
 		c.setGroupBy(new SystemUserDbModel().sex);
-		List<PolymerizationModel<SystemUser>> pms = dao.polymerization(Polymerization.MIN, c, new SystemUserDbModel().age, new SystemUserDbModel().name);
+		List<PolymerizationModel<SystemUser>> pms = dbService.polymerization(Polymerization.MIN, c, new SystemUserDbModel().age, new SystemUserDbModel().name);
 		for (PolymerizationModel<SystemUser> pm : pms) {
 			logger.info(pm.getSize());
 			logger.info(pm.getEntity());
@@ -209,7 +228,7 @@ public class JdbcDao_Test {
 		SystemUser u = new SystemUser();
 		u.setSex("1");
 		SystemUserDbModel sudm = new SystemUserDbModel(u);
-		int max = dao.polymerization(Polymerization.MAX, sudm, new SystemUserDbModel().age);
+		int max = dbService.polymerization(Polymerization.MAX, sudm, new SystemUserDbModel().age);
 		logger.info(max);
 	}
 
@@ -233,7 +252,7 @@ public class JdbcDao_Test {
 		// c.setCondition("sex",NullSign.IS_NULL);
 		// c.setOderBy("name", Sort.DESC);
 		// c.setOderBy("sex", Sort.ASC);
-		  Page p = dao.getPage(1L, 2L, c);
+		  Page p = dbService.getPage(1L, 2L, c);
 		  List<SystemUser> list = p.getOnes();
 		  logger.info(list);
 
@@ -243,9 +262,10 @@ public class JdbcDao_Test {
 
 	@Test
 	public void get2() {
-		SystemUser u = new SystemUser();
-		u.setSex("1");
-		List<SystemUser> list = dao.gets(new SystemUserDbModel(u));
+		 
+		SystemUserDbModel sudm  = new SystemUserDbModel();
+		sudm.sex.setValue("1");
+		List<SystemUser> list = dbService.gets(sudm);
 		logger.info(list);
 
 	}
@@ -257,7 +277,7 @@ public class JdbcDao_Test {
 		Conditions c =  new Conditions(new SystemUserDbModel(u));
 		c.setCondition(new SystemUserDbModel().name, LikeSign.LIKE, "he");
 		c.setCondition(new SystemUserDbModel().age, EqualSign.GT, 23);
-		List<SystemUser> list = dao.gets(c);
+		List<SystemUser> list = dbService.gets(c);
 		logger.info(list);
 
 	}
@@ -267,7 +287,7 @@ public class JdbcDao_Test {
 		SystemUser u = new SystemUser();
 		u.setSex("1");
 		Conditions c = new Conditions(new SystemUserDbModel(u));
-		long n = dao.polymerization(Polymerization.COUNT, c, new SystemUserDbModel().userId);
+		long n = dbService.polymerization(Polymerization.COUNT, c, new SystemUserDbModel().userId);
 		logger.info("------------:" + n);
 
 	}
@@ -278,7 +298,7 @@ public class JdbcDao_Test {
 		// u.setSex("1");
 		Conditions c = new Conditions(new SystemUserDbModel(u));
 		c.setGroupBy(new SystemUserDbModel().sex);
-		List<PolymerizationModel<SystemUser>> list = dao.polymerization(Polymerization.COUNT, c, new SystemUserDbModel().userId,new SystemUserDbModel().age,new SystemUserDbModel().name );
+		List<PolymerizationModel<SystemUser>> list = dbService.polymerization(Polymerization.COUNT, c, new SystemUserDbModel().userId,new SystemUserDbModel().age,new SystemUserDbModel().name );
 		logger.info("------------:" + list.size());
 
 	}
@@ -287,7 +307,7 @@ public class JdbcDao_Test {
 	public void sum() {
 		SystemUser u = new SystemUser();
 		Conditions c = new Conditions(new SystemUserDbModel(u));
-		Object n = dao.polymerization(Polymerization.SUM, c, new SystemUserDbModel().name);
+		Object n = dbService.polymerization(Polymerization.SUM, c, new SystemUserDbModel().name);
 		logger.info("------------:" + n);
 
 	}
@@ -298,7 +318,7 @@ public class JdbcDao_Test {
 		// u.setSex("0");
 		Conditions c = new Conditions(new SystemUserDbModel(u));
 		c.setGroupBy(new SystemUserDbModel().sex);
-		List<PolymerizationModel<SystemUser>> list = dao.polymerization(Polymerization.COUNT, c, new SystemUserDbModel().userId,new SystemUserDbModel().age,new SystemUserDbModel().name );
+		List<PolymerizationModel<SystemUser>> list = dbService.polymerization(Polymerization.COUNT, c, new SystemUserDbModel().userId,new SystemUserDbModel().age,new SystemUserDbModel().name );
 		logger.info("------------:" + list);
 
 	}
@@ -309,23 +329,12 @@ public class JdbcDao_Test {
 		// u.setSex("0");
 		Conditions c = new Conditions(new SystemUserDbModel(u));
 		c.setCondition(new SystemUserDbModel().name, EqualSign.EQ, "hechen");
-		Object n = dao.polymerization(Polymerization.AVG, c, new SystemUserDbModel().sex);
+		Object n = dbService.polymerization(Polymerization.AVG, c, new SystemUserDbModel().sex);
 		logger.info("------------:" + n);
 
 	}
 
-	@Test
-	public void getOne2One3() {
-		SooncodeStudent s = new SooncodeStudent();
-		s.setStudentId("001");
-		SooncodeStudentDbModel student = new SooncodeStudentDbModel(s);
-		One2One o2o = dao.getOne2One(student, new SooncodeClazzDbModel());
-		DbModel scdm = o2o.getOne(SooncodeStudentDbModel.class);
-		DbModel cl = o2o.getOne(SooncodeClazzDbModel.class);
-		SooncodeClazz sc = cl.transform(SooncodeClazz.class);
-		s = scdm.transform(SooncodeStudent.class) ;
-
-	}
+	 
 
 	/**
 	 * 单表分页 查询：性别是‘男’的所有学生
@@ -337,7 +346,7 @@ public class JdbcDao_Test {
 		Conditions c = new Conditions(new SystemUserDbModel(u));
 		c.setOderBy(new SystemUserDbModel().age, Sort.DESC);
 		 
-		Page page = dao.getPage(1L, 5L, c);
+		Page page = dbService.getPage(1L, 5L, c);
 
 		List<SystemUser> list = page.getOnes();
 		logger.info("-------" + page.getTotal() + "-------------------------------" + page.getTotalPages() + "-------------------------");
@@ -362,7 +371,7 @@ public class JdbcDao_Test {
 		SooncodeClazz sc = new SooncodeClazz();
 		Conditions c = ConditionsBuilderProcess.getConditions(s, id, sc);
 
-		Page page = dao.getPage(1L, 5L, c);
+		Page page = dbService.getPage(1L, 5L, c);
 
 		List<One2One> list = page.getOne2One();
 
@@ -394,7 +403,7 @@ public class JdbcDao_Test {
 		SooncodeIdentity id = new SooncodeIdentity();
 		SooncodeClazz cl = new SooncodeClazz();
 		Conditions c = ConditionsBuilderProcess.getConditions(s, id, cl);
-		Page page = dao.getPage(1L, 5L, c);
+		Page page = dbService.getPage(1L, 5L, c);
 
 		List<One2One> list = page.getOne2One();
 
@@ -414,27 +423,7 @@ public class JdbcDao_Test {
 	 */
 	
  
-	@Test
-	public void getOne2Many() {
-		 
-		SooncodeClazzDbModel clazzModel = new SooncodeClazzDbModel();
-		SooncodeClazz clazz = new SooncodeClazz();
-		clazz.setClazzId("002");
-		clazzModel.injectPropertyValue(clazz);
-		SooncodeStudentDbModel studentModel = new SooncodeStudentDbModel();
-		 
-		Page page = dao.getPage(1L, 10L, TableRelation.ONE_MANY, clazzModel, studentModel); 
-		One2Many  o2m = page.getOne2Many();
-		DbModel cl = o2m.getOne();
-		List<DbModel> stues = o2m.getMany();
-		
-		SooncodeClazz sc = cl.transform(SooncodeClazz.class);
-        List<SooncodeStudent> list = DbModel.transform(stues, SooncodeStudent.class);
-        
-        
-        logger.info(sc);
-        logger.info(list);
-	}
+ 
  
 	/**
 	 * 查询 学生id 为 "001" 选修的所有课程
@@ -449,7 +438,7 @@ public class JdbcDao_Test {
 		SooncodeCourse co = new SooncodeCourse();
 		Conditions c = ConditionsBuilderProcess.getConditions(s, cc, co);
 		// c.setBetweenCondition("chooseCourse.score", 50, 100);
-		Page page = dao.getPage(1L, 10L, c);
+		Page page = dbService.getPage(1L, 10L, c);
 		Many2Many<SooncodeStudent, ChooseCourse, SooncodeCourse> m2m = page.getMany2Many();
 
 		SooncodeStudent stu = m2m.getOne();
@@ -480,7 +469,7 @@ public class JdbcDao_Test {
 		SooncodeCourse co = new SooncodeCourse();
 		Conditions c = ConditionsBuilderProcess.getConditions(cc, s, co);
 		c.setCondition("chooseCourse.score", BetweenSign.NOT_BETWEEN_AND, 50, 100);
-		Page page = dao.getPage(1L, 10L, c);
+		Page page = dbService.getPage(1L, 10L, c);
 		List<One2One> list = page.getOne2One();
 		logger.info("---------------------------------------------------------------");
 		for (One2One o2o : list) {
@@ -505,7 +494,7 @@ public class JdbcDao_Test {
 		f.setMeUserId(16);
 		Conditions c = ConditionsBuilderProcess.getConditions(f, u);
 
-		Page page = dao.getPage(1L, 10L, c);
+		Page page = dbService.getPage(1L, 10L, c);
 		List<One2One> o2os = page.getOne2One();
 		logger.info("---------------------------------------------------------------");
 		for (One2One o2o : o2os) {
@@ -530,7 +519,7 @@ public class JdbcDao_Test {
 		co.setCourseId("001");
 		Conditions c = ConditionsBuilderProcess.getConditions(co, cc, s);
 		c.setCondition("chooseCourse.score", BetweenSign.BETWEEN_AND, 50, 100);
-		Page page = dao.getPage(1L, 10L, c);
+		Page page = dbService.getPage(1L, 10L, c);
 		List<Many2Many<SooncodeCourse, ChooseCourse, SooncodeStudent>> m2ms = page.getMany2Manys();
 
 		logger.info("---------------------------------------------------------------");
@@ -562,7 +551,7 @@ public class JdbcDao_Test {
 
 		Conditions c = ConditionsBuilderProcess.getConditions(school, clazz, student);
 
-		Page page = dao.getPage(1L, 10L, c);
+		Page page = dbService.getPage(1L, 10L, c);
 		List<One2Many2Many<SooncodeSchool, SooncodeClazz, SooncodeStudent>> o2m2ms = page.getOne2Many2Manys();
 
 		logger.info("---------------------------------------------------------------");
@@ -597,7 +586,7 @@ public class JdbcDao_Test {
 		SooncodeTeacher teacher = new SooncodeTeacher();
 		Conditions c = ConditionsBuilderProcess.getConditions(clazz, school, student, teacher);
 
-		Page page = dao.getPage(1L, 10L, c);
+		Page page = dbService.getPage(1L, 10L, c);
 		List<One2One> o2os = page.getOne2One();
 
 		logger.info("---------------------------------------------------------------");
@@ -625,7 +614,7 @@ public class JdbcDao_Test {
 		SooncodeTeacher teacher = new SooncodeTeacher();
 		Conditions c = ConditionsBuilderProcess.getConditions(school, teacher);
 
-		Page page = dao.getPage(1L, 10L, c);
+		Page page = dbService.getPage(1L, 10L, c);
 		List<One2One> o2os = page.getOne2One();
 
 		logger.info("---------------------------------------------------------------");
@@ -653,7 +642,7 @@ public class JdbcDao_Test {
 		teacher.setTeacherId(4);
 		Conditions c = ConditionsBuilderProcess.getConditions(teacher, school);
 
-		Page page = dao.getPage(1L, 10L, c);
+		Page page = dbService.getPage(1L, 10L, c);
 		List<One2One> o2os = page.getOne2One();
 
 		logger.info("---------------------------------------------------------------");
@@ -678,7 +667,7 @@ public class JdbcDao_Test {
 		SooncodeTeacher teacher = new SooncodeTeacher();
 		Conditions c = ConditionsBuilderProcess.getConditions(clazz, teaching, teacher);
 
-		Page page = dao.getPage(1L, 10L, c);
+		Page page = dbService.getPage(1L, 10L, c);
 		List<Many2Many<SooncodeClazz, SooncodeTeaching, SooncodeTeacher>> m2ms = page.getMany2Manys();
 
 		logger.info("---------------------------------------------------------------");
@@ -708,7 +697,7 @@ public class JdbcDao_Test {
 
 		Conditions c = ConditionsBuilderProcess.getConditions(sg, sd);
 		c.setCondition("sooncodeGroups.groupName", LikeSign.LIKE, "类型");
-		Page page = dao.getPage(1, Long.MAX_VALUE, c);
+		Page page = dbService.getPage(1, Long.MAX_VALUE, c);
 
 		List<One2Many<SooncodeGroups, SooncodeDictionary>> list = page.getOne2Manys();
 

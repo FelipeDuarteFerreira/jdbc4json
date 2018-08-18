@@ -2,8 +2,8 @@ package com.sooncode.soonjdbc.sql;
 
 import java.util.List;
 
-import com.sooncode.soonjdbc.bean.DbBean;
-import com.sooncode.soonjdbc.bean.ForeignKey;
+import com.sooncode.soonjdbc.table.DbBean;
+import com.sooncode.soonjdbc.table.ForeignKey;
 
 /**
  * 数据库 表关系 分析

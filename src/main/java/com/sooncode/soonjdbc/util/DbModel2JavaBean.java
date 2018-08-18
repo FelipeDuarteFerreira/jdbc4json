@@ -24,11 +24,11 @@ public class DbModel2JavaBean {
 		for (java.lang.reflect.Field field : rObj.getFields()) {
 
 			String key = field.getName();
-			if (field.getType().equals(Field.class)) {
+			if (field.getType().equals(DbField.class)) {
 				field.setAccessible(true);
-				Field f;
+				DbField f;
 				try {
-					f = (Field) field.get(dbModel);
+					f = (DbField) field.get(dbModel);
 					newFields.put(key, f.getValue());
 				} catch (IllegalArgumentException e) {
 					e.printStackTrace();

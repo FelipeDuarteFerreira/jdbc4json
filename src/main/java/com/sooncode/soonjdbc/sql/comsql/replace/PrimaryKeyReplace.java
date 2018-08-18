@@ -12,7 +12,9 @@ public class PrimaryKeyReplace implements SqlReplace{
 		String sql = protogenesisParameter.getReadySql();
 		sql = sql.replace("[CONDITION]", columns.getPKCondition());
 		protogenesisParameter.setReadySql(sql);
-		protogenesisParameter.addParameter(columns.getPkValue());
+		for(Object val : columns.getPkValues()) {
+			protogenesisParameter.addParameter(val);
+		}
 		return sqlReplaceChain.getReplacedSql(protogenesisParameter, columns);
 	}
 

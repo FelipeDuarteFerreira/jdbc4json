@@ -1,13 +1,13 @@
 package com.sooncode.soonjdbc.entity;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.sooncode.soonjdbc.util.DbModel;
-import com.sooncode.soonjdbc.util.Field;
+import com.sooncode.soonjdbc.util.DbField;
 
 
 /**
-* 
+* 用户
 * SYSTEM_USER
 * @author SOONJDBC CODE GENERATOR  
 * 
@@ -18,21 +18,101 @@ public class SystemUserDbModel extends DbModel {
 	private static final String  TABLE_NAME = "SYSTEM_USER";
 
     /***/
-    public  Field createDate = new Field(TABLE_NAME,"CREATE_DATE");
+    public  DbField<java.util.Date> createDate = new DbField<java.util.Date>(TABLE_NAME,"CREATE_DATE"){
+    @Override
+		public java.util.Date getValue() {
+			return  this.value;
+		}
+
+		@Override
+		public void setValue(java.util.Date value) {
+			this.value = value;
+		}
+    };
     /**余额*/
-    public  Field updateDate = new Field(TABLE_NAME,"UPDATE_DATE");
+    public  DbField<java.util.Date> updateDate = new DbField<java.util.Date>(TABLE_NAME,"UPDATE_DATE"){
+    @Override
+		public java.util.Date getValue() {
+			return  this.value;
+		}
+
+		@Override
+		public void setValue(java.util.Date value) {
+			this.value = value;
+		}
+    };
     /***/
-    public  Field address = new Field(TABLE_NAME,"ADDRESS");
+    public  DbField<String> address = new DbField<String>(TABLE_NAME,"ADDRESS"){
+    @Override
+		public String getValue() {
+			return  this.value;
+		}
+
+		@Override
+		public void setValue(String value) {
+			this.value = value;
+		}
+    };
     /***/
-    public  Field sex = new Field(TABLE_NAME,"SEX");
+    public  DbField<String> sex = new DbField<String>(TABLE_NAME,"SEX"){
+    @Override
+		public String getValue() {
+			return  this.value;
+		}
+
+		@Override
+		public void setValue(String value) {
+			this.value = value;
+		}
+    };
     /**编号*/
-    public  Field userId = new Field(TABLE_NAME,"USER_ID");
+    public  DbField<Integer> userId = new DbField<Integer>(TABLE_NAME,"USER_ID"){
+    @Override
+		public Integer getValue() {
+			return  this.value;
+		}
+
+		@Override
+		public void setValue(Integer value) {
+			this.value = value;
+		}
+    };
     /***/
-    public  Field type = new Field(TABLE_NAME,"TYPE");
+    public  DbField<String> type = new DbField<String>(TABLE_NAME,"TYPE"){
+    @Override
+		public String getValue() {
+			return  this.value;
+		}
+
+		@Override
+		public void setValue(String value) {
+			this.value = value;
+		}
+    };
     /**姓名*/
-    public  Field name = new Field(TABLE_NAME,"NAME");
+    public  DbField<String> name = new DbField<String>(TABLE_NAME,"NAME"){
+    @Override
+		public String getValue() {
+			return  this.value;
+		}
+
+		@Override
+		public void setValue(String value) {
+			this.value = value;
+		}
+    };
     /***/
-    public  Field age = new Field(TABLE_NAME,"AGE");
+    public  DbField<Integer> age = new DbField<Integer>(TABLE_NAME,"AGE"){
+    @Override
+		public Integer getValue() {
+			return  this.value;
+		}
+
+		@Override
+		public void setValue(Integer value) {
+			this.value = value;
+		}
+    };
  
 	public <T> SystemUserDbModel (T javaBean) {
 		super.init(javaBean);
@@ -46,10 +126,14 @@ public class SystemUserDbModel extends DbModel {
 	public String tableName() {
 		return TABLE_NAME;
 	}
-
-    @Override
-	public List<Field> primaryKeys() {
-		return Arrays.asList(new Field[] {userId});
+ 
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<DbField<?>> primaryKeys() {
+		List<DbField<?>> primaryKeys = new ArrayList<>();
+		primaryKeys.add(userId);
+		return primaryKeys;
 	}
 	 
 }

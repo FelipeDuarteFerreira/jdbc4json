@@ -1,10 +1,10 @@
 package com.sooncode.soonjdbc.sql.comsql;
 
-import com.sooncode.soonjdbc.bean.DbBean;
 import com.sooncode.soonjdbc.sql.Parameter;
 import com.sooncode.soonjdbc.sql.comsql.replace.SetParametersReplace;
 import com.sooncode.soonjdbc.sql.comsql.replace.SqlReplaceChain;
 import com.sooncode.soonjdbc.sql.comsql.replace.TableNameReplace;
+import com.sooncode.soonjdbc.util.DbModel;
 
 /**
  * 批量更新
@@ -14,8 +14,8 @@ import com.sooncode.soonjdbc.sql.comsql.replace.TableNameReplace;
 public class UpdatesBuilder implements SqlBuilder {
 	public static final String UPDATE_SQL = "UPDATE [TABLE] SET [SET_PARAMETERS] WHERE 1=1 ";
 	@Override
-	public Parameter getParameter(DbBean dbBean) {
-		Columns columns = new Columns(dbBean);
+	public Parameter getParameter(DbModel dbModel) {
+		Columns columns = new Columns(dbModel);
 		SqlReplaceChain src = new SqlReplaceChain();
 		src.addSqlReplace(new TableNameReplace())
 		   .addSqlReplace(new SetParametersReplace());

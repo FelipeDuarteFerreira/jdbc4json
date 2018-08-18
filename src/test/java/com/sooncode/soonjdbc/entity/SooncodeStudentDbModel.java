@@ -1,13 +1,13 @@
 package com.sooncode.soonjdbc.entity;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.sooncode.soonjdbc.util.DbModel;
-import com.sooncode.soonjdbc.util.Field;
+import com.sooncode.soonjdbc.util.DbField;
 
 
 /**
-* 
+* 学生
 * SOONCODE_STUDENT
 * @author SOONJDBC CODE GENERATOR  
 * 
@@ -18,17 +18,77 @@ public class SooncodeStudentDbModel extends DbModel {
 	private static final String  TABLE_NAME = "SOONCODE_STUDENT";
 
     /***/
-    public static Field identityId = new Field(TABLE_NAME,"IDENTITY_ID");
+    public  DbField<String> identityId = new DbField<String>(TABLE_NAME,"IDENTITY_ID"){
+    @Override
+		public String getValue() {
+			return  this.value;
+		}
+
+		@Override
+		public void setValue(String value) {
+			this.value = value;
+		}
+    };
     /***/
-    public static Field clazzId = new Field(TABLE_NAME,"CLAZZ_ID");
+    public  DbField<String> clazzId = new DbField<String>(TABLE_NAME,"CLAZZ_ID"){
+    @Override
+		public String getValue() {
+			return  this.value;
+		}
+
+		@Override
+		public void setValue(String value) {
+			this.value = value;
+		}
+    };
     /**性别*/
-    public static Field sex = new Field(TABLE_NAME,"SEX");
+    public  DbField<String> sex = new DbField<String>(TABLE_NAME,"SEX"){
+    @Override
+		public String getValue() {
+			return  this.value;
+		}
+
+		@Override
+		public void setValue(String value) {
+			this.value = value;
+		}
+    };
     /**学生编号*/
-    public static Field studentId = new Field(TABLE_NAME,"STUDENT_ID");
+    public  DbField<String> studentId = new DbField<String>(TABLE_NAME,"STUDENT_ID"){
+    @Override
+		public String getValue() {
+			return  this.value;
+		}
+
+		@Override
+		public void setValue(String value) {
+			this.value = value;
+		}
+    };
     /**姓名*/
-    public static Field name = new Field(TABLE_NAME,"NAME");
+    public  DbField<String> name = new DbField<String>(TABLE_NAME,"NAME"){
+    @Override
+		public String getValue() {
+			return  this.value;
+		}
+
+		@Override
+		public void setValue(String value) {
+			this.value = value;
+		}
+    };
     /**年龄*/
-    public static Field age = new Field(TABLE_NAME,"AGE");
+    public  DbField<Integer> age = new DbField<Integer>(TABLE_NAME,"AGE"){
+    @Override
+		public Integer getValue() {
+			return  this.value;
+		}
+
+		@Override
+		public void setValue(Integer value) {
+			this.value = value;
+		}
+    };
  
 	public <T> SooncodeStudentDbModel (T javaBean) {
 		super.init(javaBean);
@@ -42,10 +102,14 @@ public class SooncodeStudentDbModel extends DbModel {
 	public String tableName() {
 		return TABLE_NAME;
 	}
-
-    @Override
-	public List<Field> primaryKeys() {
-		return Arrays.asList(new Field[] {studentId});
+ 
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<DbField<?>> primaryKeys() {
+		List<DbField<?>> primaryKeys = new ArrayList<>();
+		primaryKeys.add(studentId);
+		return primaryKeys;
 	}
 	 
 }

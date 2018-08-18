@@ -1,13 +1,13 @@
 package com.sooncode.soonjdbc.entity;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.sooncode.soonjdbc.util.DbModel;
-import com.sooncode.soonjdbc.util.Field;
+import com.sooncode.soonjdbc.util.DbField;
 
 
 /**
-* 
+* 老师
 * SOONCODE_TEACHER
 * @author SOONJDBC CODE GENERATOR  
 * 
@@ -18,21 +18,101 @@ public class SooncodeTeacherDbModel extends DbModel {
 	private static final String  TABLE_NAME = "SOONCODE_TEACHER";
 
     /**老师编号*/
-    public static Field teacherId = new Field(TABLE_NAME,"TEACHER_ID");
+    public  DbField<Integer> teacherId = new DbField<Integer>(TABLE_NAME,"TEACHER_ID"){
+    @Override
+		public Integer getValue() {
+			return  this.value;
+		}
+
+		@Override
+		public void setValue(Integer value) {
+			this.value = value;
+		}
+    };
     /**老师年龄*/
-    public static Field teacherAge = new Field(TABLE_NAME,"TEACHER_AGE");
+    public  DbField<Integer> teacherAge = new DbField<Integer>(TABLE_NAME,"TEACHER_AGE"){
+    @Override
+		public Integer getValue() {
+			return  this.value;
+		}
+
+		@Override
+		public void setValue(Integer value) {
+			this.value = value;
+		}
+    };
     /**创建时间*/
-    public static Field createDate = new Field(TABLE_NAME,"CREATE_DATE");
+    public  DbField<java.util.Date> createDate = new DbField<java.util.Date>(TABLE_NAME,"CREATE_DATE"){
+    @Override
+		public java.util.Date getValue() {
+			return  this.value;
+		}
+
+		@Override
+		public void setValue(java.util.Date value) {
+			this.value = value;
+		}
+    };
     /**老师名称*/
-    public static Field teacherName = new Field(TABLE_NAME,"TEACHER_NAME");
+    public  DbField<String> teacherName = new DbField<String>(TABLE_NAME,"TEACHER_NAME"){
+    @Override
+		public String getValue() {
+			return  this.value;
+		}
+
+		@Override
+		public void setValue(String value) {
+			this.value = value;
+		}
+    };
     /***/
-    public static Field address = new Field(TABLE_NAME,"ADDRESS");
+    public  DbField<String> address = new DbField<String>(TABLE_NAME,"ADDRESS"){
+    @Override
+		public String getValue() {
+			return  this.value;
+		}
+
+		@Override
+		public void setValue(String value) {
+			this.value = value;
+		}
+    };
     /***/
-    public static Field sex = new Field(TABLE_NAME,"SEX");
+    public  DbField<String> sex = new DbField<String>(TABLE_NAME,"SEX"){
+    @Override
+		public String getValue() {
+			return  this.value;
+		}
+
+		@Override
+		public void setValue(String value) {
+			this.value = value;
+		}
+    };
     /***/
-    public static Field xxx = new Field(TABLE_NAME,"XXX");
+    public  DbField<Integer> xxx = new DbField<Integer>(TABLE_NAME,"XXX"){
+    @Override
+		public Integer getValue() {
+			return  this.value;
+		}
+
+		@Override
+		public void setValue(Integer value) {
+			this.value = value;
+		}
+    };
     /***/
-    public static Field hight = new Field(TABLE_NAME,"HIGHT");
+    public  DbField<Integer> hight = new DbField<Integer>(TABLE_NAME,"HIGHT"){
+    @Override
+		public Integer getValue() {
+			return  this.value;
+		}
+
+		@Override
+		public void setValue(Integer value) {
+			this.value = value;
+		}
+    };
  
 	public <T> SooncodeTeacherDbModel (T javaBean) {
 		super.init(javaBean);
@@ -46,10 +126,14 @@ public class SooncodeTeacherDbModel extends DbModel {
 	public String tableName() {
 		return TABLE_NAME;
 	}
-
-    @Override
-	public List<Field> primaryKeys() {
-		return Arrays.asList(new Field[] {teacherId});
+ 
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<DbField<?>> primaryKeys() {
+		List<DbField<?>> primaryKeys = new ArrayList<>();
+		primaryKeys.add(teacherId);
+		return primaryKeys;
 	}
 	 
 }

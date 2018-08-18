@@ -10,9 +10,9 @@ public class SetParametersReplace implements SqlReplace{
 	@Override
 	public Parameter getParameter(Parameter protogenesisParameter, Columns columns, SqlReplaceChainI sqlReplaceChain) {
 		String sql = protogenesisParameter.getReadySql();
-		sql = sql.replace(SET_PARAMETERS, columns.getSetParameters());
+		sql = sql.replace(SET_PARAMETERS, columns.getSetParametersExcludePK());
 	    protogenesisParameter.setReadySql(sql);
-		protogenesisParameter.addParameters(columns.getParameter());
+		protogenesisParameter.addParameters(columns.getParameterExcludePK());
 		return sqlReplaceChain.getReplacedSql(protogenesisParameter, columns);
 	}
 

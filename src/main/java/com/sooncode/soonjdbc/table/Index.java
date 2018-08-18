@@ -1,4 +1,4 @@
-package com.sooncode.soonjdbc.bean;
+package com.sooncode.soonjdbc.table;
  
 
 /**

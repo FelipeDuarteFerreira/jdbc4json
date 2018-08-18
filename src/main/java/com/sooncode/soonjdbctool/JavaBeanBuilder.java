@@ -2,7 +2,6 @@ package com.sooncode.soonjdbctool;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,7 +22,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import com.sooncode.soonjdbc.util.DbModel;
 
 public class JavaBeanBuilder {
 	 
@@ -68,7 +66,7 @@ public class JavaBeanBuilder {
     			writeFile(fName, code, "UTF-8");
     			String fName2 = this.codePath  + javaName +"DbModel.java";
     			String code2 = getDbModelClassCode(table.getTableName());
-    			//writeFile(fName2, code2, "UTF-8");
+    			writeFile(fName2, code2, "UTF-8");
     		}
     	}
     }
@@ -109,11 +107,11 @@ public class JavaBeanBuilder {
 				String[] types = { "Table" };
 				 
 				List<Table> list = new ArrayList<>();
-				ResultSet tableSet = dm.getTables(dataName,  null, null, types);//
+				ResultSet tableSet = dm.getTables(dataName,  null, "%", types);//
 				while (tableSet.next()) {  
 					Table t = new Table();
-					String tableRemarks = tableSet.getString("REMARKS"); 
 					String tableName = tableSet.getString("TABLE_NAME").toUpperCase(); 
+					String tableRemarks = tableSet.getString("REMARKS"); 
 					t.setTableName(tableName);
 					t.setTableRemarks(tableRemarks);
 					list.add(t);
@@ -169,18 +167,17 @@ public class JavaBeanBuilder {
 
 	}
 
-	public PrimaryKey getPrimaryKey( final String tableName) {
+	public List<PrimaryKey> getPrimaryKeies( final String tableName) {
 
-		return jdbcTemplate.execute(new ConnectionCallback<PrimaryKey>() {
+		return jdbcTemplate.execute(new ConnectionCallback<List<PrimaryKey>>() {
 
 			@Override
-			public PrimaryKey doInConnection(Connection con) throws SQLException, DataAccessException {
-				PrimaryKey primaryKey = new PrimaryKey();
-
+			public List<PrimaryKey> doInConnection(Connection con) throws SQLException, DataAccessException {
+				List<PrimaryKey> keies = new ArrayList<>();
 				ResultSet primaryKeyResultSet;
-
 				primaryKeyResultSet = con.getMetaData().getPrimaryKeys( null, null, tableName);
 				while (primaryKeyResultSet.next()) { // 遍历某个表的主键
+					PrimaryKey primaryKey = new PrimaryKey();
 					String primaryKeyName = primaryKeyResultSet.getString("COLUMN_NAME");
 					String primaryKeySerial = primaryKeyResultSet.getString("KEY_SEQ");
 					String primaryKeyDataType = "";
@@ -188,9 +185,9 @@ public class JavaBeanBuilder {
 					primaryKey.setPrimaryKeyName(primaryKeyName.toUpperCase());
 					primaryKey.setDatabaseDataType(primaryKeyDataType);
 					primaryKey.setPrimaryKeySerial(Short.parseShort(primaryKeySerial));
+					keies.add(primaryKey);
 				}
-
-				return primaryKey;
+				return keies;
 			}
 		});
 
@@ -209,7 +206,7 @@ public class JavaBeanBuilder {
 	public String getEntityClassCode(String tableName) {
 		Table t = getTable( tableName);
 		Map<String, Column> columns = getColumns( tableName);
-		PrimaryKey pk = getPrimaryKey( tableName);
+		PrimaryKey pk = getPrimaryKeies( tableName).get(0);
 
 		Column pkColumn = columns.get(pk.getPrimaryKeyName());
 		
@@ -289,16 +286,20 @@ public class JavaBeanBuilder {
 	public String getDbModelClassCode(String tableName) {
 		Table table = getTable( tableName);
 		Map<String, Column> columns = getColumns( tableName);
-		PrimaryKey pk = getPrimaryKey( tableName);
-
-		Column pkColumn = columns.get(pk.getPrimaryKeyName());
+		List<PrimaryKey> primaryKeies = getPrimaryKeies( tableName);
+		List<Column> pkColumns = new ArrayList<>();
+        for (PrimaryKey key : primaryKeies) {
+        	Column pkColumn = columns.get(key.getPrimaryKeyName());
+        	pkColumns.add(pkColumn);
+		}
+		
 		InputStream inputStream = T2E.class.getResourceAsStream("db_model_template.txt");// JavaBeanBuilder.class.getClassLoader().getResource("db_model_template.txt").getPath();
 		String  template = getPojoTemplate(inputStream);//当前类名.class.getClassLoader().getResource(“4.txt”).getPath()
 		
 		Map<String,Object> map = new HashMap<>();
 		map.put("table", table);
 		map.put("columns", columns);
-		map.put("pkColumn", pkColumn);
+		map.put("pkColumns", pkColumns);
 		map.put("packageName", this.packageName);
 		map.put("className", T2E.toClassName(tableName));
 		

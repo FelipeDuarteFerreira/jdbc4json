@@ -1,6 +1,6 @@
 package com.sooncode.soonjdbc.entity;
 /**
-* 
+* 学校
 * SOONCODE_SCHOOL
 * SooncodeSchool
 * @author SOONJDBC CODE GENERATOR 
